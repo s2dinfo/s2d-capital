@@ -7,7 +7,7 @@
 .top {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
   margin-bottom: 40px;
 }
 
@@ -61,7 +61,8 @@
 .social a:hover { color: var(--gold-light); }
 
 @media (max-width: 768px) {
-  .footer { padding: 40px 16px 24px; }
-  .top { flex-direction: column; gap: 32px; }
+  .footer { padding: 36px 16px 24px; }
+  .top { flex-direction: column; gap: 28px; }
   .columns { flex-direction: column; gap: 24px; }
+  .bottom { flex-direction: column; gap: 12px; text-align: center; }
 }

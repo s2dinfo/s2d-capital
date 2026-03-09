@@ -1,5 +1,6 @@
 import { getCryptoPrices, getMacroData, getFxRates, getFearGreed, getTrending, getBtcChart, getEthChart, getFredChart, formatPrice, formatPct, pctColor } from '@/lib/api';
 import MarketCharts from './charts';
+import styles from './markets.module.css';
 
 export const metadata = {
   title: 'Markets | S2D Capital Insights',
@@ -36,8 +37,6 @@ export default async function MarketsPage() {
     { pair: 'USD/CHF', val: fx.CHF?.toFixed(4) },
     { pair: 'AUD/USD', val: (1 / fx.AUD).toFixed(4) },
     { pair: 'USD/CAD', val: fx.CAD?.toFixed(4) },
-    { pair: 'EUR/GBP', val: (fx.GBP / fx.EUR).toFixed(4) },
-    { pair: 'USD/CNY', val: fx.CNY?.toFixed(4) },
   ] : [];
 
   const fgValue = fearGreed?.current?.value ?? 50;
@@ -52,106 +51,73 @@ export default async function MarketsPage() {
   ];
 
   return (
-    <div style={{ padding: '36px 48px 60px', minHeight: '80vh' }}>
-      {/* Header */}
-      <div style={{ marginBottom: 36 }}>
-        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#B8860B', marginBottom: 8 }}>
-          LIVE MARKET DATA
-        </p>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, color: '#1A1A2E', marginBottom: 6 }}>
-          Market <em style={{ fontStyle: 'italic', color: '#B8860B' }}>Intelligence</em> Dashboard
-        </h1>
-        <p style={{ fontSize: '0.88rem', color: '#6B6B82', fontWeight: 300 }}>
-          Real-time data across all six verticals. Powered by CoinGecko, FRED, Open Exchange Rates &amp; Alternative.me.
-        </p>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <p className={styles.eyebrow}>LIVE MARKET DATA</p>
+        <h1 className={styles.title}>Market <em>Intelligence</em> Dashboard</h1>
+        <p className={styles.subtitle}>Real-time data across all six verticals.</p>
       </div>
 
-      {/* ═══ ROW 1: Fear & Greed + Macro ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginBottom: 24 }}>
-        {/* Fear & Greed */}
-        <div style={{ background: '#FDFCF9', border: '1px solid #F0EDE6', padding: 28, textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#B8860B', marginBottom: 16 }}>
-            CRYPTO FEAR &amp; GREED INDEX
-          </p>
-          <div style={{ width: 120, height: 120, borderRadius: '50%', border: `6px solid ${fgColor}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', background: `${fgColor}08` }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '2.4rem', fontWeight: 700, color: fgColor, lineHeight: 1 }}>
-              {fgValue}
-            </span>
-            <span style={{ fontSize: '0.6rem', color: fgColor, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              {fgLabel}
-            </span>
+      {/* Fear & Greed + Macro */}
+      <div className={styles.topRow}>
+        <div className={styles.fgCard}>
+          <p className={styles.cardLabel}>CRYPTO FEAR &amp; GREED INDEX</p>
+          <div className={styles.fgCircle} style={{ borderColor: fgColor, background: `${fgColor}08` }}>
+            <span className={styles.fgValue} style={{ color: fgColor }}>{fgValue}</span>
+            <span className={styles.fgLabel} style={{ color: fgColor }}>{fgLabel}</span>
           </div>
-          <p style={{ fontSize: '0.68rem', color: '#9C9CAF' }}>0 = Extreme Fear / 100 = Extreme Greed</p>
+          <p className={styles.fgNote}>0 = Extreme Fear / 100 = Extreme Greed</p>
         </div>
-
-        {/* Macro Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+        <div className={styles.macroGrid}>
           {macroCards.map((m) => (
-            <div key={m.label} style={{ background: '#FDFCF9', border: '1px solid #F0EDE6', padding: '22px 18px', borderLeft: `4px solid ${m.color}` }}>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: m.color, marginBottom: 6 }}>
-                {m.label}
-              </p>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', lineHeight: 1, marginBottom: 4 }}>
-                {m.value}
-              </div>
-              <p style={{ fontSize: '0.65rem', color: '#9C9CAF' }}>{m.sub}</p>
+            <div key={m.label} className={styles.macroCard} style={{ borderLeftColor: m.color }}>
+              <p className={styles.macroLabel} style={{ color: m.color }}>{m.label}</p>
+              <div className={styles.macroValue}>{m.value}</div>
+              <p className={styles.macroSub}>{m.sub}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ═══ ROW 2: Crypto Prices ═══ */}
-      <div style={{ marginBottom: 24 }}>
-        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#B8860B', marginBottom: 14 }}>
-          CRYPTO MARKETS
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
+      {/* Crypto Prices */}
+      <div className={styles.section}>
+        <p className={styles.sectionLabel}>CRYPTO MARKETS</p>
+        <div className={styles.coinGrid}>
           {coins.map((c) => {
             const d = prices?.[c.key];
             return (
-              <div key={c.key} style={{ background: '#FDFCF9', border: '1px solid #F0EDE6', padding: '18px 14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#1A1A2E' }}>{c.sym}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', fontWeight: 600, color: pctColor(d?.usd_24h_change) }}>
-                    {formatPct(d?.usd_24h_change)}
-                  </span>
+              <div key={c.key} className={styles.coinCard}>
+                <div className={styles.coinTop}>
+                  <span className={styles.coinSym}>{c.sym}</span>
+                  <span className={styles.coinChg} style={{ color: pctColor(d?.usd_24h_change) }}>{formatPct(d?.usd_24h_change)}</span>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.15rem', fontWeight: 600, color: '#1A1A2E' }}>
-                  {formatPrice(d?.usd)}
-                </div>
-                <div style={{ fontSize: '0.58rem', color: '#9C9CAF', marginTop: 3 }}>
-                  MCap {formatPrice(d?.usd_market_cap)}
-                </div>
+                <div className={styles.coinPrice}>{formatPrice(d?.usd)}</div>
+                <div className={styles.coinCap}>MCap {formatPrice(d?.usd_market_cap)}</div>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* ═══ ROW 3: Charts ═══ */}
+      {/* Charts */}
       <MarketCharts btcChart={btcChart} ethChart={ethChart} fedRateChart={fedRateChart} fearGreedHistory={fearGreed?.history} btcPrice={prices?.bitcoin?.usd} ethPrice={prices?.ethereum?.usd} btcChange={prices?.bitcoin?.usd_24h_change} ethChange={prices?.ethereum?.usd_24h_change} />
 
-      {/* ═══ ROW 4: Trending + FX ═══ */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
-        {/* Trending */}
+      {/* Trending + FX */}
+      <div className={styles.bottomRow}>
         {trending && (
-          <div style={{ background: '#FDFCF9', border: '1px solid #F0EDE6', padding: 22 }}>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#B8860B', marginBottom: 14 }}>
-              TRENDING ON COINGECKO
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className={styles.trendingCard}>
+            <p className={styles.sectionLabel}>TRENDING ON COINGECKO</p>
+            <div className={styles.trendingList}>
               {trending.map((t: any, i: number) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: i < trending.length - 1 ? '1px solid #F0EDE6' : 'none' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: '#9C9CAF', width: 16 }}>{i + 1}</span>
-                    {t.thumb && <img src={t.thumb} alt={t.name} style={{ width: 20, height: 20, borderRadius: '50%' }} />}
-                    <span style={{ fontSize: '0.82rem', fontWeight: 500, color: '#1A1A2E' }}>{t.name}</span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: '#9C9CAF' }}>{t.symbol}</span>
+                <div key={i} className={styles.trendingItem}>
+                  <div className={styles.trendingLeft}>
+                    <span className={styles.trendingNum}>{i + 1}</span>
+                    {t.thumb && <img src={t.thumb} alt={t.name} className={styles.trendingImg} />}
+                    <span className={styles.trendingName}>{t.name}</span>
+                    <span className={styles.trendingSym}>{t.symbol}</span>
                   </div>
                   {t.priceChange24h != null && (
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', fontWeight: 500, color: pctColor(t.priceChange24h) }}>
-                      {formatPct(t.priceChange24h)}
-                    </span>
+                    <span className={styles.trendingChg} style={{ color: pctColor(t.priceChange24h) }}>{formatPct(t.priceChange24h)}</span>
                   )}
                 </div>
               ))}
@@ -159,17 +125,14 @@ export default async function MarketsPage() {
           </div>
         )}
 
-        {/* FX Rates */}
         {fxPairs.length > 0 && (
-          <div style={{ background: '#FDFCF9', border: '1px solid #F0EDE6', padding: 22 }}>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#2D8F5E', marginBottom: 14 }}>
-              FX RATES
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+          <div className={styles.fxCard}>
+            <p className={styles.sectionLabel} style={{ color: '#2D8F5E' }}>FX RATES</p>
+            <div className={styles.fxGrid}>
               {fxPairs.map((f) => (
-                <div key={f.pair} style={{ padding: '10px 12px', background: '#FAF8F3', border: '1px solid #F0EDE6' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1A1A2E', marginBottom: 3 }}>{f.pair}</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1rem', fontWeight: 500, color: '#2D8F5E' }}>{f.val}</div>
+                <div key={f.pair} className={styles.fxItem}>
+                  <div className={styles.fxPair}>{f.pair}</div>
+                  <div className={styles.fxVal}>{f.val}</div>
                 </div>
               ))}
             </div>
@@ -178,13 +141,11 @@ export default async function MarketsPage() {
       </div>
 
       {/* Attribution */}
-      <div style={{ padding: '14px 18px', background: '#FAF8F3', border: '1px solid #F0EDE6', fontSize: '0.68rem', color: '#9C9CAF', borderRadius: 2 }}>
-        Data provided by{' '}
-        <a href="https://www.coingecko.com" target="_blank" rel="noopener" style={{ color: '#B8860B' }}>CoinGecko</a>,{' '}
-        <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener" style={{ color: '#B8860B' }}>FRED</a>,{' '}
-        <a href="https://open.er-api.com" target="_blank" rel="noopener" style={{ color: '#B8860B' }}>Open Exchange Rates</a>, and{' '}
-        <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener" style={{ color: '#B8860B' }}>Alternative.me</a>.
-        Crypto updates every 5min. Macro hourly. FX daily.
+      <div className={styles.attribution}>
+        Data provided by <a href="https://www.coingecko.com" target="_blank" rel="noopener">CoinGecko</a>,{' '}
+        <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a>,{' '}
+        <a href="https://open.er-api.com" target="_blank" rel="noopener">Open Exchange Rates</a>, and{' '}
+        <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener">Alternative.me</a>.
       </div>
     </div>
   );
