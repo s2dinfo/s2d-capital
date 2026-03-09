@@ -1,195 +1,70 @@
-import { getCryptoWithSparklines, getGlobalData, getMacroData, getCommodities, getFxRates, getFearGreed, getTrending, getBtcChart, getEthChart, getFredChart, getDefiTvl, getDefiByChain, getOilChart, formatPrice, formatPct, pctColor } from '@/lib/api';
-import MarketCharts from './charts';
-import styles from './markets.module.css';
+import Link from 'next/link';
+import { getCryptoPrices, getMacro, getCommodities, getFx, getFearGreed, getGlobal, getDefiTvl, fmtP, fmtPct, pctCol } from '@/lib/api';
 
 export const metadata = { title: 'Markets | S2D Capital Insights' };
 export const revalidate = 300;
 
-export default async function MarketsPage() {
-  const [coins, global, macro, commodities, fx, fg, trending, btcC, ethC, fedC, defi, chains, oilC, yieldC, dxyC] = await Promise.all([
-    getCryptoWithSparklines(), getGlobalData(), getMacroData(), getCommodities(),
-    getFxRates(), getFearGreed(), getTrending(), getBtcChart(), getEthChart(),
-    getFredChart('FEDFUNDS', 24), getDefiTvl(), getDefiByChain(), getOilChart(),
-    getFredChart('T10Y2Y', 24), getFredChart('DTWEXBGS', 30),
+export default async function MarketsHub() {
+  const [prices, macro, commod, fx, fg, global, defi] = await Promise.all([
+    getCryptoPrices(), getMacro(), getCommodities(), getFx(), getFearGreed(), getGlobal(), getDefiTvl(),
   ]);
 
-  const fxPairs = fx ? [
-    { pair: 'EUR/USD', val: (1/fx.EUR).toFixed(4) }, { pair: 'GBP/USD', val: (1/fx.GBP).toFixed(4) },
-    { pair: 'USD/JPY', val: fx.JPY?.toFixed(2) }, { pair: 'USD/CHF', val: fx.CHF?.toFixed(4) },
-    { pair: 'AUD/USD', val: (1/fx.AUD).toFixed(4) }, { pair: 'USD/CAD', val: fx.CAD?.toFixed(4) },
-    { pair: 'EUR/GBP', val: (fx.GBP/fx.EUR).toFixed(4) }, { pair: 'USD/CNY', val: fx.CNY?.toFixed(4) },
-  ] : [];
-
+  const btc = prices?.bitcoin;
   const fgVal = fg?.current?.value ?? 50;
-  const fgLbl = fg?.current?.label ?? 'Neutral';
   const fgCol = fgVal<=25?'#C0392B':fgVal<=45?'#E67E22':fgVal<=55?'#F1C40F':fgVal<=75?'#82E0AA':'#2D8F5E';
-  const ysVal = macro.yieldSpread ? parseFloat(macro.yieldSpread) : null;
-  const ysColor = ysVal !== null ? (ysVal < 0 ? '#C0392B' : ysVal < 0.5 ? '#E67E22' : '#2D8F5E') : '#9C9CAF';
+
+  const cards = [
+    { href: '/markets/crypto', color: '#B8860B', tag: 'CRYPTO & DIGITAL ASSETS', metric: fmtP(btc?.usd), label: 'Bitcoin', sub: fmtPct(btc?.usd_24h_change), subCol: pctCol(btc?.usd_24h_change), extra: `Fear & Greed: ${fgVal}`, extraCol: fgCol },
+    { href: '/markets/macro', color: '#3B6CB4', tag: 'MACRO & CENTRAL BANKS', metric: macro.fedRate ? macro.fedRate + '%' : '-', label: 'Fed Funds Rate', sub: `10Y: ${macro.t10y||'-'}%`, subCol: '#3B6CB4', extra: `Unemployment: ${macro.unemp||'-'}%`, extraCol: '#8B2252' },
+    { href: '/markets/commodities', color: '#8B5E3C', tag: 'COMMODITIES & ENERGY', metric: commod.oil ? '$'+commod.oil.toFixed(2) : '-', label: 'WTI Crude Oil', sub: 'per barrel', subCol: '#8B5E3C', extra: `Gold: ${commod.gold?'$'+commod.gold.toFixed(0):'-'}`, extraCol: '#B8860B' },
+    { href: '/markets/fx', color: '#2D8F5E', tag: 'FX & CURRENCIES', metric: fx ? (1/fx.EUR).toFixed(4) : '-', label: 'EUR/USD', sub: `USD/JPY: ${fx?.JPY?.toFixed(1)||'-'}`, subCol: '#2D8F5E', extra: `DXY: ${macro.dxy||'-'}`, extraCol: '#2D8F5E' },
+    { href: '/markets/geopolitics', color: '#8B2252', tag: 'GEOPOLITICS & POLICY', metric: macro.yieldSpread ? macro.yieldSpread + '%' : '-', label: 'Yield Curve (10Y-2Y)', sub: parseFloat(macro.yieldSpread||'0')<0?'INVERTED':'Positive', subCol: parseFloat(macro.yieldSpread||'0')<0?'#C0392B':'#2D8F5E', extra: `M2: $${macro.m2?(parseFloat(macro.m2)/1e3).toFixed(1)+'T':'-'}`, extraCol: '#3B6CB4' },
+    { href: '/markets/structure', color: '#5B4FA0', tag: 'MARKET STRUCTURE', metric: defi?.current ? '$'+(defi.current/1e9).toFixed(1)+'B' : '-', label: 'DeFi TVL', sub: 'Total Value Locked', subCol: '#5B4FA0', extra: `${global?.active?.toLocaleString()||'-'} active cryptos`, extraCol: '#9C9CAF' },
+  ];
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <p className={styles.eye}>LIVE MARKET DATA</p>
-        <h1 className={styles.h1}>Market <em>Intelligence</em> Dashboard</h1>
-        <p className={styles.sub}>Real-time data across all six verticals. 8 APIs. Updated every 5 minutes.</p>
+    <div style={{padding:'32px 48px 48px',minHeight:'80vh',maxWidth:'100%',overflowX:'hidden'}}>
+      <div style={{marginBottom:32}}>
+        <p style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.3em',textTransform:'uppercase',color:'var(--gold)',marginBottom:8}}>MARKET INTELLIGENCE</p>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.6rem,3vw,2.4rem)',fontWeight:400,color:'var(--navy)',marginBottom:8}}>Choose Your <em style={{fontStyle:'italic',color:'var(--gold)'}}>Vertical</em></h1>
+        <p style={{fontSize:'0.88rem',color:'var(--text-sec)',fontWeight:300}}>Live data across all six verticals. Click any section to explore.</p>
       </div>
 
-      {/* ════ GLOBAL OVERVIEW ════ */}
+      {/* Global bar */}
       {global && (
-        <div className={styles.globalRow}>
-          <div className={styles.gCard}><span className={styles.gLabel}>Total Crypto MCap</span><span className={styles.gVal}>{formatPrice(global.totalMarketCap)}</span><span style={{color:pctColor(global.marketCapChange24h),fontFamily:'var(--font-mono)',fontSize:'0.6rem'}}>{formatPct(global.marketCapChange24h)}</span></div>
-          <div className={styles.gCard}><span className={styles.gLabel}>24h Volume</span><span className={styles.gVal}>{formatPrice(global.totalVolume)}</span></div>
-          <div className={styles.gCard}><span className={styles.gLabel}>BTC Dominance</span><span className={styles.gVal}>{global.btcDominance?.toFixed(1)}%</span><div className={styles.bar}><div className={styles.barFill} style={{width:`${global.btcDominance}%`}}/></div></div>
-          <div className={styles.gCard}><span className={styles.gLabel}>DeFi TVL</span><span className={styles.gVal}>{defi?.current?'$'+(defi.current/1e9).toFixed(1)+'B':'-'}</span></div>
-          <div className={styles.gCard}><span className={styles.gLabel}>Fear &amp; Greed</span><span className={styles.gVal} style={{color:fgCol}}>{fgVal} - {fgLbl}</span></div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:8,marginBottom:28}}>
+          {[
+            {l:'Total Crypto MCap',v:fmtP(global.totalMcap),c:pctCol(global.mcapChg),s:fmtPct(global.mcapChg)},
+            {l:'24h Volume',v:fmtP(global.vol24h)},
+            {l:'BTC Dominance',v:(global.btcDom?.toFixed(1)||'-')+'%'},
+            {l:'DeFi TVL',v:defi?.current?'$'+(defi.current/1e9).toFixed(1)+'B':'-'},
+            {l:'Fear & Greed',v:String(fgVal),c:fgCol,s:fg?.current?.label},
+          ].map((item,i)=>(
+            <div key={i} style={{background:'var(--navy)',padding:'14px 12px'}}>
+              <span style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.4)',display:'block'}}>{item.l}</span>
+              <span style={{fontFamily:'var(--font-mono)',fontSize:'0.95rem',fontWeight:600,color:'#fff',display:'block'}}>{item.v}</span>
+              {item.s&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:item.c||'rgba(255,255,255,0.5)'}}>{item.s}</span>}
+            </div>
+          ))}
         </div>
       )}
 
-      {/* ════ 1. CRYPTO ════ */}
-      <div className={styles.vertSection}>
-        <div className={styles.vertHeader} style={{borderLeftColor:'#B8860B'}}>
-          <span className={styles.vertTag} style={{color:'#B8860B'}}>CRYPTO &amp; DIGITAL ASSETS</span>
-          <span className={styles.vertDesc}>CoinGecko + Alternative.me</span>
-        </div>
-        <div className={styles.fgRow}>
-          <div className={styles.fgBox}>
-            <div className={styles.fgCircle} style={{borderColor:fgCol,background:`${fgCol}08`}}>
-              <span className={styles.fgNum} style={{color:fgCol}}>{fgVal}</span>
-              <span className={styles.fgTxt} style={{color:fgCol}}>{fgLbl}</span>
-            </div>
-          </div>
-          {trending && (
-            <div className={styles.trendBox}>
-              <p className={styles.miniLabel}>TRENDING</p>
-              {trending.slice(0,6).map((t:any,i:number)=>(
-                <div key={i} className={styles.trendItem}>
-                  <span className={styles.trendLeft}>{t.thumb&&<img src={t.thumb} alt="" className={styles.trendImg}/>}{t.name} <span className={styles.trendSym}>{t.symbol}</span></span>
-                  <span style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:pctColor(t.priceChange24h)}}>{formatPct(t.priceChange24h)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ════ 2. MACRO ════ */}
-      <div className={styles.vertSection}>
-        <div className={styles.vertHeader} style={{borderLeftColor:'#3B6CB4'}}>
-          <span className={styles.vertTag} style={{color:'#3B6CB4'}}>MACRO &amp; CENTRAL BANKS</span>
-          <span className={styles.vertDesc}>Federal Reserve Economic Data (FRED)</span>
-        </div>
-        <div className={styles.macroGrid}>
-          {[
-            {l:'Fed Funds Rate',v:macro.fedRate?macro.fedRate+'%':'-',c:'#3B6CB4'},
-            {l:'10Y Treasury',v:macro.treasury10y?macro.treasury10y+'%':'-',c:'#3B6CB4'},
-            {l:'2Y Treasury',v:macro.treasury2y?macro.treasury2y+'%':'-',c:'#3B6CB4'},
-            {l:'Yield Curve (10Y-2Y)',v:macro.yieldSpread?macro.yieldSpread+'%':'-',c:ysColor},
-            {l:'CPI Index',v:macro.cpi||'-',c:'#8B5E3C'},
-            {l:'Unemployment',v:macro.unemployment?macro.unemployment+'%':'-',c:'#8B2252'},
-            {l:'M2 Money Supply',v:macro.m2?'$'+(parseFloat(macro.m2)/1e3).toFixed(1)+'T':'-',c:'#3B6CB4'},
-            {l:'US Dollar Index',v:macro.dollarIndex||'-',c:'#2D8F5E'},
-          ].map(m=>(
-            <div key={m.l} className={styles.mCard} style={{borderLeftColor:m.c}}>
-              <p className={styles.mLabel} style={{color:m.c}}>{m.l}</p>
-              <div className={styles.mVal}>{m.v}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ════ 3. COMMODITIES ════ */}
-      <div className={styles.vertSection}>
-        <div className={styles.vertHeader} style={{borderLeftColor:'#8B5E3C'}}>
-          <span className={styles.vertTag} style={{color:'#8B5E3C'}}>COMMODITIES &amp; ENERGY</span>
-          <span className={styles.vertDesc}>FRED (WTI Crude) + CoinGecko (PAX Gold)</span>
-        </div>
-        <div className={styles.commRow}>
-          <div className={styles.commCard}>
-            <p className={styles.miniLabel} style={{color:'#8B5E3C'}}>WTI CRUDE OIL</p>
-            <div className={styles.commPrice}>${commodities.wtiOil?.toFixed(2) || '-'}<span className={styles.commUnit}>/barrel</span></div>
-            {commodities.oilDate && <p className={styles.commDate}>{commodities.oilDate}</p>}
-          </div>
-          <div className={styles.commCard}>
-            <p className={styles.miniLabel} style={{color:'#B8860B'}}>GOLD (PAXG PROXY)</p>
-            <div className={styles.commPrice}>${commodities.gold?.toFixed(0) || '-'}<span className={styles.commUnit}>/oz</span></div>
-            {commodities.goldChange!=null && <p className={styles.commDate} style={{color:pctColor(commodities.goldChange)}}>{formatPct(commodities.goldChange)}</p>}
-          </div>
-        </div>
-      </div>
-
-      {/* ════ 4. FX ════ */}
-      <div className={styles.vertSection}>
-        <div className={styles.vertHeader} style={{borderLeftColor:'#2D8F5E'}}>
-          <span className={styles.vertTag} style={{color:'#2D8F5E'}}>FX &amp; CURRENCIES</span>
-          <span className={styles.vertDesc}>Open Exchange Rates + FRED Dollar Index</span>
-        </div>
-        <div className={styles.fxGrid}>
-          {fxPairs.map(f=>(
-            <div key={f.pair} className={styles.fxItem}><div className={styles.fxPair}>{f.pair}</div><div className={styles.fxVal}>{f.val}</div></div>
-          ))}
-        </div>
-      </div>
-
-      {/* ════ 5. GEOPOLITICS SIGNALS ════ */}
-      <div className={styles.vertSection}>
-        <div className={styles.vertHeader} style={{borderLeftColor:'#8B2252'}}>
-          <span className={styles.vertTag} style={{color:'#8B2252'}}>GEOPOLITICS &amp; POLICY SIGNALS</span>
-          <span className={styles.vertDesc}>Recession indicators from FRED</span>
-        </div>
-        <div className={styles.geoGrid}>
-          <div className={styles.geoCard}>
-            <p className={styles.miniLabel}>YIELD CURVE SPREAD (10Y-2Y)</p>
-            <div className={styles.geoVal} style={{color:ysColor}}>{macro.yieldSpread?macro.yieldSpread+'%':'-'}</div>
-            <p className={styles.geoDesc}>{ysVal!==null?(ysVal<0?'INVERTED - Recession signal':'Positive - Normal conditions'):''}</p>
-          </div>
-          <div className={styles.geoCard}>
-            <p className={styles.miniLabel}>US DOLLAR INDEX (DXY)</p>
-            <div className={styles.geoVal}>{macro.dollarIndex||'-'}</div>
-            <p className={styles.geoDesc}>Dollar strength impacts EM and commodities</p>
-          </div>
-          <div className={styles.geoCard}>
-            <p className={styles.miniLabel}>M2 MONEY SUPPLY</p>
-            <div className={styles.geoVal}>{macro.m2?'$'+(parseFloat(macro.m2)/1e3).toFixed(1)+'T':'-'}</div>
-            <p className={styles.geoDesc}>Liquidity indicator for risk assets</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ════ 6. MARKET STRUCTURE ════ */}
-      <div className={styles.vertSection}>
-        <div className={styles.vertHeader} style={{borderLeftColor:'#5B4FA0'}}>
-          <span className={styles.vertTag} style={{color:'#5B4FA0'}}>MARKET STRUCTURE</span>
-          <span className={styles.vertDesc}>DefiLlama - Total Value Locked by Chain</span>
-        </div>
-        {chains && (
-          <div className={styles.chainGrid}>
-            {chains.map((c:any)=>(
-              <div key={c.name} className={styles.chainCard}>
-                <span className={styles.chainName}>{c.name}</span>
-                <span className={styles.chainTvl}>${(c.tvl/1e9).toFixed(1)}B</span>
-                <div className={styles.bar}><div className={styles.barFill} style={{width:`${Math.min(100,(c.tvl/(chains[0]?.tvl||1))*100)}%`,background:'#5B4FA0'}}/></div>
+      {/* Vertical Cards Grid */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:16}}>
+        {cards.map((card)=>(
+          <Link key={card.href} href={card.href} style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'28px 24px',display:'block',transition:'all 0.4s',position:'relative',overflow:'hidden',textDecoration:'none',color:'inherit',borderTop:`4px solid ${card.color}`}}>
+            <p style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.15em',fontWeight:600,color:card.color,marginBottom:16}}>{card.tag}</p>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'2.2rem',fontWeight:700,color:'var(--navy)',lineHeight:1,marginBottom:4}}>{card.metric}</div>
+            <div style={{fontSize:'0.82rem',color:'var(--text-sec)',marginBottom:12}}>{card.label}</div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:14,borderTop:'1px solid var(--border-lt)'}}>
+              <div>
+                <span style={{fontFamily:'var(--font-mono)',fontSize:'0.65rem',color:card.subCol,fontWeight:500}}>{card.sub}</span>
+                <span style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:card.extraCol,display:'block',marginTop:2}}>{card.extra}</span>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ════ CHARTS ════ */}
-      <MarketCharts
-        sparklineCoins={coins} btcChart={btcC} ethChart={ethC}
-        fedRateChart={fedC} fearGreedHistory={fg?.history}
-        defiTvlChart={defi?.chart} oilChart={oilC}
-        yieldCurveChart={yieldC} dxyChart={dxyC}
-        btcPrice={coins?.[0]?.current_price} ethPrice={coins?.[1]?.current_price}
-        btcChange={coins?.[0]?.price_change_percentage_24h} ethChange={coins?.[1]?.price_change_percentage_24h}
-      />
-
-      <div className={styles.attr}>
-        Data: <a href="https://www.coingecko.com" target="_blank" rel="noopener">CoinGecko</a> |{' '}
-        <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a> |{' '}
-        <a href="https://open.er-api.com" target="_blank" rel="noopener">Open Exchange Rates</a> |{' '}
-        <a href="https://alternative.me" target="_blank" rel="noopener">Alternative.me</a> |{' '}
-        <a href="https://defillama.com" target="_blank" rel="noopener">DefiLlama</a>
+              <span style={{fontSize:'1.2rem',color:card.color,fontWeight:300}}>&#8594;</span>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );
