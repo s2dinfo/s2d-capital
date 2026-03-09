@@ -1,71 +1,64 @@
-.page { padding: 36px 48px 60px; min-height: 80vh; max-width: 100%; overflow-x: hidden; }
-.header { margin-bottom: 28px; }
-.eyebrow { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
-.title { font-family: var(--font-serif); font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 400; color: var(--navy); margin-bottom: 6px; }
-.title em { font-style: italic; color: var(--gold); }
-.subtitle { font-size: 0.85rem; color: var(--text-sec); font-weight: 300; }
-.cardLabel { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
-.sectionLabel { font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
-.section { margin-bottom: 24px; }
-
-/* ═══ GLOBAL OVERVIEW ═══ */
-.globalRow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 24px; }
-.globalCard { background: var(--navy); padding: 18px 16px; display: flex; flex-direction: column; gap: 4px; }
-.globalLabel { font-family: var(--font-mono); font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
-.globalValue { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 600; color: #fff; }
-.globalChg { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 500; }
-.domBar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; }
-.domFill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.5s; }
-
-/* ═══ FEAR & GREED + MACRO ═══ */
-.topRow { display: grid; grid-template-columns: 280px 1fr; gap: 16px; margin-bottom: 24px; }
-.fgCard { background: var(--bg-warm); border: 1px solid var(--border-lt); padding: 24px; text-align: center; }
-.fgCircle { width: 110px; height: 110px; border-radius: 50%; border: 5px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 10px; }
-.fgValue { font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700; line-height: 1; }
-.fgLabelText { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-.fgNote { font-size: 0.62rem; color: var(--text-muted); }
-.macroGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.macroCard { background: var(--bg-warm); border: 1px solid var(--border-lt); padding: 20px 16px; border-left: 4px solid; }
-.macroLabel { font-family: var(--font-mono); font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px; }
-.macroValue { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; color: var(--navy); line-height: 1; margin-bottom: 3px; }
-.macroSub { font-size: 0.62rem; color: var(--text-muted); }
-
-/* ═══ BOTTOM ROW ═══ */
-.bottomRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-.trendingCard { background: var(--bg-warm); border: 1px solid var(--border-lt); padding: 20px; }
-.trendingList { display: flex; flex-direction: column; gap: 6px; }
-.trendingItem { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border-lt); }
-.trendingItem:last-child { border-bottom: none; }
-.trendingLeft { display: flex; align-items: center; gap: 6px; }
-.trendingNum { font-family: var(--font-mono); font-size: 0.56rem; color: var(--text-muted); width: 14px; }
-.trendingImg { width: 18px; height: 18px; border-radius: 50%; }
-.trendingName { font-size: 0.8rem; font-weight: 500; color: var(--navy); }
-.trendingSym { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-muted); }
-.trendingChg { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 500; }
-.fxCard { background: var(--bg-warm); border: 1px solid var(--border-lt); padding: 20px; }
-.fxGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.fxItem { padding: 10px 12px; background: var(--bg-cream); border: 1px solid var(--border-lt); }
-.fxPair { font-size: 0.66rem; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
-.fxVal { font-family: var(--font-mono); font-size: 0.95rem; font-weight: 500; color: #2D8F5E; }
-.attribution { padding: 12px 16px; background: var(--bg-cream); border: 1px solid var(--border-lt); font-size: 0.65rem; color: var(--text-muted); }
-.attribution a { color: var(--gold); }
-
-/* ═══ MOBILE ═══ */
-@media (max-width: 1024px) {
-  .globalRow { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 768px) {
-  .page { padding: 20px 16px 40px; }
-  .globalRow { grid-template-columns: repeat(2, 1fr); }
-  .topRow { grid-template-columns: 1fr; }
-  .bottomRow { grid-template-columns: 1fr; }
-}
-@media (max-width: 480px) {
-  .page { padding: 16px 12px 32px; }
-  .globalRow { grid-template-columns: 1fr 1fr; }
-  .globalValue { font-size: 1rem; }
-  .macroGrid { grid-template-columns: 1fr; }
-  .macroValue { font-size: 1.3rem; }
-  .fgCircle { width: 100px; height: 100px; }
-  .fgValue { font-size: 1.8rem; }
-}
+.page{padding:32px 48px 48px;min-height:80vh;overflow-x:hidden}
+.header{margin-bottom:28px}
+.eye{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.h1{font-family:var(--font-serif);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:400;color:var(--navy);margin-bottom:4px}
+.h1 em{font-style:italic;color:var(--gold)}
+.sub{font-size:.82rem;color:var(--text-sec);font-weight:300}
+/* Global */
+.globalRow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:24px}
+.gCard{background:var(--navy);padding:14px 12px;display:flex;flex-direction:column;gap:3px}
+.gLabel{font-family:var(--font-mono);font-size:.48rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.gVal{font-family:var(--font-mono);font-size:1rem;font-weight:600;color:#fff}
+.bar{width:100%;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:3px}
+.barFill{height:100%;background:var(--gold);border-radius:2px}
+/* Vertical sections */
+.vertSection{margin-bottom:28px}
+.vertHeader{padding:8px 0 12px;border-left:4px solid;padding-left:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.vertTag{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.15em;font-weight:600}
+.vertDesc{font-size:.68rem;color:var(--text-muted)}
+/* Fear & Greed row */
+.fgRow{display:grid;grid-template-columns:160px 1fr;gap:14px;align-items:start}
+.fgBox{background:var(--bg-warm);border:1px solid var(--border-lt);padding:20px;text-align:center}
+.fgCircle{width:100px;height:100px;border-radius:50%;border:5px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto}
+.fgNum{font-family:var(--font-mono);font-size:2rem;font-weight:700;line-height:1}
+.fgTxt{font-size:.5rem;font-weight:600;text-transform:uppercase}
+.trendBox{background:var(--bg-warm);border:1px solid var(--border-lt);padding:14px}
+.trendItem{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border-lt)}
+.trendItem:last-child{border-bottom:none}
+.trendLeft{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--navy)}
+.trendImg{width:16px;height:16px;border-radius:50%}
+.trendSym{font-family:var(--font-mono);font-size:.55rem;color:var(--text-muted)}
+.miniLabel{font-family:var(--font-mono);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+/* Macro */
+.macroGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mCard{background:var(--bg-warm);border:1px solid var(--border-lt);padding:16px 14px;border-left:4px solid}
+.mLabel{font-family:var(--font-mono);font-size:.48rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.mVal{font-family:var(--font-mono);font-size:1.3rem;font-weight:600;color:var(--navy)}
+/* Commodities */
+.commRow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.commCard{background:var(--bg-warm);border:1px solid var(--border-lt);padding:20px}
+.commPrice{font-family:var(--font-mono);font-size:1.8rem;font-weight:600;color:var(--navy)}
+.commUnit{font-size:.7rem;color:var(--text-muted);font-weight:400;margin-left:4px}
+.commDate{font-size:.62rem;color:var(--text-muted);margin-top:2px;font-family:var(--font-mono)}
+/* FX */
+.fxGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fxItem{padding:10px 12px;background:var(--bg-warm);border:1px solid var(--border-lt)}
+.fxPair{font-size:.66rem;font-weight:700;color:var(--navy);margin-bottom:2px}
+.fxVal{font-family:var(--font-mono);font-size:.92rem;font-weight:500;color:#2D8F5E}
+/* Geopolitics */
+.geoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.geoCard{background:var(--bg-warm);border:1px solid var(--border-lt);padding:18px}
+.geoVal{font-family:var(--font-mono);font-size:1.5rem;font-weight:600;color:var(--navy);margin:4px 0}
+.geoDesc{font-size:.68rem;color:var(--text-muted);line-height:1.4}
+/* Chains */
+.chainGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.chainCard{background:var(--bg-warm);border:1px solid var(--border-lt);padding:12px}
+.chainName{font-size:.72rem;font-weight:600;color:var(--navy);display:block}
+.chainTvl{font-family:var(--font-mono);font-size:.85rem;font-weight:500;color:#5B4FA0;display:block;margin:2px 0 4px}
+/* Attribution */
+.attr{padding:12px 14px;background:var(--bg-cream);border:1px solid var(--border-lt);font-size:.62rem;color:var(--text-muted);margin-top:8px}
+.attr a{color:var(--gold)}
+/* Mobile */
+@media(max-width:1024px){.globalRow{grid-template-columns:repeat(3,1fr)}.macroGrid{grid-template-columns:repeat(2,1fr)}.fxGrid{grid-template-columns:repeat(3,1fr)}.geoGrid{grid-template-columns:1fr 1fr 1fr}.chainGrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.page{padding:20px 16px 36px}.globalRow{grid-template-columns:repeat(2,1fr)}.fgRow{grid-template-columns:1fr}.macroGrid{grid-template-columns:1fr 1fr}.commRow{grid-template-columns:1fr}.fxGrid{grid-template-columns:repeat(2,1fr)}.geoGrid{grid-template-columns:1fr}.chainGrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.globalRow{grid-template-columns:1fr 1fr}.gVal{font-size:.85rem}.macroGrid{grid-template-columns:1fr}.mVal{font-size:1.1rem}.commPrice{font-size:1.4rem}.fxGrid{grid-template-columns:1fr 1fr}.chainGrid{grid-template-columns:1fr 1fr}}

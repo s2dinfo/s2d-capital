@@ -1,32 +1,23 @@
-/* ═══ SPARKLINE CRYPTO CARDS ═══ */
-.coinGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-.coinCard { background: var(--bg-warm); border: 1px solid var(--border-lt); padding: 18px 16px; transition: all 0.3s; }
-.coinCard:hover { border-color: var(--gold-wash); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(184,134,11,0.06); }
-.coinTop { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-.coinInfo { display: flex; align-items: center; gap: 8px; }
-.coinImg { width: 24px; height: 24px; border-radius: 50%; }
-.coinSym { font-size: 0.78rem; font-weight: 700; color: var(--navy); display: block; line-height: 1.1; }
-.coinName { font-size: 0.62rem; color: var(--text-muted); display: block; }
-.coinChg { font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600; }
-.coinMid { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; }
-.coinPrice { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 600; color: var(--navy); }
-.coinCap { font-size: 0.58rem; color: var(--text-muted); }
-
-/* ═══ CHARTS GRID ═══ */
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-.chartCard { background: var(--bg-warm); border: 1px solid var(--border-lt); padding: 18px; min-width: 0; }
-.chartHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.chartLabel { font-family: var(--font-mono); font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
-.chartPrice { font-family: var(--font-mono); font-size: 1.2rem; font-weight: 600; color: var(--navy); }
-.chartChg { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600; }
-.chartSub { font-size: 0.65rem; color: var(--text-sec); }
-
-/* ═══ MOBILE ═══ */
-@media (max-width: 768px) {
-  .coinGrid { grid-template-columns: repeat(2, 1fr); }
-  .grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 480px) {
-  .coinGrid { grid-template-columns: 1fr; }
-  .coinPrice { font-size: 1rem; }
-}
+.chartsSection{margin-bottom:24px}
+.chartsTitle{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;padding-top:16px;border-top:1px solid var(--border-lt)}
+.coinGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.coinCard{background:var(--bg-warm);border:1px solid var(--border-lt);padding:16px 14px;transition:all .3s}
+.coinCard:hover{border-color:var(--gold-wash);transform:translateY(-2px);box-shadow:0 6px 20px rgba(184,134,11,.06)}
+.coinTop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.coinInfo{display:flex;align-items:center;gap:7px}
+.coinImg{width:22px;height:22px;border-radius:50%}
+.coinSym{font-size:.75rem;font-weight:700;color:var(--navy);display:block;line-height:1.1}
+.coinName{font-size:.58rem;color:var(--text-muted);display:block}
+.coinChg{font-family:var(--font-mono);font-size:.6rem;font-weight:600}
+.coinMid{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px}
+.coinPrice{font-family:var(--font-mono);font-size:1.1rem;font-weight:600;color:var(--navy)}
+.coinCap{font-size:.55rem;color:var(--text-muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chartCard{background:var(--bg-warm);border:1px solid var(--border-lt);padding:16px;min-width:0}
+.cHeader{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.cLabel{font-family:var(--font-mono);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.cPrice{font-family:var(--font-mono);font-size:1.1rem;font-weight:600;color:var(--navy);display:block}
+.cChg{font-family:var(--font-mono);font-size:.65rem;font-weight:600}
+.cSub{font-size:.62rem;color:var(--text-sec);display:block}
+@media(max-width:768px){.coinGrid{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:480px){.coinGrid{grid-template-columns:1fr}.coinPrice{font-size:.95rem}}
