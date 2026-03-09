@@ -1,0 +1,58 @@
+export const VERTICALS = {
+  crypto: {
+    label: 'Crypto & Digital Assets',
+    labelShort: 'Crypto',
+    icon: 'B',
+    color: 'var(--v-crypto)',
+    hex: '#B8860B',
+    description: 'Regulation, ETFs, Tokenization, DeFi',
+    tags: ['CLARITY', 'ETFs', 'BTC', 'DeFi'],
+  },
+  macro: {
+    label: 'Macro & Central Banks',
+    labelShort: 'Macro',
+    icon: 'M',
+    color: 'var(--v-macro)',
+    hex: '#3B6CB4',
+    description: 'Fed, ECB, BOJ, Rates, Liquidity',
+    tags: ['Fed', 'ECB', 'Rates', 'CPI'],
+  },
+  commodities: {
+    label: 'Commodities & Energy',
+    labelShort: 'Commodities',
+    icon: 'C',
+    color: 'var(--v-commodities)',
+    hex: '#8B5E3C',
+    description: 'Oil, Gold, Agriculture, Supply Chains',
+    tags: ['Gold', 'Oil', 'Copper'],
+  },
+  fx: {
+    label: 'FX & Currencies',
+    labelShort: 'FX',
+    icon: 'F',
+    color: 'var(--v-fx)',
+    hex: '#2D8F5E',
+    description: 'Dollar, EUR/USD, EM Currencies, Stablecoins',
+    tags: ['DXY', 'EUR', 'Stablecoins'],
+  },
+  geopolitics: {
+    label: 'Geopolitics & Policy',
+    labelShort: 'Geopolitics',
+    icon: 'G',
+    color: 'var(--v-geopolitics)',
+    hex: '#8B2252',
+    description: 'Trade Wars, Sanctions, Elections',
+    tags: ['Tariffs', 'Sanctions', 'EU'],
+  },
+  structure: {
+    label: 'Market Structure',
+    labelShort: 'Structure',
+    icon: 'S',
+    color: 'var(--v-structure)',
+    hex: '#5B4FA0',
+    description: 'Institutional Flows, ETF Architecture, TradFi',
+    tags: ['ETF Flows', 'OCC', 'Wall St'],
+  },
+} as const;
+
+export type VerticalKey = keyof typeof VERTICALS;
