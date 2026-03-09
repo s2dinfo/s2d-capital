@@ -2,7 +2,7 @@ export const VERTICALS = {
   crypto: {
     label: 'Crypto & Digital Assets',
     labelShort: 'Crypto',
-    icon: 'B',
+    icon: 'Crypto',
     color: 'var(--v-crypto)',
     hex: '#B8860B',
     description: 'Regulation, ETFs, Tokenization, DeFi',
@@ -11,7 +11,7 @@ export const VERTICALS = {
   macro: {
     label: 'Macro & Central Banks',
     labelShort: 'Macro',
-    icon: 'M',
+    icon: 'Macro',
     color: 'var(--v-macro)',
     hex: '#3B6CB4',
     description: 'Fed, ECB, BOJ, Rates, Liquidity',
@@ -20,7 +20,7 @@ export const VERTICALS = {
   commodities: {
     label: 'Commodities & Energy',
     labelShort: 'Commodities',
-    icon: 'C',
+    icon: 'Commodities',
     color: 'var(--v-commodities)',
     hex: '#8B5E3C',
     description: 'Oil, Gold, Agriculture, Supply Chains',
@@ -29,7 +29,7 @@ export const VERTICALS = {
   fx: {
     label: 'FX & Currencies',
     labelShort: 'FX',
-    icon: 'F',
+    icon: 'FX',
     color: 'var(--v-fx)',
     hex: '#2D8F5E',
     description: 'Dollar, EUR/USD, EM Currencies, Stablecoins',
@@ -38,7 +38,7 @@ export const VERTICALS = {
   geopolitics: {
     label: 'Geopolitics & Policy',
     labelShort: 'Geopolitics',
-    icon: 'G',
+    icon: 'Geopolitics',
     color: 'var(--v-geopolitics)',
     hex: '#8B2252',
     description: 'Trade Wars, Sanctions, Elections',
@@ -47,7 +47,7 @@ export const VERTICALS = {
   structure: {
     label: 'Market Structure',
     labelShort: 'Structure',
-    icon: 'S',
+    icon: 'Structure',
     color: 'var(--v-structure)',
     hex: '#5B4FA0',
     description: 'Institutional Flows, ETF Architecture, TradFi',

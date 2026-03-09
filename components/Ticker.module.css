@@ -1,28 +1,65 @@
 .bar {
   background: var(--navy);
-  padding: 10px 0;
+  padding: 11px 0;
   overflow: hidden;
+  position: relative;
+}
+
+.bar::before,
+.bar::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.bar::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--navy) 0%, transparent 100%);
+}
+
+.bar::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--navy) 0%, transparent 100%);
 }
 
 .track {
   display: flex;
-  gap: 44px;
-  animation: ticker 35s linear infinite;
+  gap: 48px;
   width: max-content;
+  animation: tickerScroll 45s linear infinite;
+}
+
+.track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
 }
 
 .item {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   white-space: nowrap;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.4);
 }
 
-.sym { color: rgba(255, 255, 255, 0.85); font-weight: 500; }
-.price { color: rgba(255, 255, 255, 0.65); }
+.sym {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.price {
+  color: rgba(255, 255, 255, 0.65);
+}
+
 .up { color: #4ADE80; }
 .down { color: #F87171; }
 .gold { color: var(--gold-light); }

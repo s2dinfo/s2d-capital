@@ -17,7 +17,7 @@ export default function Navbar() {
   return (
     <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
       <Link href="/" className={styles.logo}>
-        <Image src="/logo.png" alt="S2D Capital Insights" width={160} height={107} priority />
+        <Image src="/logo-hero.png" alt="S2D Capital Insights" width={220} height={147} priority />
       </Link>
       <ul className={styles.links}>
         <li><Link href="/research">Research</Link></li>

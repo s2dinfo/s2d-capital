@@ -9,6 +9,8 @@ export default async function Ticker() {
     { sym: 'ETH', price: prices?.ethereum?.usd, chg: prices?.ethereum?.usd_24h_change },
     { sym: 'SOL', price: prices?.solana?.usd, chg: prices?.solana?.usd_24h_change },
     { sym: 'XRP', price: prices?.ripple?.usd, chg: prices?.ripple?.usd_24h_change },
+    { sym: 'DOGE', price: prices?.dogecoin?.usd, chg: prices?.dogecoin?.usd_24h_change },
+    { sym: 'ADA', price: prices?.cardano?.usd, chg: prices?.cardano?.usd_24h_change },
     { sym: 'CLARITY Act', label: 'Senate - Pending', isGold: true },
   ];
 
@@ -19,10 +21,12 @@ export default async function Ticker() {
     return `$${n.toFixed(4)}`;
   };
 
+  const allItems = [...items, ...items, ...items];
+
   return (
     <div className={styles.bar}>
       <div className={styles.track}>
-        {[...items, ...items].map((item, i) => (
+        {allItems.map((item, i) => (
           <span key={i} className={styles.item}>
             <span className={styles.sym}>{item.sym}</span>
             {item.isGold ? (

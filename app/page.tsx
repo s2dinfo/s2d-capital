@@ -5,7 +5,7 @@ import { VERTICALS } from '@/lib/verticals';
 import { articles } from '@/lib/articles';
 import styles from './page.module.css';
 
-export const revalidate = 300; // Revalidate every 5 minutes
+export const revalidate = 300;
 
 export default async function Home() {
   const prices = await getCryptoPrices();
@@ -22,167 +22,160 @@ export default async function Home() {
 
   return (
     <>
-      {/* ── HERO ── */}
+      {/* HERO */}
       <section className={styles.hero}>
         <div className={styles.heroGlow} />
-        <Image
-          src="/logo-icon.png"
-          alt="S2D"
-          width={80}
-          height={49}
-          className={styles.heroLogo}
-        />
-        <p className={`eyebrow ${styles.heroEyebrow}`}>Financial Intelligence &middot; Since 2026</p>
-        <h1 className={styles.heroTitle}>
-          Where Markets Meet <em>Clarity</em>
-        </h1>
-        <p className={styles.heroSub}>
-          Institutional analysis across crypto, macro, commodities, FX, and geopolitics.
-          We connect the dots others miss.
-        </p>
-        <div className={styles.heroActions}>
-          <Link href="/research" className="btn-gold">Explore Research</Link>
-          <Link href="/newsletter" className="btn-outline">Subscribe</Link>
+        <div className={styles.heroContent}>
+          <Image
+            src="/logo-hero.png"
+            alt="S2D Capital Insights"
+            width={500}
+            height={333}
+            className={styles.heroLogo}
+            priority
+          />
+          <p className={styles.heroEyebrow}>FINANCIAL INTELLIGENCE</p>
+          <h1 className={styles.heroTitle}>
+            Where Markets Meet <em>Clarity</em>
+          </h1>
+          <p className={styles.heroSub}>
+            Institutional analysis across crypto, macro, commodities, FX, and geopolitics.
+            We connect the dots others miss.
+          </p>
+          <div className={styles.heroActions}>
+            <Link href="/research" className={styles.btnGold}>Explore Research</Link>
+            <Link href="/newsletter" className={styles.btnOutline}>Subscribe</Link>
+          </div>
         </div>
+        <div className={styles.heroBottom} />
       </section>
 
-      {/* ── CRYPTO SNAPSHOT ── */}
-      <section className={styles.snapshot}>
-        <div className={styles.snapshotHeader}>
-          <span className="eyebrow">Live Market Data</span>
-          <Link href="/markets" className={styles.snapshotLink}>
-            Full Dashboard &rarr;
-          </Link>
-        </div>
-        <div className={styles.coinGrid}>
-          {coins.map((coin) => {
-            const d = prices?.[coin.key];
-            return (
-              <div key={coin.key} className={styles.coinCard}>
-                <div className={styles.coinTop}>
-                  <span className={styles.coinSym}>{coin.sym}</span>
-                  <span
-                    className={styles.coinChg}
-                    style={{ color: pctColor(d?.usd_24h_change) }}
-                  >
-                    {formatPct(d?.usd_24h_change)}
-                  </span>
-                </div>
-                <div className={styles.coinPrice}>{formatPrice(d?.usd)}</div>
-                <div className={styles.coinCap}>MCap {formatPrice(d?.usd_market_cap)}</div>
+      {/* STATS BAR */}
+      <section className={styles.statsBar}>
+        {coins.map((coin) => {
+          const d = prices?.[coin.key];
+          const isUp = d?.usd_24h_change > 0;
+          return (
+            <div key={coin.key} className={styles.statItem}>
+              <div className={styles.statValue}>
+                {formatPrice(d?.usd)}
               </div>
-            );
-          })}
-        </div>
+              <div className={styles.statLabel}>
+                {coin.name}{' '}
+                <span className={isUp ? styles.statUp : styles.statDown}>
+                  {formatPct(d?.usd_24h_change)}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </section>
 
-      <div className="gold-divider" />
+      <div className={styles.goldDiv} />
 
-      {/* ── VERTICALS ── */}
+      {/* VERTICALS */}
       <section className={styles.verticals}>
-        <div className={styles.vertHeader}>
-          <p className="eyebrow">Our Coverage</p>
-          <h2 className="section-title">
+        <div className={styles.sectionCenter}>
+          <p className={styles.eyebrow}>Our Coverage</p>
+          <h2 className={styles.sectionTitle}>
             Six Perspectives. <em>One Picture.</em>
           </h2>
-          <p className={styles.vertDesc}>
+          <p className={styles.sectionDesc}>
             Markets are interconnected. We analyze each vertical independently
             and show how everything connects.
           </p>
         </div>
         <div className={styles.vertGrid}>
           {Object.entries(VERTICALS).map(([key, v]) => (
-            <Link
-              key={key}
-              href={`/research?v=${key}`}
-              className={styles.vertCard}
-              style={{ '--vc': v.hex } as any}
-            >
-              <span className={styles.vertIcon}>{v.icon}</span>
-              <span className={styles.vertName}>{v.labelShort}</span>
-              <span className={styles.vertDesc2}>{v.description}</span>
+            <Link key={key} href={`/research?v=${key}`} className={styles.vertCard}>
+              <div className={styles.vertAccent} style={{ background: v.hex }} />
+              <div className={styles.vertIconWrap} style={{ color: v.hex }}>
+                {v.icon}
+              </div>
+              <div className={styles.vertLabel}>{v.label}</div>
+              <div className={styles.vertDesc}>{v.description}</div>
+              <div className={styles.vertTagRow}>
+                {v.tags.map((t) => (
+                  <span key={t} className={styles.vertTag} style={{ color: v.hex, borderColor: `${v.hex}30` }}>{t}</span>
+                ))}
+              </div>
             </Link>
           ))}
         </div>
-        {/* Cross-connections */}
+
         <div className={styles.crossBanner}>
           <p>
-            <strong>Fed rate decision</strong> &rarr; Dollar &rarr; Gold &amp; Oil
-            &rarr; EM Currencies &rarr; Crypto allocation.{' '}
+            <strong>Fed rate decision</strong> &#8594; Dollar &#8594; Gold &amp; Oil
+            &#8594; EM Currencies &#8594; Crypto allocation.{' '}
             <strong>We connect these dots.</strong>
           </p>
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className={styles.goldDiv} />
 
-      {/* ── FEATURED RESEARCH ── */}
+      {/* RESEARCH */}
       <section className={styles.research}>
-        <div className={styles.researchHeader}>
+        <div className={styles.researchTop}>
           <div>
-            <p className="eyebrow">Research &amp; Opinions</p>
-            <h2 className="section-title">
-              Latest <em>Publications</em>
-            </h2>
+            <p className={styles.eyebrow}>Research &amp; Opinions</p>
+            <h2 className={styles.sectionTitle}>Latest <em>Publications</em></h2>
           </div>
-          <Link href="/research" className="btn-outline" style={{ padding: '10px 24px', fontSize: '0.7rem' }}>
+          <Link href="/research" className={styles.btnOutline} style={{ padding: '10px 24px', fontSize: '0.7rem' }}>
             View All
           </Link>
         </div>
         <div className={styles.articleGrid}>
           {featured && (
-            <Link href={`/research/${featured.slug}`} className={`${styles.articleCard} ${styles.featured}`}>
-              <div className={styles.articleTags}>
+            <Link href={`/research/${featured.slug}`} className={`${styles.card} ${styles.cardFeat}`}>
+              <div className={styles.cardTags}>
                 {featured.tags.map((t) => (
-                  <span key={t} className={styles.tag} style={{ background: `${VERTICALS[t].hex}15`, color: VERTICALS[t].hex }}>
+                  <span key={t} className={styles.cardTag} style={{ background: `${VERTICALS[t].hex}18`, color: VERTICALS[t].hex }}>
                     {VERTICALS[t].labelShort}
                   </span>
                 ))}
               </div>
-              <h3 className={styles.articleTitle}>{featured.title}</h3>
-              <p className={styles.articleExcerpt}>{featured.excerpt}</p>
-              <div className={styles.articleMeta}>
+              <h3 className={styles.cardTitle}>{featured.title}</h3>
+              <p className={styles.cardExcerpt}>{featured.excerpt}</p>
+              <div className={styles.cardMeta}>
                 <span>{featured.date} &middot; {featured.readTime}</span>
-                <span className={styles.arrow}>&rarr;</span>
+                <span className={styles.cardArrow}>&#8594;</span>
               </div>
             </Link>
           )}
           {recent.map((a) => (
-            <Link key={a.slug} href={`/research/${a.slug}`} className={styles.articleCard}>
-              <div className={styles.articleTags}>
+            <Link key={a.slug} href={`/research/${a.slug}`} className={styles.card}>
+              <div className={styles.cardTags}>
                 {a.tags.map((t) => (
-                  <span key={t} className={styles.tag} style={{ background: `${VERTICALS[t].hex}15`, color: VERTICALS[t].hex }}>
+                  <span key={t} className={styles.cardTag} style={{ background: `${VERTICALS[t].hex}18`, color: VERTICALS[t].hex }}>
                     {VERTICALS[t].labelShort}
                   </span>
                 ))}
               </div>
-              <h3 className={styles.articleTitle}>{a.title}</h3>
-              <p className={styles.articleExcerpt}>{a.excerpt}</p>
-              <div className={styles.articleMeta}>
+              <h3 className={styles.cardTitle}>{a.title}</h3>
+              <p className={styles.cardExcerpt}>{a.excerpt}</p>
+              <div className={styles.cardMeta}>
                 <span>{a.date} &middot; {a.readTime}</span>
-                <span className={styles.arrow}>&rarr;</span>
+                <span className={styles.cardArrow}>&#8594;</span>
               </div>
             </Link>
           ))}
         </div>
       </section>
 
-      <div className="gold-divider" />
+      <div className={styles.goldDiv} />
 
-      {/* ── NEWSLETTER CTA ── */}
+      {/* NEWSLETTER */}
       <section className={styles.nlSection}>
-        <p className="eyebrow">Newsletter</p>
-        <h2 className="section-title">
-          Stay <em>Informed</em>
-        </h2>
+        <div className={styles.nlGlow} />
+        <p className={styles.eyebrow}>Newsletter</p>
+        <h2 className={styles.sectionTitle}>Stay <em>Informed</em></h2>
         <p className={styles.nlDesc}>
           Investor briefings directly to your inbox. Choose your topics. No spam, only substance.
         </p>
-        <div className={styles.nlBox}>
-          <Link href="/newsletter" className="btn-gold" style={{ width: '100%', textAlign: 'center' }}>
-            Subscribe to Newsletter
-          </Link>
-        </div>
+        <Link href="/newsletter" className={styles.btnGold} style={{ padding: '16px 48px' }}>
+          Subscribe to Newsletter
+        </Link>
       </section>
     </>
   );
