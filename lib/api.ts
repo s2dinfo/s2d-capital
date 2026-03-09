@@ -49,4 +49,8 @@ export async function getWorldGdp() {
 export function fmtP(n:number|null|undefined):string { if(n===null||n===undefined) return '-'; if(n>=1e12) return '$'+(n/1e12).toFixed(2)+'T'; if(n>=1e9) return '$'+(n/1e9).toFixed(1)+'B'; if(n>=1e6) return '$'+(n/1e6).toFixed(1)+'M'; if(n>=1000) return '$'+n.toLocaleString('en-US',{maximumFractionDigits:0}); if(n>=1) return '$'+n.toFixed(2); return '$'+n.toFixed(4); }
 export function fmtPct(v:number|null|undefined):string { if(v===null||v===undefined) return '-'; return (v>0?'+':'')+v.toFixed(1)+'%'; }
 export function pctCol(v:number|null|undefined):string { if(!v) return '#9C9CAF'; return v>0?'#2D8F5E':'#C0392B'; }
+// Aliases for backward compat
+export const formatPrice = fmtP;
+export const formatPct = fmtPct;
+export const pctColor = pctCol;
 function FB() { return {bitcoin:{usd:68743,usd_24h_change:2.5,usd_market_cap:1360000000000},ethereum:{usd:2023,usd_24h_change:4.3,usd_market_cap:244000000000},solana:{usd:84.95,usd_24h_change:3.8,usd_market_cap:42000000000},ripple:{usd:1.36,usd_24h_change:1.2,usd_market_cap:78000000000},dogecoin:{usd:0.0914,usd_24h_change:2.9,usd_market_cap:13000000000},cardano:{usd:0.2571,usd_24h_change:2.4,usd_market_cap:9200000000}}; }
