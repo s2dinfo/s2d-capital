@@ -1,6 +1,6 @@
 const CG_KEY = process.env.NEXT_PUBLIC_COINGECKO_API_KEY || '';
 const FRED_KEY = process.env.FRED_API_KEY || '';
-const cgHeaders = CG_KEY ? { 'x-cg-demo-api-key': CG_KEY } : {};
+const cgHeaders: Record<string, string> = CG_KEY ? { 'x-cg-demo-api-key': CG_KEY } : {};
 
 // ═══ COINGECKO ═══
 export async function getCryptoPrices() {
