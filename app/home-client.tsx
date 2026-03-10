@@ -135,9 +135,8 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
         <Link href="/markets" className="nav-link">MARKETS</Link>
         <Link href="/research" className="nav-link">RESEARCH</Link>
       </div>
-      <Link href="/" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:8}}>
-        <span style={{fontFamily:'var(--font-serif)',fontSize:'1.4rem',fontWeight:600,color:'var(--gold-light)',letterSpacing:'-0.02em',textShadow:'0 0 20px rgba(184,134,11,0.3)'}}>S2D</span>
-        <span style={{fontFamily:'var(--font-serif)',fontSize:'1rem',fontWeight:400,color:'rgba(255,255,255,0.7)',letterSpacing:'0.02em'}}>Capital Insights</span>
+      <Link href="/" style={{textDecoration:'none',display:'flex',alignItems:'center'}}>
+        <Image src="/logo-dark.png" alt="S2D Capital Insights" width={180} height={60} style={{objectFit:'contain',filter:'drop-shadow(0 2px 16px rgba(184,134,11,0.2))'}} priority/>
       </Link>
       <div style={{position:'absolute',right:32,display:'flex',gap:20,alignItems:'center'}}>
         <Link href="/newsletter" className="nav-link">NEWSLETTER</Link>
@@ -157,6 +156,9 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
       <div style={{position:'absolute',inset:0,overflow:'hidden',opacity:0.3}}><ParticleField/></div>
 
       <div style={{position:'relative',zIndex:2}}>
+        <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{duration:0.8}}>
+          <Image src="/logo-dark.png" alt="S2D Capital Insights" width={280} height={180} style={{objectFit:'contain',margin:'0 auto 24px',filter:'drop-shadow(0 4px 30px rgba(184,134,11,0.2))'}} priority/>
+        </motion.div>
         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}} style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.35em',color:'var(--gold-light)',marginBottom:16}}>FINANCIAL INTELLIGENCE</motion.p>
         <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2.2rem,5vw,3.5rem)',fontWeight:400,lineHeight:1.1,color:'#ffffff',marginBottom:14,maxWidth:650,margin:'0 auto 14px',textShadow:'0 2px 30px rgba(184,134,11,0.15)'}}>
           Where Markets Meet <em style={{fontStyle:'italic',color:'var(--gold-light)',textShadow:'0 0 30px rgba(184,134,11,0.3)'}}>Clarity</em>
@@ -304,9 +306,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
     {/* ══ FOOTER ══ */}
     <footer style={{padding:'40px 32px 24px',borderTop:'1px solid rgba(255,255,255,0.05)',maxWidth:1200,margin:'0 auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
-        <div style={{fontFamily:'var(--font-serif)',fontSize:'0.9rem',color:'rgba(255,255,255,0.6)'}}>
-          <span style={{color:'var(--gold-light)'}}>S2D</span> Capital Insights
-        </div>
+        <Image src="/logo-dark.png" alt="S2D Capital Insights" width={140} height={46} style={{objectFit:'contain',opacity:0.7}}/>
         <div style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.2)'}}>© {new Date().getFullYear()} S2D Capital Insights · sami@s2d.info</div>
       </div>
     </footer>
