@@ -120,23 +120,24 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
     `}</style>
 
     {/* ══ TICKER BAR ══ */}
-    <div style={{background:'rgba(0,0,0,0.3)',borderBottom:'1px solid rgba(184,134,11,0.12)',overflow:'hidden',whiteSpace:'nowrap',height:34}}>
-      <motion.div animate={{x:['0%','-50%']}} transition={{duration:35,repeat:Infinity,ease:'linear'}} style={{display:'inline-flex',alignItems:'center',height:34}}>
-        {[...marqueeItems,...marqueeItems].map((item,i)=><span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,marginRight:32,fontFamily:'var(--font-mono)',fontSize:'0.62rem'}}>
-          <span style={{color:'rgba(255,255,255,0.35)',fontWeight:400}}>{item.l}</span>
-          <span style={{color:item.c||'rgba(255,255,255,0.8)',fontWeight:600}}>{item.v}</span>
+    <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36}}>
+      <motion.div animate={{x:['0%','-50%']}} transition={{duration:35,repeat:Infinity,ease:'linear'}} style={{display:'inline-flex',alignItems:'center',height:36}}>
+        {[...marqueeItems,...marqueeItems].map((item,i)=><span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,marginRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
+          <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
+          <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
         </span>)}
       </motion.div>
     </div>
 
     {/* ══ NAVBAR ══ */}
-    <nav style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'12px 32px',borderBottom:'1px solid rgba(255,255,255,0.05)',position:'sticky',top:0,zIndex:40,background:'rgba(15,15,35,0.85)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)'}}>
+    <nav style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'14px 32px',borderBottom:'1px solid rgba(184,134,11,0.15)',position:'sticky',top:0,zIndex:40,background:'rgba(15,15,35,0.9)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)'}}>
       <div style={{position:'absolute',left:32,display:'flex',gap:20,alignItems:'center'}}>
         <Link href="/markets" className="nav-link">MARKETS</Link>
         <Link href="/research" className="nav-link">RESEARCH</Link>
       </div>
-      <Link href="/" style={{textDecoration:'none',display:'flex',alignItems:'center'}}>
-        <Image src="/logo-hero.png" alt="S2D Capital Insights" width={160} height={54} style={{filter:'brightness(1.5) drop-shadow(0 2px 12px rgba(184,134,11,0.2))'}} priority/>
+      <Link href="/" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:8}}>
+        <span style={{fontFamily:'var(--font-serif)',fontSize:'1.4rem',fontWeight:600,color:'var(--gold-light)',letterSpacing:'-0.02em',textShadow:'0 0 20px rgba(184,134,11,0.3)'}}>S2D</span>
+        <span style={{fontFamily:'var(--font-serif)',fontSize:'1rem',fontWeight:400,color:'rgba(255,255,255,0.7)',letterSpacing:'0.02em'}}>Capital Insights</span>
       </Link>
       <div style={{position:'absolute',right:32,display:'flex',gap:20,alignItems:'center'}}>
         <Link href="/newsletter" className="nav-link">NEWSLETTER</Link>
@@ -147,20 +148,20 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
     {/* ══ HERO — DARK NAVY + GOLD ══ */}
     <div style={{position:'relative',overflow:'hidden',padding:'56px 32px 40px',textAlign:'center',minHeight:420}}>
       {/* Ambient gold orbs */}
-      <div className="ambient-orb" style={{width:500,height:500,top:'-20%',left:'15%',background:'radial-gradient(circle,rgba(184,134,11,0.08) 0%,transparent 55%)'}}/>
-      <div className="ambient-orb" style={{width:400,height:400,bottom:'-15%',right:'10%',background:'radial-gradient(circle,rgba(184,134,11,0.06) 0%,transparent 55%)',animationDelay:'-8s'}}/>
-      <div className="ambient-orb" style={{width:250,height:250,top:'40%',left:'60%',background:'radial-gradient(circle,rgba(59,108,180,0.04) 0%,transparent 55%)',animationDelay:'-14s'}}/>
-      {/* Gold grid */}
-      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.04) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
+      <div className="ambient-orb" style={{width:600,height:600,top:'-25%',left:'10%',background:'radial-gradient(circle,rgba(184,134,11,0.14) 0%,transparent 55%)'}}/>
+      <div className="ambient-orb" style={{width:500,height:500,bottom:'-20%',right:'5%',background:'radial-gradient(circle,rgba(184,134,11,0.1) 0%,transparent 55%)',animationDelay:'-8s'}}/>
+      <div className="ambient-orb" style={{width:300,height:300,top:'30%',left:'55%',background:'radial-gradient(circle,rgba(59,108,180,0.06) 0%,transparent 55%)',animationDelay:'-14s'}}/>
+      {/* Gold grid — more visible */}
+      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.07) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
       {/* Particles */}
       <div style={{position:'absolute',inset:0,overflow:'hidden',opacity:0.3}}><ParticleField/></div>
 
       <div style={{position:'relative',zIndex:2}}>
         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}} style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.35em',color:'var(--gold-light)',marginBottom:16}}>FINANCIAL INTELLIGENCE</motion.p>
-        <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2rem,5vw,3.2rem)',fontWeight:400,lineHeight:1.1,color:'#fff',marginBottom:14,maxWidth:600,margin:'0 auto 14px'}}>
-          Where Markets Meet <em style={{fontStyle:'italic',color:'var(--gold-light)'}}>Clarity</em>
+        <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2.2rem,5vw,3.5rem)',fontWeight:400,lineHeight:1.1,color:'#ffffff',marginBottom:14,maxWidth:650,margin:'0 auto 14px',textShadow:'0 2px 30px rgba(184,134,11,0.15)'}}>
+          Where Markets Meet <em style={{fontStyle:'italic',color:'var(--gold-light)',textShadow:'0 0 30px rgba(184,134,11,0.3)'}}>Clarity</em>
         </motion.h1>
-        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.6}} style={{fontSize:'0.9rem',color:'rgba(255,255,255,0.5)',maxWidth:460,margin:'0 auto 32px',lineHeight:1.7}}>
+        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.6}} style={{fontSize:'0.95rem',color:'rgba(255,255,255,0.6)',maxWidth:480,margin:'0 auto 36px',lineHeight:1.7}}>
           Six verticals. One picture. Live data from global equities, crypto, macro, commodities, FX, and geopolitics.
         </motion.p>
       </div>
