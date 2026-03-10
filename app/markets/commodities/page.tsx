@@ -20,7 +20,6 @@ export default async function CommoditiesPage() {
         <div style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'28px 24px',borderLeft:'4px solid #8B5E3C'}}>
           <p style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.15em',textTransform:'uppercase',color:'#8B5E3C',marginBottom:6}}>WTI CRUDE OIL</p>
           <div style={{fontFamily:'var(--font-mono)',fontSize:'2.6rem',fontWeight:700,color:'var(--navy)',lineHeight:1}}>${commod.oil?.toFixed(2)||'-'}<span style={{fontSize:'0.8rem',color:'var(--text-muted)',fontWeight:400,marginLeft:6}}>/barrel</span></div>
-          {commod.oilDate&&<p style={{fontSize:'0.65rem',color:'var(--text-muted)',marginTop:4,fontFamily:'var(--font-mono)'}}>Last: {commod.oilDate}</p>}
         </div>
         <div style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'28px 24px',borderLeft:'4px solid #B8860B'}}>
           <p style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.15em',textTransform:'uppercase',color:'#B8860B',marginBottom:6}}>GOLD (PAXG PROXY)</p>
