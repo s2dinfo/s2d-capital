@@ -122,8 +122,8 @@ function FeaturedArticle({ featured, btc }: { featured: any; btc: any }) {
           style={{ background: hovered ? '#151528' : '#111120', border: `1px solid ${hovered ? '#C9A84C44' : '#1A1A2E'}`, padding: '24px 20px', borderLeft: '3px solid #C9A84C', transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)', transform: hovered ? 'translateY(-2px)' : 'translateY(0)', boxShadow: hovered ? '0 8px 24px rgba(201,168,76,0.08)' : 'none', position: 'relative' as const, overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -40, right: -40, width: 120, height: 120, borderRadius: '50%', background: `radial-gradient(circle, rgba(201,168,76,${hovered ? '0.08' : '0'}) 0%, transparent 70%)`, transition: 'all 0.4s ease', pointerEvents: 'none' }} />
           <div style={{ display: 'flex', gap: 5, marginBottom: 10 }}>
-            {featured.tags.map((t: string) => (
-              <span key={t} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.48rem', letterSpacing: '0.08em', padding: '2px 8px', background: `${VERTICALS[t].hex}18`, color: VERTICALS[t].hex }}>{VERTICALS[t].labelShort}</span>
+            {featured.tags.map((t: any) => (
+              <span key={t} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.48rem', letterSpacing: '0.08em', padding: '2px 8px', background: `${VERTICALS[t as keyof typeof VERTICALS].hex}18`, color: VERTICALS[t as keyof typeof VERTICALS].hex }}>{VERTICALS[t as keyof typeof VERTICALS].labelShort}</span>
             ))}
           </div>
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 500, color: hovered ? '#F8F4EC' : '#F0EDE6', lineHeight: 1.3, marginBottom: 8, transition: 'color 0.2s' }}>{featured.title}</h3>
