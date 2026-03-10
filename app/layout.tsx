@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import Ticker from '@/components/Ticker';
 
 export const metadata: Metadata = {
   title: 'S2D Capital Insights | Financial Intelligence',
@@ -31,7 +30,6 @@ export default function RootLayout({
     <html lang="de">
       <body>
         <Navbar />
-        <Ticker />
         <main>{children}</main>
         <Footer />
       </body>
