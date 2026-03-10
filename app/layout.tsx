@@ -1,23 +1,22 @@
-import type { Metadata } from 'next';
-import '@/styles/globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+// app/layout.tsx
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'S2D Capital Insights | Financial Intelligence',
-  description: 'Institutional-grade research across crypto, macro, commodities, FX, geopolitics, and market structure. We connect the dots others miss.',
+  title: "S2D Capital Insights — Financial Intelligence",
+  description:
+    "In-depth research and real-time data across crypto, macro, commodities, FX, and geopolitics.",
   openGraph: {
-    title: 'S2D Capital Insights',
-    description: 'Financial Intelligence. Crypto. Macro. Commodities. FX. Geopolitics.',
-    url: 'https://s2d.info',
-    siteName: 'S2D Capital Insights',
-    locale: 'de_DE',
-    type: 'website',
+    title: "S2D Capital Insights",
+    description: "Financial intelligence across six verticals.",
+    siteName: "S2D Capital Insights",
+    url: "https://s2d.info",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'S2D Capital Insights',
-    description: 'Financial Intelligence across six verticals.',
+    card: "summary_large_image",
+    title: "S2D Capital Insights",
+    description: "Financial intelligence across crypto, macro, commodities, FX, and geopolitics.",
   },
 };
 
@@ -28,11 +27,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="de">
-      <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-      </body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>{children}</body>
     </html>
   );
 }

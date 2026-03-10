@@ -1,41 +1,150 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import styles from './Footer.module.css';
+// components/Footer.tsx
+"use client";
 
-export default function Footer() {
+import Link from "next/link";
+
+export default function Footer({ lang = "de" }: { lang?: string }) {
+  const t = (de: string, en: string) => (lang === "de" ? de : en);
+
   return (
-    <footer className={styles.footer}>
-      <div className={styles.top}>
+    <footer
+      style={{
+        padding: "48px 48px 32px",
+        background: "var(--navy, #0f0f23)",
+        color: "rgba(255,255,255,0.65)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "start",
+          marginBottom: 36,
+          flexWrap: "wrap",
+          gap: 32,
+        }}
+      >
+        {/* Brand */}
         <div>
-          <Image src="/logo.png" alt="S2D Capital Insights" width={140} height={93} className={styles.logo} />
-          <p className={styles.tagline}>
-            Financial Intelligence. Crypto. Macro. Commodities. FX. Geopolitics.
-            <br />Frankfurt &middot; London
-          </p>
-        </div>
-        <div className={styles.columns}>
-          <div className={styles.col}>
-            <h4>Research</h4>
-            <Link href="/research">All Publications</Link>
-            <Link href="/research?v=crypto">Crypto &amp; Digital Assets</Link>
-            <Link href="/research?v=macro">Macro &amp; Central Banks</Link>
-            <Link href="/research?v=commodities">Commodities &amp; Energy</Link>
-            <Link href="/research?v=fx">FX &amp; Currencies</Link>
+          <div
+            style={{
+              fontFamily: "var(--serif, 'Playfair Display', serif)",
+              fontSize: "1.1rem",
+              fontWeight: 500,
+              color: "rgba(255,255,255,0.9)",
+              marginBottom: 10,
+            }}
+          >
+            <span style={{ color: "var(--gold-light, #d4a843)" }}>S2D</span> Capital Insights
           </div>
-          <div className={styles.col}>
-            <h4>Company</h4>
-            <Link href="/about">About</Link>
-            <Link href="/newsletter">Newsletter</Link>
-            <Link href="/impressum">Impressum</Link>
-            <Link href="/datenschutz">Datenschutz</Link>
+          <div
+            style={{
+              fontSize: "0.78rem",
+              color: "rgba(255,255,255,0.35)",
+              maxWidth: 260,
+              lineHeight: 1.6,
+            }}
+          >
+            {t(
+              "Finanzielle Intelligenz über Krypto, Makro, Rohstoffe, Devisen und Geopolitik.",
+              "Financial intelligence across crypto, macro, commodities, FX, and geopolitics."
+            )}
+          </div>
+        </div>
+
+        {/* Links */}
+        <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+          <div>
+            <h4
+              style={{
+                fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
+                fontSize: "0.6rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "var(--gold-light, #d4a843)",
+                marginBottom: 12,
+              }}
+            >
+              {t("Verticals", "Verticals")}
+            </h4>
+            {[
+              "Crypto & Digital Assets",
+              "Macro & Central Banks",
+              "Commodities & Energy",
+              "FX & Currencies",
+              "Geopolitics & Policy",
+              "Market Structure",
+            ].map((v) => (
+              <div
+                key={v}
+                style={{
+                  fontSize: "0.82rem",
+                  color: "rgba(255,255,255,0.45)",
+                  marginBottom: 8,
+                }}
+              >
+                {v}
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <h4
+              style={{
+                fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
+                fontSize: "0.6rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "var(--gold-light, #d4a843)",
+                marginBottom: 12,
+              }}
+            >
+              {t("Plattform", "Platform")}
+            </h4>
+            {[
+              { label: "Dashboard", href: "/" },
+              { label: "Research", href: "/research" },
+              { label: "Newsletter", href: "#newsletter" },
+              { label: t("Kontakt", "Contact"), href: "mailto:sami@s2d.info" },
+            ].map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                style={{
+                  display: "block",
+                  fontSize: "0.82rem",
+                  color: "rgba(255,255,255,0.45)",
+                  textDecoration: "none",
+                  marginBottom: 8,
+                  transition: "color 0.3s",
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
-      <div className={styles.bottom}>
-        <span>&copy; 2026 S2D Capital Insights. All rights reserved.</span>
-        <div className={styles.social}>
-          <a href="https://x.com/S2DCapital" target="_blank" rel="noopener">X / Twitter</a>
-          <a href="https://linkedin.com/company/s2d-capital" target="_blank" rel="noopener">LinkedIn</a>
+
+      {/* Bottom */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingTop: 24,
+          borderTop: "1px solid rgba(255,255,255,0.07)",
+          fontSize: "0.7rem",
+          color: "rgba(255,255,255,0.25)",
+          flexWrap: "wrap",
+          gap: 12,
+        }}
+      >
+        <span>© {new Date().getFullYear()} S2D Capital Insights. {t("Alle Rechte vorbehalten.", "All rights reserved.")}</span>
+        <div style={{ display: "flex", gap: 18 }}>
+          <a href="https://x.com/s2dcapital" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.3s" }}>𝕏</a>
+          <a href="https://linkedin.com" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.3s" }}>LinkedIn</a>
+          <a href="mailto:sami@s2d.info" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.3s" }}>Email</a>
         </div>
       </div>
     </footer>

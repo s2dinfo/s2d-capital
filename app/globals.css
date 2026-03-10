@@ -1,0 +1,145 @@
+/* app/globals.css — S2D Capital Insights */
+
+:root {
+  /* ── Brand Colors ── */
+  --gold: #b8860b;
+  --gold-light: #d4a843;
+  --gold-wash: rgba(184, 134, 11, 0.15);
+  --gold-pale: rgba(184, 134, 11, 0.08);
+  --gold-tint: #faf6ee;
+
+  --navy: #0f0f23;
+  --navy-soft: #1a1a2e;
+
+  /* ── Backgrounds ── */
+  --bg-primary: #ffffff;
+  --bg-warm: #fdfcfa;
+  --bg-cream: #f8f6f1;
+
+  /* ── Text ── */
+  --text-primary: #0f0f23;
+  --text-body: #3a3a4a;
+  --text-secondary: #6b6b82;
+  --text-muted: #9c9caf;
+
+  /* ── Borders ── */
+  --border: #e8e6e0;
+  --border-light: #f0eee8;
+
+  /* ── Typography ── */
+  --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --sans: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--text-body);
+  background: var(--bg-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--gold-wash);
+  color: var(--navy);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* ── Global Animations ── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Gold Divider ── */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-wash),
+    var(--gold-pale),
+    var(--gold-wash),
+    transparent
+  );
+  margin: 0;
+}
+
+/* ── Reveal on scroll ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+}
