@@ -135,8 +135,8 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
         <Link href="/markets" className="nav-link">MARKETS</Link>
         <Link href="/research" className="nav-link">RESEARCH</Link>
       </div>
-      <Link href="/" style={{textDecoration:'none'}}>
-        <Image src="/logo-hero.png" alt="S2D Capital Insights" width={120} height={40} style={{filter:'brightness(1.6) drop-shadow(0 2px 12px rgba(184,134,11,0.2))'}} priority/>
+      <Link href="/" style={{textDecoration:'none',display:'flex',alignItems:'center'}}>
+        <Image src="/logo-hero.png" alt="S2D Capital Insights" width={160} height={54} style={{filter:'brightness(1.5) drop-shadow(0 2px 12px rgba(184,134,11,0.2))'}} priority/>
       </Link>
       <div style={{position:'absolute',right:32,display:'flex',gap:20,alignItems:'center'}}>
         <Link href="/newsletter" className="nav-link">NEWSLETTER</Link>
@@ -156,10 +156,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
       <div style={{position:'absolute',inset:0,overflow:'hidden',opacity:0.3}}><ParticleField/></div>
 
       <div style={{position:'relative',zIndex:2}}>
-        <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{duration:0.8}}>
-          <Image src="/logo-hero.png" alt="S2D" width={200} height={130} style={{filter:'brightness(1.5) drop-shadow(0 4px 24px rgba(184,134,11,0.15))',margin:'0 auto 20px'}} priority/>
-        </motion.div>
-        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.3}} style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.35em',color:'var(--gold-light)',marginBottom:16}}>FINANCIAL INTELLIGENCE</motion.p>
+        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}} style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.35em',color:'var(--gold-light)',marginBottom:16}}>FINANCIAL INTELLIGENCE</motion.p>
         <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2rem,5vw,3.2rem)',fontWeight:400,lineHeight:1.1,color:'#fff',marginBottom:14,maxWidth:600,margin:'0 auto 14px'}}>
           Where Markets Meet <em style={{fontStyle:'italic',color:'var(--gold-light)'}}>Clarity</em>
         </motion.h1>
