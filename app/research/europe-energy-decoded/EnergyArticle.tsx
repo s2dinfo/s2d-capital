@@ -333,7 +333,7 @@ export default function EnergyArticle() {
         </div>
 
         <Def term="TTF (Title Transfer Facility)">
-          The Dutch gas trading hub that serves as Europe&apos;s benchmark for natural gas pricing — the &ldquo;Brent of gas.&rdquo; TTF futures on ICE Endex are the most liquid gas contracts in Europe. When media report &ldquo;European gas prices,&rdquo; they almost always mean the TTF month-ahead contract. However, TTF is not the only gas trading hub in Europe. Each major market has its own: Germany trades at THE (Trading Hub Europe), Spain at PVB (Punto Virtual de Balance), Italy at PSV (Punto di Scambio Virtuale), and France at PEG (Point d\u2019Échange de Gaz). These national hubs generally track TTF but can diverge significantly during local supply stress, pipeline constraints, or regulatory shifts.
+          The Dutch gas trading hub that serves as Europe&apos;s benchmark for natural gas pricing — the &ldquo;Brent of gas.&rdquo; TTF futures on ICE Endex are the most liquid gas contracts in Europe. When media report &ldquo;European gas prices,&rdquo; they almost always mean the TTF month-ahead contract. However, TTF is not the only gas trading hub in Europe. Each major market has its own: Germany trades at THE (Trading Hub Europe), Spain at PVB (Punto Virtual de Balance), Italy at PSV (Punto di Scambio Virtuale), and France at PEG (Point d\u2019Échange de Gaz). These national hubs generally track TTF but can diverge significantly during local supply stress, pipeline constraints, or regulatory shifts. However, TTF is not the only gas trading hub in Europe. Each major market has its own: Germany trades at THE (Trading Hub Europe), Spain at PVB (Punto Virtual de Balance), Italy at PSV (Punto di Scambio Virtuale), and France at PEG (Point d\u2019Échange de Gaz). These national hubs generally track TTF but can diverge significantly during local supply stress, pipeline constraints, or regulatory shifts.
         </Def>
 
         <h3 style={S.h3}>5.3 Over-the-Counter (OTC): The Hidden Market</h3>
@@ -405,6 +405,16 @@ export default function EnergyArticle() {
 
         <div style={S.callout}>
           <div style={S.calloutLabel}>Why This Matters</div>
+
+        <div style={S.callout}>
+          <div style={S.calloutLabel}>Important Distinction</div>
+          <strong>THE (Trading Hub Europe)</strong> is Germany{`'`}s gas trading hub — the German equivalent of TTF.
+          When this article discusses {`"`}European gas prices,{`"`} it refers to TTF, the continental benchmark.
+          But for German-specific gas supply, storage, and industrial pricing, THE is the relevant reference point.
+          German gas storage levels, the Russian pipeline gas ban{`'`}s impact on Germany, and industrial gas costs
+          are most directly reflected in THE prices — which can trade at a premium or discount to TTF depending on
+          pipeline flows, storage levels, and cross-border capacity constraints.
+        </div>
 
         <div style={S.callout}>
           <div style={S.calloutLabel}>Important Distinction</div>
