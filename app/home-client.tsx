@@ -129,21 +129,66 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
       </motion.div>
     </div>
 
-    {/* ══ NAVBAR ══ */}
-    <nav style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'14px 32px',borderBottom:'1px solid rgba(184,134,11,0.15)',position:'sticky',top:0,zIndex:40,background:'rgba(15,15,35,0.9)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)'}}>
-      <div style={{position:'absolute',left:32,display:'flex',gap:20,alignItems:'center'}}>
-        <Link href="/markets" className="nav-link">MARKETS</Link>
-        <Link href="/research" className="nav-link">RESEARCH</Link>
-      </div>
-      <Link href="/" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:8}}>
-        <span style={{fontFamily:'var(--font-serif)',fontSize:'1.3rem',fontWeight:600,color:'var(--gold-light)',letterSpacing:'-0.01em'}}>S2D</span>
-        <span style={{fontFamily:'var(--font-serif)',fontSize:'0.85rem',fontWeight:400,color:'rgba(255,255,255,0.65)',letterSpacing:'0.05em'}}>Capital Insights</span>
-      </Link>
-      <div style={{position:'absolute',right:32,display:'flex',gap:20,alignItems:'center'}}>
-        <Link href="/newsletter" className="nav-link">NEWSLETTER</Link>
-        <Link href="/about" className="nav-link">ABOUT</Link>
-      </div>
-    </nav>
+    {/* ══ MENU BUTTON (top-left) ══ */}
+    <button onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:46,left:16,zIndex:50,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
+      onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(184,134,11,0.15)';}}
+      onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.2)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.3)';}}>
+      <div style={{width:18,height:2,background:'var(--gold-light)',marginBottom:4,borderRadius:1,transition:'all 0.3s',transform:sidebarOpen?'rotate(45deg) translateY(6px)':'none'}}/>
+      <div style={{width:18,height:2,background:'var(--gold-light)',marginBottom:4,borderRadius:1,transition:'all 0.3s',opacity:sidebarOpen?0:1}}/>
+      <div style={{width:18,height:2,background:'var(--gold-light)',borderRadius:1,transition:'all 0.3s',transform:sidebarOpen?'rotate(-45deg) translateY(-6px)':'none'}}/>
+    </button>
+
+    {/* ══ SIDE PANEL (overlay) ══ */}
+    <AnimatePresence>
+      {sidebarOpen && <>
+        <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setSidebarOpen(false)}
+          style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:45,backdropFilter:'blur(4px)'}}/>
+        <motion.div initial={{x:-300,opacity:0}} animate={{x:0,opacity:1}} exit={{x:-300,opacity:0}} transition={{duration:0.3,ease:'easeOut'}}
+          style={{position:'fixed',top:0,left:0,bottom:0,width:280,background:'rgba(15,15,35,0.95)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRight:'1px solid rgba(184,134,11,0.15)',zIndex:46,overflowY:'auto',padding:'24px 0'}}>
+          {/* Panel logo */}
+          <div style={{padding:'0 20px 20px',borderBottom:'1px solid rgba(255,255,255,0.06)',marginBottom:16}}>
+            <Link href="/" onClick={()=>setSidebarOpen(false)} style={{textDecoration:'none',display:'flex',alignItems:'center',gap:8}}>
+              <span style={{fontFamily:'var(--font-serif)',fontSize:'1.2rem',fontWeight:600,color:'var(--gold-light)'}}>S2D</span>
+              <span style={{fontFamily:'var(--font-serif)',fontSize:'0.85rem',fontWeight:400,color:'rgba(255,255,255,0.6)'}}>Capital Insights</span>
+            </Link>
+          </div>
+          {/* Navigation */}
+          <div style={{padding:'0 8px'}}>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>NAVIGATE</div>
+            {[{l:'Markets',h:'/markets'},{l:'Research',h:'/research'},{l:'Newsletter',h:'/newsletter'},{l:'About',h:'/about'}].map(n=>
+              <Link key={n.l} href={n.h} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'10px 12px',fontFamily:'var(--font-mono)',fontSize:'0.68rem',letterSpacing:'0.06em',color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
+                onMouseEnter={e=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
+                onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.55)';e.currentTarget.style.background='transparent';}}>{n.l}</Link>
+            )}
+          </div>
+          <div style={{height:1,background:'rgba(255,255,255,0.06)',margin:'16px 20px'}}/>
+          {/* Verticals */}
+          <div style={{padding:'0 8px'}}>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>VERTICALS</div>
+            {[{l:'Crypto & Digital Assets',h:'/markets/crypto',c:'#B8860B'},{l:'Macro & Central Banks',h:'/markets/macro',c:'#3B6CB4'},{l:'Commodities & Energy',h:'/markets/commodities',c:'#8B5E3C'},{l:'FX & Currencies',h:'/markets/fx',c:'#2D8F5E'},{l:'Geopolitics & Policy',h:'/markets/geopolitics',c:'#8B2252'},{l:'Market Structure',h:'/markets/structure',c:'#5B4FA0'}].map(v=>
+              <Link key={v.l} href={v.h} onClick={()=>setSidebarOpen(false)} style={{display:'flex',alignItems:'center',gap:8,padding:'9px 12px',fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.45)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:1}}
+                onMouseEnter={e=>{e.currentTarget.style.color=v.c;e.currentTarget.style.background='rgba(255,255,255,0.03)';}}
+                onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.45)';e.currentTarget.style.background='transparent';}}>
+                <div style={{width:4,height:4,borderRadius:'50%',background:v.c,flexShrink:0}}/>{v.l}
+              </Link>
+            )}
+          </div>
+          <div style={{height:1,background:'rgba(255,255,255,0.06)',margin:'16px 20px'}}/>
+          {/* Research */}
+          <div style={{padding:'0 8px'}}>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>LATEST RESEARCH</div>
+            {articles.slice(0,4).map((a:any)=>
+              <Link key={a.slug} href={`/research/${a.slug}`} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'10px 12px',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='transparent';}}>
+                <div style={{fontFamily:'var(--font-serif)',fontSize:'0.78rem',color:'rgba(255,255,255,0.7)',lineHeight:1.3,marginBottom:3}}>{a.title}</div>
+                <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',color:'rgba(255,255,255,0.25)'}}>{a.date} · {a.readTime}</div>
+              </Link>
+            )}
+          </div>
+        </motion.div>
+      </>}
+    </AnimatePresence>
 
     {/* ══ HERO — DARK NAVY + GOLD ══ */}
     <div style={{position:'relative',overflow:'hidden',padding:'56px 32px 40px',textAlign:'center',minHeight:420}}>
