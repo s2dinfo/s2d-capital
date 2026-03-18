@@ -88,6 +88,7 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
 export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:any){
   const[time,setTime]=useState('');
   const[selectedTopic,setSelectedTopic]=useState<string|null>(null);
+  const[sidebarOpen,setSidebarOpen]=useState(false);
   const[btcCandles]=useState(()=>generateMockCandles(84500,90,1800));
   const[ethCandles]=useState(()=>generateMockCandles(2150,90,80));
   useEffect(()=>{const iv=setInterval(()=>setTime(new Date().toLocaleTimeString('en-US',{hour12:false})),1000);setTime(new Date().toLocaleTimeString('en-US',{hour12:false}));return()=>clearInterval(iv);},[]); 

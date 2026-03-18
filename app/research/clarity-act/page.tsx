@@ -3,13 +3,13 @@ import { Metadata } from "next";
 import ClarityActArticle from "./ClarityActArticle";
 
 export const metadata: Metadata = {
-  title: "Der CLARITY Act – S2D Capital Insights",
+  title: "The CLARITY Act – S2D Capital Insights",
   description:
-    "Wie US-Regulierung die nächste Ära institutioneller Krypto-Adoption einläutet. Investoren-Briefing März 2026.",
+    "How US regulation ushers in the next era of institutional crypto adoption. Investor briefing, March 2026.",
   openGraph: {
-    title: "Der CLARITY Act | S2D Capital Insights",
+    title: "The CLARITY Act | S2D Capital Insights",
     description:
-      "Investoren-Briefing: Wie US-Regulierung die nächste Ära institutioneller Krypto-Adoption einläutet.",
+      "Investor briefing: How US regulation ushers in the next era of institutional crypto adoption.",
     type: "article",
     publishedTime: "2026-03-10",
     authors: ["Sami Samii"],

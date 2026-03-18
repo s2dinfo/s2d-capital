@@ -5,12 +5,12 @@ import Link from "next/link";
 const articles = [
   {
     slug: "clarity-act",
-    title: "Der CLARITY Act",
-    subtitle: "Wie US-Regulierung die nächste Ära institutioneller Krypto-Adoption einläutet",
-    date: "März 2026",
+    title: "The CLARITY Act",
+    subtitle: "How US regulation ushers in the next era of institutional crypto adoption",
+    date: "March 2026",
     author: "Sami Samii",
     sector: "Crypto & Regulation",
-    readTime: "15 Min.",
+    readTime: "15 min",
     featured: true,
   },
 ];
@@ -36,7 +36,7 @@ export default function ResearchList() {
               </div>
               <h2 style={{ fontFamily: "var(--serif)", fontSize: "1.4rem", fontWeight: 400, color: "var(--navy, #0f0f23)", marginBottom: 8 }}>{a.title}</h2>
               <p style={{ fontSize: "0.9rem", color: "var(--text-secondary, #6B6B82)", lineHeight: 1.6, marginBottom: 12 }}>{a.subtitle}</p>
-              <span style={{ fontFamily: "var(--mono)", fontSize: "0.6rem", color: "var(--text-muted, #9C9CAF)" }}>Von {a.author}</span>
+              <span style={{ fontFamily: "var(--mono)", fontSize: "0.6rem", color: "var(--text-muted, #9C9CAF)" }}>By {a.author}</span>
             </div>
           </Link>
         ))}

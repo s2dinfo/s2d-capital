@@ -14,7 +14,7 @@ export interface Article {
 // Temporary static articles - will be replaced by Notion CMS
 export const articles: Article[] = [
   {
-    slug: 'clarity-act-institutional-crypto-adoption',
+    slug: 'clarity-act',
     title: 'The CLARITY Act: How US Regulation Ushers in the Next Era of Institutional Crypto Adoption',
     excerpt: 'JPMorgan calls it the most important catalyst of the year. Eight key provisions, lessons from the $1.8T crash of 2022, institutional price targets from $150K to $710K, and why this cycle is structurally different.',
     tags: ['crypto', 'structure'],
