@@ -11,7 +11,6 @@ export interface Article {
   published: boolean;
 }
 
-// Temporary static articles - will be replaced by Notion CMS
 export const articles: Article[] = [
   {
     slug: 'clarity-act',
@@ -20,6 +19,16 @@ export const articles: Article[] = [
     tags: ['crypto', 'structure'],
     date: 'March 2026',
     readTime: '25 min',
+    featured: false,
+    published: true,
+  },
+  {
+    slug: 'europe-energy-decoded',
+    title: 'Europe\'s Energy System, Decoded: From the Grid to the Trading Floor',
+    excerpt: 'How renewables, regulation, and geopolitics are reshaping the continent\'s energy future. The merit order, Guarantees of Origin, OTC trading, the EU ETS, biomethane, THG-Quoten — and why the Iran war just changed everything.',
+    tags: ['commodities', 'geopolitics'],
+    date: 'March 2026',
+    readTime: '30 min',
     featured: true,
     published: true,
   },
