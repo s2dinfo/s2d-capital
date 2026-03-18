@@ -1,8 +1,8 @@
-// app/research/clarity-act/ClarityActArticle.tsx
 "use client";
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import React from "react";
 
 // Dynamic import to avoid SSR issues with lightweight-charts
 const LiveChart = dynamic(() => import("@/components/LiveChart"), {
@@ -184,14 +184,14 @@ const fadeUp = {
 
 // Price targets table data
 const priceTargets = [
-  { institution: "JPMorgan Chase", target: "$266.000", basis: "Volatilitätsbereinigter Goldvergleich (langfristig)" },
-  { institution: "JPMorgan Chase", target: "$170.000", basis: "Fair-Value-Modell (6–12 Monate)" },
-  { institution: "Standard Chartered", target: "$150.000", basis: "ETF-Zuflüsse & Miner-Profitabilität" },
-  { institution: "Bernstein", target: "$150.000", basis: "Tokenisierungs-Superzyklus 2026; $200K in 2027" },
-  { institution: "VanEck", target: "$180.000", basis: "Durchdringung globaler Vermögensmärkte" },
-  { institution: "Fundstrat (Tom Lee)", target: "$200–250K", basis: "Institutionelle Flüsse & erweiterte Allokation" },
-  { institution: "Maple Finance", target: "$175.000", basis: "Zinssenkungen & wachsende inst. Anwendungsfälle" },
-  { institution: "ARK Invest (2030)", target: "$710K Basis", basis: "Skalierung institutioneller Allokationen" },
+  { institution: "JPMorgan Chase", target: "$266,000", basis: "Volatility-adjusted gold comparison (long-term)" },
+  { institution: "JPMorgan Chase", target: "$170,000", basis: "Fair value model (6–12 months)" },
+  { institution: "Standard Chartered", target: "$150,000", basis: "ETF inflows & miner profitability" },
+  { institution: "Bernstein", target: "$150,000", basis: "Tokenization supercycle 2026; $200K in 2027" },
+  { institution: "VanEck", target: "$180,000", basis: "Penetration of global asset markets" },
+  { institution: "Fundstrat (Tom Lee)", target: "$200–250K", basis: "Institutional flows & expanded allocation" },
+  { institution: "Maple Finance", target: "$175,000", basis: "Rate cuts & growing institutional use cases" },
+  { institution: "ARK Invest (2030)", target: "$710K Base", basis: "Scaling of institutional allocations" },
 ];
 
 export default function ClarityActArticle() {
@@ -199,19 +199,19 @@ export default function ClarityActArticle() {
     <article>
       {/* ═══ HERO ═══ */}
       <motion.div style={S.hero} {...fadeUp}>
-        <div style={S.eyebrow}>Investoren-Briefing · März 2026</div>
+        <div style={S.eyebrow}>Investor Briefing · March 2026</div>
         <h1 style={S.h1}>
-          Der <em style={{ fontStyle: "italic", color: "var(--gold, #b8860b)" }}>CLARITY Act</em>
+          The <em style={{ fontStyle: "italic", color: "var(--gold, #b8860b)" }}>CLARITY Act</em>
         </h1>
         <p style={S.subtitle}>
-          Wie US-Regulierung die nächste Ära institutioneller Krypto-Adoption einläutet
+          How US regulation ushers in the next era of institutional crypto adoption
         </p>
         <div style={S.meta}>
-          <span>Von Sami Samii</span>
+          <span>By Sami Samii</span>
           <span>·</span>
           <span>S2D Capital Insights</span>
           <span>·</span>
-          <span>15 Min. Lesezeit</span>
+          <span>25 min read</span>
         </div>
       </motion.div>
 
@@ -226,238 +226,236 @@ export default function ClarityActArticle() {
         >
           <div>
             <div style={S.keyFigureNum}>$266K</div>
-            <div style={S.keyFigureLabel}>JPMorgan BTC-Langfristziel</div>
+            <div style={S.keyFigureLabel}>JPMorgan BTC Long-Term Target</div>
           </div>
           <div>
-            <div style={S.keyFigureNum}>$180–220 Mrd.</div>
-            <div style={S.keyFigureLabel}>BTC-ETF AuM bis Ende 2026</div>
+            <div style={S.keyFigureNum}>$180–220B</div>
+            <div style={S.keyFigureLabel}>BTC ETF AuM by End of 2026</div>
           </div>
           <div>
-            <div style={S.keyFigureNum}>&gt;$1,8 Bio.</div>
-            <div style={S.keyFigureLabel}>Marktwertverlust 2022</div>
+            <div style={S.keyFigureNum}>&gt;$1.8T</div>
+            <div style={S.keyFigureLabel}>Market Value Lost in 2022</div>
           </div>
         </motion.div>
 
-        {/* ── Zusammenfassung ── */}
-        <h2 style={S.h2}>Zusammenfassung für Investoren</h2>
+        {/* ── Executive Summary ── */}
+        <h2 style={S.h2}>Executive Summary</h2>
 
         <p>
-          Der Kryptomarkt befindet sich an einem Wendepunkt. Nach Jahren in einer regulatorischen Grauzone
-          – einem Umfeld, das katastrophale Zusammenbrüche wie FTX, Terra/Luna und Celsius ermöglichte –
-          steht die Vereinigten Staaten kurz vor der Verabschiedung des ersten umfassenden Krypto-Marktstrukturgesetzes
-          in der Geschichte: dem <strong>Digital Asset Market Clarity Act</strong> (kurz: „CLARITY Act").
+          The crypto market is at a turning point. After years in a regulatory gray zone — an environment
+          that enabled catastrophic collapses like FTX, Terra/Luna, and Celsius — the United States is on
+          the verge of passing the first comprehensive crypto market structure law in history: the{" "}
+          <strong>Digital Asset Market Clarity Act</strong> (the &ldquo;CLARITY Act&rdquo;).
         </p>
 
         <p>
-          Einfach ausgedrückt: Bisher gab es für Kryptowährungen keine klaren Spielregeln. Unternehmen konnten
-          mit dem Geld ihrer Kunden machen, was sie wollten, ohne dass eine Behörde wirksam eingriff. Das hat
-          zu milliardenschweren Betrügereien und Zusammenbrüchen geführt. Der CLARITY Act soll genau das ändern
-          – und damit den Weg für institutionelles Kapital in bisher ungekanntem Ausmaß frei machen.
+          Put simply: until now, there were no clear rules for cryptocurrencies. Companies could do whatever
+          they wanted with customer funds without effective regulatory oversight. This led to billions in
+          fraud and collapses. The CLARITY Act aims to change exactly that — paving the way for institutional
+          capital on an unprecedented scale.
         </p>
 
         <div style={S.callout}>
           <div style={S.calloutLabel}>JPMorgan Chase Research · Feb. 2026</div>
-          JPMorgan Chase identifizierte die Verabschiedung dieses Gesetzes als den „wichtigsten Katalysator
-          für den Kryptomarkt" im laufenden Jahr. Die Bank schrieb: Wenn das Gesetz verabschiedet wird, wird
-          es die Marktstruktur grundlegend verändern – durch regulatorische Klarheit, das Ende der Regulierung
-          durch Vollstreckung, die Förderung von Tokenisierung und stärkere institutionelle Beteiligung.
+          JPMorgan Chase identified the passage of this law as the &ldquo;most important catalyst for the
+          crypto market&rdquo; this year. The bank wrote: if the law is passed, it will fundamentally
+          transform market structure — through regulatory clarity, the end of regulation by enforcement,
+          the promotion of tokenization, and stronger institutional participation.
         </div>
 
         {/* Inline BTC chart — relevant after discussing market impact */}
         <LiveChart symbol="BTC-USD" label="Bitcoin (BTC/USD)" range="6mo" height={280} />
 
         <p>
-          Was bedeutet das für Sie als Investor? Die Krypto-Branche steht vor einem strukturellen Wandel.
-          Die Frage ist nicht mehr, ob große Finanzinstitutionen in Krypto einsteigen – sondern wie viel
-          Kapital sie allokieren werden. Und genau dieser Wandel wird durch den CLARITY Act beschleunigt.
+          What does this mean for you as an investor? The crypto industry is facing a structural shift.
+          The question is no longer whether major financial institutions will enter crypto — but how much
+          capital they will allocate. And this shift is being accelerated by the CLARITY Act.
         </p>
 
         {/* ── Section 1: CLARITY Act ── */}
-        <h2 style={S.h2}>1. Der CLARITY Act: Was er ist und warum er wichtig ist</h2>
+        <h2 style={S.h2}>1. The CLARITY Act: What It Is and Why It Matters</h2>
 
-        <h3 style={S.h3}>Was ist der CLARITY Act?</h3>
+        <h3 style={S.h3}>What is the CLARITY Act?</h3>
         <p>
-          Der „Digital Asset Market Clarity Act" ist das wichtigste Krypto-Gesetz, das jemals im US-Kongress
-          behandelt wurde. Er wurde im Juli 2025 mit überparteilicher Mehrheit im Repräsentantenhaus verabschiedet
-          und wird derzeit im Senat verhandelt.
+          The &ldquo;Digital Asset Market Clarity Act&rdquo; is the most important piece of crypto
+          legislation ever considered by the US Congress. It was passed with bipartisan support in the
+          House of Representatives in July 2025 and is currently being debated in the Senate.
         </p>
         <p>
-          Um es verständlich zu machen: Stellen Sie sich vor, Sie eröffnen ein Restaurant, aber es gibt keine
-          Lebensmittelvorschriften, keine Hygienekontrollen und keine klare Zuordnung, welche Behörde für was
-          zuständig ist. Genau so war der Kryptomarkt bisher. Der CLARITY Act schafft erstmals einen klaren
-          Ordnungsrahmen.
-        </p>
-
-        <h3 style={S.h3}>1.1 Das Kernproblem: Zuständigkeitschaos</h3>
-        <p>
-          Seit Jahren stritten sich zwei US-Behörden um die Zuständigkeit für Krypto: die Securities and Exchange
-          Commission (SEC) und die Commodity Futures Trading Commission (CFTC). Es gab keine klaren Regeln, welche
-          Kryptowährung unter welche Aufsicht fällt. Die Folge: Unternehmen erfuhren die Regeln oft erst, wenn sie
-          bereits verklagt wurden – die sogenannte „Regulierung durch Vollstreckung".
-        </p>
-        <p>
-          Der CLARITY Act löst dieses Problem grundlegend: Er klassifiziert Krypto-Token entweder als „digitale
-          Rohstoffe" (CFTC-Aufsicht) oder „digitale Wertpapiere" (SEC-Aufsicht), basierend auf ihrer Natur und
-          Verwendung.
+          To put it in perspective: imagine opening a restaurant where there are no food safety regulations,
+          no hygiene inspections, and no clear assignment of which agency is responsible for what. That is
+          essentially how the crypto market has operated until now. The CLARITY Act creates a clear
+          regulatory framework for the first time.
         </p>
 
-        <h3 style={S.h3}>1.2 Die acht zentralen Bestimmungen</h3>
-        <p>JPMorgan identifizierte acht konkrete Katalysatoren im Gesetz:</p>
+        <h3 style={S.h3}>1.1 The Core Problem: Jurisdictional Chaos</h3>
+        <p>
+          For years, two US agencies have fought over jurisdiction for crypto: the Securities and Exchange
+          Commission (SEC) and the Commodity Futures Trading Commission (CFTC). There were no clear rules
+          governing which cryptocurrency falls under which regulator. The result: companies often only
+          learned the rules when they were already being sued — so-called &ldquo;regulation by enforcement.&rdquo;
+        </p>
+        <p>
+          The CLARITY Act solves this problem at its root: it classifies crypto tokens as either
+          &ldquo;digital commodities&rdquo; (CFTC oversight) or &ldquo;digital securities&rdquo; (SEC
+          oversight), based on their nature and use.
+        </p>
+
+        <h3 style={S.h3}>1.2 The Eight Key Provisions</h3>
+        <p>JPMorgan identified eight concrete catalysts in the legislation:</p>
 
         <div style={{ margin: "20px 0 20px 20px" }}>
-          <p><strong>1. Klare CFTC/SEC-Zuständigkeit:</strong> Große Token wie Bitcoin und Ethereum würden unter
-          CFTC-Aufsicht fallen, was die regulatorische Last deutlich verringert. Eine „Grandfather-Klausel" ermöglicht
-          es Token, die vor dem 1. Januar 2026 an Spot-ETFs gebunden waren – darunter XRP, Solana, Litecoin, Hedera,
-          Dogecoin und Chainlink – als Rohstoffe behandelt zu werden.</p>
+          <p><strong>1. Clear CFTC/SEC Jurisdiction:</strong> Major tokens like Bitcoin and Ethereum would
+          fall under CFTC oversight, significantly reducing the regulatory burden. A &ldquo;grandfather
+          clause&rdquo; allows tokens that were tied to spot ETFs before January 1, 2026 — including XRP,
+          Solana, Litecoin, Hedera, Dogecoin, and Chainlink — to be treated as commodities.</p>
 
-          <p><strong>2. Kapitalaufnahme ohne volle SEC-Registrierung:</strong> Neue Krypto-Projekte könnten jährlich
-          bis zu 75 Millionen Dollar einsammeln, ohne den aufwändigen vollständigen SEC-Registrierungsprozess durchlaufen
-          zu müssen. JPMorgan sagt, dies könnte die Gründungsaktivität und Venture-Capital-Investitionen zurück in die USA
-          holen.</p>
+          <p><strong>2. Capital Raising Without Full SEC Registration:</strong> New crypto projects could
+          raise up to $75 million annually without going through the full SEC registration process. JPMorgan
+          says this could bring startup activity and venture capital investment back to the US.</p>
 
-          <p><strong>3. Institutionelle Verwahrungsstandards:</strong> Klarere Anforderungen an Registrierung und Verwahrung
-          würden es großen Finanzinstituten wie BNY Mellon und State Street ermöglichen, digitale Vermögenswerte direkt zu
-          verwahren. Für Sie als Investor heißt das: Ihr Krypto-Vermögen wird von derselben Art von Institution verwahrt
-          wie Ihre Aktien oder Anleihen.</p>
+          <p><strong>3. Institutional Custody Standards:</strong> Clearer registration and custody requirements
+          would allow major financial institutions like BNY Mellon and State Street to directly custody digital
+          assets. For you as an investor, this means: your crypto assets will be held by the same type of
+          institution that holds your stocks and bonds.</p>
 
-          <p><strong>4. Tokenisierung realer Vermögenswerte:</strong> Das Gesetz klärt, dass tokenisierte traditionelle
-          Wertpapiere weiterhin den bestehenden Wertpapiergesetzen unterliegen. Stellen Sie sich vor, ein Gebäude im Wert
-          von 100 Millionen Euro wird in 10 Millionen digitale „Anteile" aufgeteilt, die über die Blockchain gehandelt werden
-          können – 24/7, weltweit, mit sofortiger Abwicklung.</p>
+          <p><strong>4. Real-World Asset Tokenization:</strong> The law clarifies that tokenized traditional
+          securities remain subject to existing securities laws. Imagine a $100 million building divided into
+          10 million digital &ldquo;shares&rdquo; that can be traded on the blockchain — 24/7, globally, with
+          instant settlement.</p>
 
-          <p><strong>5. Schutz für Entwickler:</strong> Miner, Validatoren und Software-Entwickler würden von
-          Broker-Meldepflichten befreit, solange sie sich in der Entwicklungsphase befinden.</p>
+          <p><strong>5. Developer Protections:</strong> Miners, validators, and software developers would be
+          exempt from broker reporting requirements as long as they are in the development phase.</p>
 
-          <p><strong>6. Steuerliche Klarheit:</strong> Steuerbefreiungen für kleine Krypto-Alltagszahlungen und klare
-          Regeln für die Besteuerung von Staking-Einnahmen.</p>
+          <p><strong>6. Tax Clarity:</strong> Tax exemptions for small everyday crypto payments and clear rules
+          for taxing staking income.</p>
 
-          <p><strong>7. Stablecoin-Rahmenwerk:</strong> In Ergänzung zum bereits verabschiedeten GENIUS Act schafft der
-          CLARITY Act umfassende Regeln für die Ausgabe und Reservehaltung von Stablecoins. Künftig müssen sie nachweislich
-          1:1 durch kurzfristige US-Staatsanleihen oder Bargeld gedeckt sein.</p>
+          <p><strong>7. Stablecoin Framework:</strong> Complementing the already-passed GENIUS Act, the CLARITY
+          Act creates comprehensive rules for the issuance and reserve management of stablecoins. Going forward,
+          they must be provably backed 1:1 by short-term US Treasury bonds or cash.</p>
 
-          <p><strong>8. Ende der „Regulierung durch Vollstreckung":</strong> Die Ära, in der Unternehmen erst verklagt und
-          dann über die Regeln informiert wurden, würde formell enden.</p>
+          <p><strong>8. End of &ldquo;Regulation by Enforcement&rdquo;:</strong> The era in which companies were
+          sued first and informed of the rules later would formally end.</p>
         </div>
 
-        <h3 style={S.h3}>1.3 Aktueller Stand im Gesetzgebungsprozess</h3>
-        <p>Stand Anfang März 2026 gibt es im Senat noch zwei strittige Punkte:</p>
+        <h3 style={S.h3}>1.3 Current Status in the Legislative Process</h3>
+        <p>As of early March 2026, two contentious issues remain in the Senate:</p>
         <div style={{ margin: "16px 0 16px 20px" }}>
           <p>
-            <strong>Stablecoin-Renditen:</strong> Krypto-Unternehmen wie Coinbase wollen Nutzern Zinsen für das Halten
-            von Stablecoins zahlen. Banken warnen, dass dies Einlagen aus dem traditionellen Bankensystem abziehen könnte.
+            <strong>Stablecoin Yields:</strong> Crypto companies like Coinbase want to pay users interest for
+            holding stablecoins. Banks warn that this could draw deposits away from the traditional banking system.
           </p>
           <p>
-            <strong>Interessenkonflikte:</strong> Demokratische Senatoren drängen darauf, hochrangigen Regierungsbeamten
-            und deren Familien bestimmte Krypto-Finanzgeschäfte zu untersagen.
+            <strong>Conflicts of Interest:</strong> Democratic senators are pushing to prohibit senior government
+            officials and their families from engaging in certain crypto financial transactions.
           </p>
         </div>
         <p>
-          JPMorgans Basisszenario: Verabschiedung bis Mitte 2026, bevor das Zeitfenster durch die Kongresswahlen im August
-          geschlossen wird.
+          JPMorgan&apos;s base case: passage by mid-2026, before the legislative window closes due to congressional
+          elections in August.
         </p>
 
         {/* ── Section 2: 2022 Crashes ── */}
-        <h2 style={S.h2}>2. Die Folgen fehlender Regulierung: Was 2022 passiert ist</h2>
+        <h2 style={S.h2}>2. The Consequences of Missing Regulation: What Happened in 2022</h2>
 
         <p>
-          Die Krypto-Crashs von 2022 vernichteten über 1,8 Billionen Dollar an Marktwert. Das waren keine normalen
-          Marktbewegungen – es waren kaskadierende Zusammenbrüche, die direkt durch das Fehlen von Aufsicht,
-          Transparenzanforderungen und Kundenschutz verursacht wurden.
+          The crypto crashes of 2022 destroyed over $1.8 trillion in market value. These were not normal market
+          movements — they were cascading collapses directly caused by the absence of oversight, transparency
+          requirements, and customer protections.
         </p>
 
         <div style={S.callout}>
-          <div style={S.calloutLabel}>Zentrale Erkenntnis</div>
-          Jeder große Krypto-Crash 2022 wurde durch Betrug, Missmanagement oder fehlerhafte Konstruktionen verursacht,
-          die eine angemessene Regulierung verhindert hätte. Der CLARITY Act adressiert jeden einzelnen dieser Schwachpunkte.
+          <div style={S.calloutLabel}>Key Takeaway</div>
+          Every major crypto crash in 2022 was caused by fraud, mismanagement, or flawed designs that proper
+          regulation would have prevented. The CLARITY Act addresses each of these vulnerabilities.
         </div>
 
-        <h3 style={S.h3}>2.1 Terra/Luna: Der 48-Milliarden-Dollar-Kollaps (Mai 2022)</h3>
+        <h3 style={S.h3}>2.1 Terra/Luna: The $48 Billion Collapse (May 2022)</h3>
         <p>
-          Terra war ein sogenannter „algorithmischer Stablecoin" – eine Kryptowährung, die immer genau 1 Dollar wert
-          sein sollte. Aber anders als traditionelle Stablecoins wurde Terras Dollarbindung rein durch einen
-          Computermechanismus mit einer Schwestermünze namens LUNA aufrechterhalten. Es gab keine echten Reserven.
+          Terra was a so-called &ldquo;algorithmic stablecoin&rdquo; — a cryptocurrency designed to always be
+          worth exactly $1. But unlike traditional stablecoins, Terra&apos;s dollar peg was maintained purely
+          through a computer mechanism involving a sister coin called LUNA. There were no real reserves.
         </p>
         <p>
-          Als das Vertrauen ins Wanken geriet, entstand ein klassischer Bank Run: Alle wollten gleichzeitig raus.
-          Innerhalb von nur drei Tagen explodierte die LUNA-Menge von 1 Milliarde auf 6 Billionen Token, und der
-          Preis fiel von 80 Dollar auf praktisch null. Über 48 Milliarden Dollar an Wert wurden vernichtet.
-        </p>
-
-        <h3 style={S.h3}>2.2 FTX: Der 8-Milliarden-Dollar-Betrug (November 2022)</h3>
-        <p>
-          FTX war eine der größten Krypto-Börsen der Welt, gegründet von Sam Bankman-Fried. Hinter der glänzenden
-          Fassade geschah jedoch etwas, das in der regulierten Finanzwelt undenkbar wäre: FTX lieh heimlich Milliarden
-          Dollar an Kundengeldern an seine eigene Handelsfirma Alameda Research.
-        </p>
-        <p>
-          Als dies durch einen CoinDesk-Bericht aufgedeckt wurde, zogen Kunden innerhalb eines Tages über 5 Milliarden
-          Dollar ab. FTX konnte nicht zahlen und ging bankrott.
+          When confidence faltered, a classic bank run ensued: everyone wanted out at the same time. Within just
+          three days, the LUNA supply exploded from 1 billion to 6 trillion tokens, and its price fell from $80
+          to virtually zero. Over $48 billion in value was destroyed.
         </p>
 
-        <h3 style={S.h3}>2.3 Der Dominoeffekt: Celsius, Three Arrows Capital und mehr</h3>
+        <h3 style={S.h3}>2.2 FTX: The $8 Billion Fraud (November 2022)</h3>
         <p>
-          Terras Kollaps löste eine Kettenreaktion aus: Celsius Network fror Kundenabhebungen ein und ging bankrott.
-          Three Arrows Capital (3AC) wurde insolvent und riss weitere Unternehmen mit. Diese Zusammenbrüche waren die
-          vorhersehbare Folge eines unregulierten Marktes.
+          FTX was one of the largest crypto exchanges in the world, founded by Sam Bankman-Fried. Behind the
+          polished facade, however, something unthinkable in the regulated financial world was happening: FTX
+          secretly lent billions of dollars in customer funds to its own trading firm, Alameda Research.
+        </p>
+        <p>
+          When this was exposed by a CoinDesk report, customers withdrew over $5 billion within a single day.
+          FTX could not pay and went bankrupt.
+        </p>
+
+        <h3 style={S.h3}>2.3 The Domino Effect: Celsius, Three Arrows Capital, and More</h3>
+        <p>
+          Terra&apos;s collapse triggered a chain reaction: Celsius Network froze customer withdrawals and went
+          bankrupt. Three Arrows Capital (3AC) became insolvent and dragged other firms down with it. These
+          collapses were the predictable consequence of an unregulated market.
         </p>
 
         {/* ── Section 3: Institutional Wave ── */}
-        <h2 style={S.h2}>3. Die institutionelle Welle baut sich bereits auf</h2>
+        <h2 style={S.h2}>3. The Institutional Wave Is Already Building</h2>
 
         <p>
-          Während der Markt auf gesetzgeberische Klarheit wartet, steht die Wall Street nicht still. Die Infrastruktur
-          für institutionelle Krypto-Beteiligung wird in hohem Tempo aufgebaut.
+          While the market waits for legislative clarity, Wall Street is not standing still. The infrastructure
+          for institutional crypto participation is being built at a rapid pace.
         </p>
 
-        <h3 style={S.h3}>3.1 Morgan Stanley: 8 Billionen Dollar treffen auf Krypto</h3>
+        <h3 style={S.h3}>3.1 Morgan Stanley: $8 Trillion Meets Crypto</h3>
         <p>
-          Am 18. Februar 2026 stellte Morgan Stanley beim Office of the Comptroller of the Currency (OCC) einen Antrag
-          auf eine National Trust Bank Charter, um die „Morgan Stanley Digital Trust" zu gründen. Morgan Stanley – eine
-          der größten Investmentbanken der Welt mit rund 8 bis 9 Billionen Dollar an verwaltetem Kundenvermögen – möchte
-          eine eigene, bundesaufsichtlich überwachte Krypto-Bank gründen.
+          On February 18, 2026, Morgan Stanley filed an application with the Office of the Comptroller of the
+          Currency (OCC) for a National Trust Bank Charter to establish the &ldquo;Morgan Stanley Digital
+          Trust.&rdquo; Morgan Stanley — one of the largest investment banks in the world, with approximately
+          $8–9 trillion in client assets under management — wants to create its own federally supervised crypto bank.
         </p>
         <p>
-          ETF-Analyst Eric Balchunas fasste die Bedeutung zusammen: Morgan Stanley hat 16.000 Finanzberater, die 7
-          Billionen Dollar für 18 Millionen Kunden verwalten – ein massives Netzwerk an Kapital, das nun an den
-          Kryptomarkt angebunden wird.
+          ETF analyst Eric Balchunas summarized the significance: Morgan Stanley has 16,000 financial advisors
+          managing $7 trillion for 18 million clients — a massive capital network that is now being connected
+          to the crypto market.
         </p>
 
-        <h3 style={S.h3}>3.3 ETF-Zuflüsse: Die institutionelle Auffahrtsrampe</h3>
+        <h3 style={S.h3}>3.2 ETF Inflows: The Institutional On-Ramp</h3>
         <p>
-          Seit dem Start der Spot-Bitcoin-ETFs in den USA im Januar 2024 sind weltweit 87 Milliarden Dollar in
-          Krypto-ETPs geflossen. Aber hier ist die entscheidende Zahl: Grayscale schätzt, dass weniger als 0,5 %
-          des beratenen Vermögens in den USA derzeit in Krypto allokiert ist.
+          Since the launch of spot Bitcoin ETFs in the US in January 2024, $87 billion has flowed into crypto
+          ETPs globally. But here is the critical number: Grayscale estimates that less than 0.5% of advised
+          assets in the US are currently allocated to crypto.
         </p>
 
         <div style={S.callout}>
-          <div style={S.calloutLabel}>Die Rechnung</div>
-          In den USA werden schätzungsweise 30 Billionen Dollar von Finanzberatern verwaltet. Wenn nur 1 % davon in
-          Krypto fließt, wären das 300 Milliarden Dollar an zusätzlichem Kapital – mehr als die derzeitige gesamte
-          Bitcoin-ETF-Marktkapitalisierung.
+          <div style={S.calloutLabel}>The Math</div>
+          An estimated $30 trillion is managed by financial advisors in the US. If just 1% flows into crypto,
+          that would be $300 billion in additional capital — more than the current total Bitcoin ETF market
+          capitalization.
         </div>
 
         {/* ── Section 4: Market Outlook ── */}
-        <h2 style={S.h2}>4. Marktausblick und Kursprognosen</h2>
+        <h2 style={S.h2}>4. Market Outlook and Price Forecasts</h2>
 
         <p>
-          Bitcoin wird Anfang März 2026 bei rund 65.000 Dollar gehandelt, etwa 50 % unter seinem Allzeithoch von über
-          126.000 Dollar vom Oktober 2025. Ethereum liegt bei etwa 2.000 Dollar. Diese Schwäche wird von Analysten
-          überwiegend auf die regulatorische Unsicherheit zurückgeführt – genau den Faktor, den der CLARITY Act
-          beseitigen würde.
+          Bitcoin is trading at around $65,000 in early March 2026, roughly 50% below its all-time high of
+          over $126,000 from October 2025. Ethereum is at approximately $2,000. Analysts largely attribute
+          this weakness to regulatory uncertainty — precisely the factor that the CLARITY Act would eliminate.
         </p>
 
         {/* Inline ETH chart — relevant in market outlook section */}
         <LiveChart symbol="ETH-USD" label="Ethereum (ETH/USD)" range="6mo" height={280} />
 
-        <h3 style={S.h3}>4.1 Institutionelle Kursziele für Bitcoin</h3>
+        <h3 style={S.h3}>4.1 Institutional Price Targets for Bitcoin</h3>
 
         <div style={{ overflowX: "auto", margin: "24px 0" }}>
           <table style={S.table}>
             <thead>
               <tr>
                 <th style={S.th}>Institution</th>
-                <th style={S.th}>BTC-Kursziel</th>
-                <th style={S.th}>Begründung</th>
+                <th style={S.th}>BTC Price Target</th>
+                <th style={S.th}>Rationale</th>
               </tr>
             </thead>
             <tbody>
@@ -485,100 +483,102 @@ export default function ClarityActArticle() {
           </table>
         </div>
 
-        <h3 style={S.h3}>4.2 Was die Verabschiedung des CLARITY Act auslösen würde</h3>
+        <h3 style={S.h3}>4.2 What the Passage of the CLARITY Act Would Trigger</h3>
         <p>
-          <strong>Soforteffekt (Wochen 1–4):</strong> Ein Stimmungsumschwung. Die größte Hürde des Marktes –
-          regulatorische Unsicherheit – wäre beseitigt. Institutionelles Kapital, das bisher an der Seitenlinie
-          wartete, würde beginnen, sich zu positionieren.
+          <strong>Immediate Effect (Weeks 1–4):</strong> A sentiment shift. The market&apos;s biggest
+          hurdle — regulatory uncertainty — would be removed. Institutional capital that has been sitting
+          on the sidelines would begin positioning.
         </p>
         <p>
-          <strong>Mittelfristig (Monate 3–6):</strong> Neue ETF-Anträge (Solana, XRP, Multi-Asset-Produkte),
-          erweiterte Verwahrungsdienste, Wiederbelebung der US-Venture-Finanzierung. Galaxy Research prognostiziert
-          über 100 neue Krypto-ETF-Produkte im Jahr 2026.
+          <strong>Medium-Term (Months 3–6):</strong> New ETF filings (Solana, XRP, multi-asset products),
+          expanded custody services, revival of US venture funding. Galaxy Research projects over 100 new
+          crypto ETF products in 2026.
         </p>
         <p>
-          <strong>Langfristig (12–24 Monate):</strong> Ein „Tokenisierungs-Superzyklus", bei dem traditionelle
-          Wertpapiere und reale Vermögenswerte auf die Blockchain gebracht werden. Neun große internationale Banken
-          prüfen bereits die Einführung eigener Stablecoins.
+          <strong>Long-Term (12–24 Months):</strong> A &ldquo;tokenization supercycle&rdquo; in which
+          traditional securities and real-world assets are brought onto the blockchain. Nine major
+          international banks are already exploring the launch of their own stablecoins.
         </p>
 
         {/* Second BTC chart showing longer timeframe */}
         <LiveChart symbol="BTC-USD" label="Bitcoin (BTC/USD) — 1 Year" range="1y" height={280} />
 
         {/* ── Section 5 ── */}
-        <h2 style={S.h2}>5. Warum dieser Zyklus strukturell anders ist</h2>
+        <h2 style={S.h2}>5. Why This Cycle Is Structurally Different</h2>
 
         <p>
-          Investoren, die den Schmerz von 2022 erlebt haben, fragen zu Recht: „Warum sollte es diesmal anders sein?"
-          Die Antwort liegt in fünf strukturellen Veränderungen:
+          Investors who lived through the pain of 2022 rightly ask: &ldquo;Why should this time be
+          different?&rdquo; The answer lies in five structural changes:
         </p>
 
         <div style={{ margin: "20px 0 20px 20px" }}>
-          <p><strong>1. Regulierte Zugangskanäle existieren jetzt.</strong> Spot-Bitcoin- und Ethereum-ETFs,
-          bundesaufsichtlich lizenzierte Krypto-Verwahrstellen und bankenüberwachte Handelsplattformen schaffen eine
-          grundlegend andere Infrastruktur als die unregulierten Börsen von 2022.</p>
+          <p><strong>1. Regulated access channels now exist.</strong> Spot Bitcoin and Ethereum ETFs,
+          federally licensed crypto custodians, and bank-supervised trading platforms create a fundamentally
+          different infrastructure than the unregulated exchanges of 2022.</p>
 
-          <p><strong>2. Institutionelles Kapital ist angekommen.</strong> BlackRock, Morgan Stanley, Fidelity und
-          Staatsfonds (Mubadala, Abu Dhabi) sind aktive Marktteilnehmer. Diese Investoren handeln nicht aus Panik
-          oder Euphorie.</p>
+          <p><strong>2. Institutional capital has arrived.</strong> BlackRock, Morgan Stanley, Fidelity,
+          and sovereign wealth funds (Mubadala, Abu Dhabi) are active market participants. These investors
+          do not trade based on panic or euphoria.</p>
 
-          <p><strong>3. Die Angebotsdynamik hat sich verschoben.</strong> Das Bitcoin-Halving 2024 halbierte die
-          tägliche Neuausgabe. ETF-Käufe übersteigen die Neuproduktion um das Doppelte. Etwa 12 % des gesamten
-          Bitcoin-Angebots sind nun in ETFs und institutionellen Vehikeln gebunden.</p>
+          <p><strong>3. Supply dynamics have shifted.</strong> The 2024 Bitcoin halving cut daily issuance
+          in half. ETF purchases exceed new production by a factor of two. Approximately 12% of total
+          Bitcoin supply is now held in ETFs and institutional vehicles.</p>
 
-          <p><strong>4. Das Stablecoin-Rahmenwerk steht.</strong> Der GENIUS Act verlangt 1:1-Deckung durch
-          kurzfristige Staatsanleihen, monatliche Reserveoffenlegung und vollständige KYC/AML-Compliance.</p>
+          <p><strong>4. The stablecoin framework is in place.</strong> The GENIUS Act requires 1:1 backing
+          by short-term Treasury bonds, monthly reserve disclosure, and full KYC/AML compliance.</p>
 
-          <p><strong>5. Umfassende Regulierung steht unmittelbar bevor.</strong> Der CLARITY Act würde die regulatorische
-          Architektur vervollständigen. Erstmals würden die Spielregeln bekannt sein, bevor Unternehmen bauen.</p>
+          <p><strong>5. Comprehensive regulation is imminent.</strong> The CLARITY Act would complete the
+          regulatory architecture. For the first time, the rules of the game would be known before
+          companies build.</p>
         </div>
 
         {/* ── Section 6: Risks ── */}
-        <h2 style={S.h2}>6. Risikofaktoren</h2>
-        <p>Trotz des konstruktiven Ausblicks sollten Sie als Investor die folgenden Risiken kennen:</p>
+        <h2 style={S.h2}>6. Risk Factors</h2>
+        <p>Despite the constructive outlook, investors should be aware of the following risks:</p>
 
         <div style={{ margin: "16px 0 16px 20px" }}>
-          <p><strong>Verzögerung im Gesetzgebungsprozess:</strong> Der CLARITY Act könnte im Senat über das
-          Mitte-2026-Fenster hinaus ins Stocken geraten. 2026 ist ein Midterm-Wahljahr, und das legislative Fenster
-          schließt faktisch nach August.</p>
+          <p><strong>Legislative Delay:</strong> The CLARITY Act could stall in the Senate beyond the
+          mid-2026 window. 2026 is a midterm election year, and the legislative window effectively closes
+          after August.</p>
 
-          <p><strong>Makroökonomische Bedingungen:</strong> Bitcoin bleibt mit Risikoanlagen korreliert. Eine globale
-          Rezession, anhaltend hohe Zinsen oder ein großer geopolitischer Schock könnten die Preise drücken.</p>
+          <p><strong>Macroeconomic Conditions:</strong> Bitcoin remains correlated with risk assets. A
+          global recession, persistently high interest rates, or a major geopolitical shock could weigh
+          on prices.</p>
 
-          <p><strong>Kurzfristige Volatilität:</strong> Bitcoin liegt derzeit etwa 50 % unter seinem Allzeithoch.
-          Einige seriöse Analysten warnen vor Szenarien von bis zu $40.000–$56.000.</p>
+          <p><strong>Short-Term Volatility:</strong> Bitcoin is currently about 50% below its all-time
+          high. Some credible analysts warn of scenarios down to $40,000–$56,000.</p>
 
-          <p><strong>Regulatorische Überregulierung:</strong> Übermäßig restriktive Bestimmungen könnten Innovation
-          einschränken oder Aktivität ins Ausland verlagern.</p>
+          <p><strong>Regulatory Overreach:</strong> Excessively restrictive provisions could stifle
+          innovation or push activity offshore.</p>
 
-          <p><strong>Technologische Risiken:</strong> Blockchain-Technologie, Smart Contracts und DeFi-Protokolle
-          können Fehler oder Sicherheitslücken aufweisen. Kryptoinvestitionen können zum vollständigen Verlust des
-          eingesetzten Kapitals führen.</p>
+          <p><strong>Technology Risks:</strong> Blockchain technology, smart contracts, and DeFi protocols
+          can contain bugs or security vulnerabilities. Crypto investments can result in the total loss of
+          invested capital.</p>
         </div>
 
         {/* ── Section 7: Conclusion ── */}
-        <h2 style={S.h2}>7. Fazit: Ein generationsdefinierender Wendepunkt</h2>
+        <h2 style={S.h2}>7. Conclusion: A Generational Turning Point</h2>
 
         <p>
-          Der Kryptomarkt steht an einem Scheideweg. Hinter uns liegt eine Periode, die durch das Fehlen von
-          Regulierung geprägt war – eine Periode, die Betrug, systemische Zusammenbrüche und über 1,8 Billionen
-          Dollar an vernichtetem Wert ermöglichte.
+          The crypto market stands at a crossroads. Behind us lies a period defined by the absence of
+          regulation — a period that enabled fraud, systemic collapses, and over $1.8 trillion in
+          destroyed value.
         </p>
         <p>
-          Vor uns liegt ein Markt, der durch Bundesgesetze gestützt wird, über institutionelle Infrastruktur verfügt
-          und an dem die größten Finanzinstitutionen der Welt teilnehmen.
+          Ahead lies a market underpinned by federal law, equipped with institutional infrastructure, and
+          featuring participation from the world&apos;s largest financial institutions.
         </p>
 
         <div style={S.callout}>
           <div style={S.calloutLabel}>Grayscale 2026 Digital Asset Outlook</div>
-          „2026 markiert die Dämmerung der institutionellen Ära – der Markt wandelt sich von schnellen,
-          retailgetriebenen Zyklen zu einem stetigeren Aufwärtstrend, getrieben durch institutionelle Kapitalflüsse."
+          &ldquo;2026 marks the dawn of the institutional era — the market is shifting from fast,
+          retail-driven cycles to a steadier upward trend driven by institutional capital flows.&rdquo;
         </div>
 
         <p>
-          Die Verabschiedung des CLARITY Act würde nicht bloß die Stimmung heben – sie würde den Markt strukturell
-          transformieren. Für geduldige, überzeugungsgetriebene Investoren könnte die aktuelle Phase regulatorischer
-          Unsicherheit und Preiskonsolidierung einen der überzeugendsten Einstiegspunkte dieses Zyklus darstellen.
+          The passage of the CLARITY Act would not merely lift sentiment — it would structurally transform
+          the market. For patient, conviction-driven investors, the current phase of regulatory uncertainty
+          and price consolidation may represent one of the most compelling entry points of this cycle.
         </p>
 
         <div style={{ textAlign: "center", margin: "48px 0 0" }}>
@@ -591,21 +591,22 @@ export default function ClarityActArticle() {
           }}>
             S2D CAPITAL INSIGHTS
           </p>
-          <p style={{ color: "var(--text-muted, #9C9CAF)", fontSize: "0.85rem" }}>März 2026</p>
+          <p style={{ color: "var(--text-muted, #9C9CAF)", fontSize: "0.85rem" }}>March 2026</p>
         </div>
 
         {/* ── Disclaimer ── */}
         <div style={S.disclaimer}>
-          <strong>Haftungsausschluss:</strong> Dieses Dokument dient ausschließlich Informationszwecken und stellt
-          keine Finanz-, Rechts- oder Anlageberatung dar. Investitionen in Kryptowährungen sind mit erheblichen
-          Risiken verbunden, einschließlich des möglichen Totalverlusts des eingesetzten Kapitals. Vergangene
-          Wertentwicklungen sind kein verlässlicher Indikator für zukünftige Ergebnisse. Alle zitierten Prognosen
-          stammen von Drittinstitutionen und müssen nicht eintreten. Investoren sollten vor Anlageentscheidungen eine
-          eigene Prüfung durchführen und qualifizierte Finanzberater konsultieren.
+          <strong>Disclaimer:</strong> This document is for informational purposes only and does not
+          constitute financial, legal, or investment advice. Investments in cryptocurrencies involve
+          significant risks, including the possible total loss of invested capital. Past performance is
+          not a reliable indicator of future results. All cited forecasts originate from third-party
+          institutions and may not materialize. Investors should conduct their own due diligence and
+          consult qualified financial advisors before making investment decisions.
           <br /><br />
-          <strong>Quellen:</strong> JPMorgan Chase Research (Feb. 2026), Bloomberg, CoinDesk, The Block, Grayscale
-          2026 Digital Asset Outlook, MIT Sloan School of Management, BIS Bulletin Nr. 69, Bloomberg Intelligence,
-          Standard Chartered, Bernstein, VanEck, ARK Invest, Galaxy Digital, Coinbase, KPMG, Morgan Stanley OCC-Antrag.
+          <strong>Sources:</strong> JPMorgan Chase Research (Feb. 2026), Bloomberg, CoinDesk, The Block,
+          Grayscale 2026 Digital Asset Outlook, MIT Sloan School of Management, BIS Bulletin No. 69,
+          Bloomberg Intelligence, Standard Chartered, Bernstein, VanEck, ARK Invest, Galaxy Digital,
+          Coinbase, KPMG, Morgan Stanley OCC Filing.
         </div>
       </div>
     </article>
