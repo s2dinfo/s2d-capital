@@ -1,140 +1,207 @@
-// components/Navbar.tsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { usePathname } from "next/navigation";
 
-interface NavbarProps {
-  lang?: string;
-  onLangToggle?: () => void;
-  activeTab?: string;
-  onTabChange?: (tab: string) => void;
-}
-
-const NAV_ITEMS = [
-  { key: "dashboard", labelDe: "Dashboard", labelEn: "Dashboard", href: "/" },
-  { key: "research", labelDe: "Research", labelEn: "Research", href: "/research" },
-  { key: "newsletter", labelDe: "Newsletter", labelEn: "Newsletter", href: "#newsletter" },
-  { key: "about", labelDe: "Über uns", labelEn: "About", href: "#about" },
-];
-
-export default function Navbar({
-  lang = "de",
-  onLangToggle,
-  activeTab = "dashboard",
-  onTabChange,
-}: NavbarProps) {
+export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const t = (de: string, en: string) => (lang === "de" ? de : en);
+  const pathname = usePathname();
+
+  const isHome = pathname === "/";
+
+  const links = [
+    { label: "Research", href: "/research" },
+    { label: "Markets", href: "/markets" },
+    { label: "Newsletter", href: "/newsletter" },
+    { label: "About", href: "/about" },
+  ];
+
+  // Don't render navbar on homepage (it has its own hamburger menu)
+  if (isHome) return null;
 
   return (
-    <nav
-      style={{
+    <>
+      <nav style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "16px 32px",
-        background: "var(--bg-primary, #fff)",
-        borderBottom: "1px solid var(--border, #E8E6E0)",
+        padding: "0 32px",
+        height: 60,
+        background: "rgba(15,15,35,0.95)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(184,134,11,0.12)",
         position: "sticky",
         top: 0,
         zIndex: 100,
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        backgroundColor: "rgba(255,255,255,0.92)",
-      }}
-    >
-      {/* Logo */}
-      <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 12 }}>
-        {/* If you have the logo image in /public/logo.png, use Image. Otherwise text fallback. */}
-        <div
-          style={{
-            fontFamily: "var(--serif, 'Playfair Display', serif)",
+      }}>
+        {/* Logo */}
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{
+            fontFamily: "var(--font-serif, 'Cormorant Garamond', serif)",
             fontSize: "1.1rem",
-            fontWeight: 500,
-            color: "var(--navy, #0f0f23)",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          <span style={{ color: "var(--gold, #b8860b)", fontWeight: 600 }}>S2D</span>{" "}
-          Capital Insights
-        </div>
-      </Link>
+            fontWeight: 600,
+            color: "var(--gold-light, #D4B85C)",
+          }}>S2D</span>
+          <span style={{
+            fontFamily: "var(--font-serif, 'Cormorant Garamond', serif)",
+            fontSize: "0.85rem",
+            fontWeight: 400,
+            color: "rgba(255,255,255,0.5)",
+          }}>Capital Insights</span>
+        </Link>
 
-      {/* Desktop nav */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 24,
-        }}
-      >
-        {NAV_ITEMS.map((item) => {
-          const isActive = activeTab === item.key;
-          const isLink = item.href.startsWith("/") && item.href !== "/";
-
-          if (isLink) {
+        {/* Desktop links */}
+        <div style={{ display: "flex", alignItems: "center", gap: 28 }} className="nav-desktop">
+          {links.map((l) => {
+            const isActive = pathname.startsWith(l.href);
             return (
               <Link
-                key={item.key}
-                href={item.href}
+                key={l.label}
+                href={l.href}
                 style={{
-                  fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
-                  fontSize: "0.68rem",
-                  letterSpacing: "0.08em",
-                  color: "var(--text-muted, #9C9CAF)",
+                  fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
+                  fontSize: "0.62rem",
+                  letterSpacing: "0.1em",
+                  color: isActive ? "var(--gold-light, #D4B85C)" : "rgba(255,255,255,0.45)",
                   textDecoration: "none",
                   padding: "4px 0",
-                  transition: "color 0.2s",
+                  borderBottom: isActive ? "1.5px solid var(--gold, #b8860b)" : "1.5px solid transparent",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.color = "rgba(255,255,255,0.45)";
                 }}
               >
-                {t(item.labelDe, item.labelEn)}
+                {l.label}
               </Link>
             );
-          }
-
-          return (
-            <button
-              key={item.key}
-              onClick={() => onTabChange?.(item.key)}
-              style={{
-                fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
-                fontSize: "0.68rem",
-                letterSpacing: "0.08em",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: isActive ? "var(--navy, #0f0f23)" : "var(--text-muted, #9C9CAF)",
-                borderBottom: isActive ? "2px solid var(--gold, #b8860b)" : "2px solid transparent",
-                padding: "4px 0",
-                transition: "all 0.2s",
-              }}
-            >
-              {t(item.labelDe, item.labelEn)}
-            </button>
-          );
-        })}
-
-        {/* Language toggle */}
-        <button
-          onClick={onLangToggle}
-          style={{
-            fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
+          })}
+          <Link href="/newsletter" style={{
+            fontFamily: "var(--font-sans, 'DM Sans', sans-serif)",
             fontSize: "0.6rem",
-            padding: "4px 10px",
-            border: "1px solid var(--border, #E8E6E0)",
-            borderRadius: 3,
-            background: "transparent",
-            color: "var(--text-muted, #9C9CAF)",
-            cursor: "pointer",
+            fontWeight: 600,
             letterSpacing: "0.1em",
-            transition: "all 0.2s",
+            textTransform: "uppercase" as const,
+            padding: "8px 20px",
+            background: "linear-gradient(135deg, var(--gold, #b8860b), var(--gold-dark, #8B6914))",
+            color: "#fff",
+            textDecoration: "none",
+            borderRadius: 4,
+            transition: "all 0.3s",
+            boxShadow: "0 2px 12px rgba(184,134,11,0.2)",
+          }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(184,134,11,0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 2px 12px rgba(184,134,11,0.2)";
+            }}
+          >
+            Subscribe
+          </Link>
+        </div>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle menu"
+          className="nav-hamburger"
+          style={{
+            display: "none",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: 5,
+            width: 28,
+            height: 28,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
           }}
         >
-          {lang === "de" ? "EN" : "DE"}
+          <span style={{
+            display: "block", width: 20, height: 2, background: "var(--gold-light, #D4B85C)",
+            borderRadius: 1, transition: "all 0.3s",
+            transform: mobileOpen ? "translateY(7px) rotate(45deg)" : "none",
+          }} />
+          <span style={{
+            display: "block", width: 20, height: 2, background: "var(--gold-light, #D4B85C)",
+            borderRadius: 1, transition: "all 0.3s",
+            opacity: mobileOpen ? 0 : 1,
+          }} />
+          <span style={{
+            display: "block", width: 20, height: 2, background: "var(--gold-light, #D4B85C)",
+            borderRadius: 1, transition: "all 0.3s",
+            transform: mobileOpen ? "translateY(-7px) rotate(-45deg)" : "none",
+          }} />
         </button>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(4px)", zIndex: 98,
+          }}
+          onClick={() => setMobileOpen(false)}
+        >
+          <div
+            style={{
+              position: "absolute", top: 60, left: 0, right: 0,
+              background: "rgba(15,15,35,0.98)",
+              borderBottom: "1px solid rgba(184,134,11,0.15)",
+              padding: "16px 0",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {links.map((l) => (
+              <Link
+                key={l.label}
+                href={l.href}
+                onClick={() => setMobileOpen(false)}
+                style={{
+                  display: "block",
+                  padding: "14px 32px",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.06em",
+                  color: "rgba(255,255,255,0.6)",
+                  textDecoration: "none",
+                  borderBottom: "1px solid rgba(255,255,255,0.04)",
+                  transition: "all 0.2s",
+                }}
+              >
+                {l.label}
+              </Link>
+            ))}
+            <div style={{ padding: "12px 32px 8px", display: "flex", gap: 16 }}>
+              <Link href="/impressum" onClick={() => setMobileOpen(false)} style={{
+                fontFamily: "var(--font-mono)", fontSize: "0.58rem",
+                color: "rgba(255,255,255,0.3)", textDecoration: "none",
+              }}>Impressum</Link>
+              <Link href="/datenschutz" onClick={() => setMobileOpen(false)} style={{
+                fontFamily: "var(--font-mono)", fontSize: "0.58rem",
+                color: "rgba(255,255,255,0.3)", textDecoration: "none",
+              }}>Datenschutz</Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @media (max-width: 768px) {
+          .nav-desktop { display: none !important; }
+          .nav-hamburger { display: flex !important; }
+        }
+      `}</style>
+    </>
   );
 }
