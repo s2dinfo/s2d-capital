@@ -3,50 +3,77 @@ import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 
 const verticals = [
-  { slug: 'crypto', label: 'Crypto & Digital Assets', desc: 'Regulation, ETFs, Tokenization, DeFi', color: '#B8860B' },
-  { slug: 'macro', label: 'Macro & Central Banks', desc: 'Fed, ECB, BOJ, Rates, Liquidity', color: '#3B6CB4' },
-  { slug: 'commodities', label: 'Commodities & Energy', desc: 'Oil, Gold, Agriculture, Supply Chains', color: '#8B5E3C' },
-  { slug: 'fx', label: 'FX & Currencies', desc: 'Dollar, EUR/USD, EM Currencies, Stablecoins', color: '#2D8F5E' },
-  { slug: 'geopolitics', label: 'Geopolitics & Policy', desc: 'Trade Wars, Sanctions, Elections', color: '#8B2252' },
-  { slug: 'structure', label: 'Market Structure', desc: 'Institutional Flows, ETF Architecture, TradFi', color: '#5B4FA0' },
+  { slug: 'crypto', label: 'Crypto & Digital Assets', desc: 'Regulation, ETFs, Tokenization, DeFi', color: '#B8860B', icon: '₿' },
+  { slug: 'macro', label: 'Macro & Central Banks', desc: 'Fed, ECB, BOJ, Rates, Liquidity', color: '#3B6CB4', icon: '🏛' },
+  { slug: 'commodities', label: 'Commodities & Energy', desc: 'Oil, Gold, Agriculture, Supply Chains', color: '#8B5E3C', icon: '🛢' },
+  { slug: 'fx', label: 'FX & Currencies', desc: 'Dollar, EUR/USD, EM Currencies, Stablecoins', color: '#2D8F5E', icon: '💱' },
+  { slug: 'geopolitics', label: 'Geopolitics & Policy', desc: 'Trade Wars, Sanctions, Elections', color: '#8B2252', icon: '🌍' },
+  { slug: 'structure', label: 'Market Structure', desc: 'Institutional Flows, ETF Architecture, TradFi', color: '#5B4FA0', icon: '⚙' },
 ];
 
 export default function MarketsPage() {
   return (
-    <>
+    <div style={{ background: 'var(--navy, #1A1A2E)', minHeight: '100vh', color: '#fff' }}>
       <BackButton label="Home" href="/" />
-      <div style={{ textAlign: 'center', padding: '48px 24px 32px', background: 'linear-gradient(180deg, var(--gold-tint, #faf6ee) 0%, var(--bg, #fff) 100%)', borderBottom: '1px solid var(--border, #E8E6E0)' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold, #b8860b)', marginBottom: 16 }}>S2D Capital Insights</div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 400, color: 'var(--navy, #1A1A2E)', marginBottom: 14 }}>
-          Markets & <em style={{ fontStyle: 'italic', color: 'var(--gold, #b8860b)' }}>Data</em>
-        </h1>
-        <p style={{ fontSize: '0.95rem', color: 'var(--text-sec, #6B6B82)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
-          Live data and analysis across six verticals. Choose your market.
-        </p>
+      <div style={{
+        textAlign: 'center',
+        padding: '48px 24px 32px',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'linear-gradient(rgba(184,134,11,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.05) 1px,transparent 1px)',
+          backgroundSize: '60px 60px', pointerEvents: 'none',
+        }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold-light, #D4B85C)', marginBottom: 16 }}>
+            S2D Capital Insights
+          </div>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 400, color: '#fff', marginBottom: 14 }}>
+            Markets & <em style={{ fontStyle: 'italic', color: 'var(--gold-light, #D4B85C)' }}>Data</em>
+          </h1>
+          <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
+            Live data and analysis across six verticals. Choose your market.
+          </p>
+        </div>
       </div>
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 80px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
           {verticals.map(v => (
-            <Link key={v.slug} href={`/markets/${v.slug}`} style={{ textDecoration: 'none' }}>
+            <Link key={v.slug} href={`/markets/${v.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div style={{
-                border: '1px solid var(--border, #E8E6E0)',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.06)',
                 borderRadius: 8,
                 padding: '24px 20px',
                 transition: 'all 0.3s',
                 cursor: 'pointer',
                 borderLeft: `3px solid ${v.color}`,
+                position: 'relative',
+                overflow: 'hidden',
               }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'; (e.currentTarget as HTMLElement).style.borderColor = v.color; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'none'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border, #E8E6E0)'; }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = v.color;
+                  (e.currentTarget as HTMLElement).style.background = `${v.color}10`;
+                  (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 20px ${v.color}15`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)';
+                  (e.currentTarget as HTMLElement).style.borderLeftColor = v.color;
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                }}
               >
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 500, color: 'var(--navy, #1A1A2E)', marginBottom: 6 }}>{v.label}</h2>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-sec, #6B6B82)', lineHeight: 1.6 }}>{v.desc}</p>
+                <div style={{ fontSize: '1.5rem', marginBottom: 10 }}>{v.icon}</div>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 500, color: '#fff', marginBottom: 6 }}>{v.label}</h2>
+                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>{v.desc}</p>
                 <span style={{ display: 'inline-block', marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: v.color, fontWeight: 600 }}>View Data →</span>
               </div>
             </Link>
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

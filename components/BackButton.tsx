@@ -12,10 +12,10 @@ export default function BackButton({ label = 'Back', href = '/' }: BackButtonPro
       position: 'sticky',
       top: 0,
       zIndex: 40,
-      background: 'rgba(255,255,255,0.92)',
+      background: 'rgba(26,26,46,0.92)',
       backdropFilter: 'blur(12px)',
       WebkitBackdropFilter: 'blur(12px)',
-      borderBottom: '1px solid var(--border, #E8E6E0)',
+      borderBottom: '1px solid rgba(184,134,11,0.15)',
       padding: '10px 24px',
     }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -28,7 +28,7 @@ export default function BackButton({ label = 'Back', href = '/' }: BackButtonPro
             fontFamily: 'var(--font-mono)',
             fontSize: '0.65rem',
             letterSpacing: '0.06em',
-            color: 'var(--text-sec, #6B6B82)',
+            color: 'rgba(255,255,255,0.5)',
             textDecoration: 'none',
             padding: '6px 12px',
             borderRadius: 5,
@@ -36,11 +36,11 @@ export default function BackButton({ label = 'Back', href = '/' }: BackButtonPro
             fontWeight: 500,
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--gold-dark, #8B6914)';
-            e.currentTarget.style.background = 'var(--gold-tint, #FBF8F0)';
+            e.currentTarget.style.color = 'var(--gold-light, #D4B85C)';
+            e.currentTarget.style.background = 'rgba(184,134,11,0.08)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--text-sec, #6B6B82)';
+            e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
             e.currentTarget.style.background = 'transparent';
           }}
         >
