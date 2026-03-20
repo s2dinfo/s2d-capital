@@ -131,7 +131,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
     </div>
 
     {/* ══ MENU BUTTON (top-left) ══ */}
-    <button onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:46,left:16,zIndex:50,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
+    <button onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:46,right:16,zIndex:50,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
       onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(184,134,11,0.15)';}}
       onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.2)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.3)';}}>
       <div style={{width:18,height:2,background:'var(--gold-light)',marginBottom:4,borderRadius:1,transition:'all 0.3s',transform:sidebarOpen?'rotate(45deg) translateY(6px)':'none'}}/>
@@ -182,7 +182,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
               <Link key={a.slug} href={`/research/${a.slug}`} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'10px 12px',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
                 onMouseEnter={e=>{e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
                 onMouseLeave={e=>{e.currentTarget.style.background='transparent';}}>
-                <div style={{fontFamily:'var(--font-serif)',fontSize:'0.78rem',color:'rgba(255,255,255,0.7)',lineHeight:1.3,marginBottom:3}}>{a.title}</div>
+                <div style={{fontFamily:'var(--font-serif)',fontSize:'0.88rem',color:'rgba(255,255,255,0.75)',lineHeight:1.3,marginBottom:3}}>{a.title}</div>
                 <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',color:'rgba(255,255,255,0.25)'}}>{a.date} · {a.readTime}</div>
               </Link>
             )}
