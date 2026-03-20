@@ -68,7 +68,7 @@ const venues = [
 ];
 
 export default function EnergyArticle() {
-  return (<><BackButton />
+  return (<><BackButton label="Back to Research" href="/research" />
     <article>
       {/* ═══ HERO ═══ */}
       <motion.div style={S.hero} {...fadeUp}>

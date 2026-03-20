@@ -196,7 +196,7 @@ const priceTargets = [
 ];
 
 export default function ClarityActArticle() {
-  return (<><BackButton />
+  return (<><BackButton label="Back to Research" href="/research" />
     <article>
       {/* ═══ HERO ═══ */}
       <motion.div style={S.hero} {...fadeUp}>

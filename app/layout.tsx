@@ -1,22 +1,31 @@
-// app/layout.tsx
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import '@/styles/globals.css';
+import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: "S2D Capital Insights — Financial Intelligence",
-  description:
-    "In-depth research and real-time data across crypto, macro, commodities, FX, and geopolitics.",
+  title: 'S2D Capital Insights | Financial Intelligence',
+  description: 'Institutional-grade research across crypto, macro, commodities, FX, geopolitics, and market structure. We connect the dots others miss.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
-    title: "S2D Capital Insights",
-    description: "Financial intelligence across six verticals.",
-    siteName: "S2D Capital Insights",
-    url: "https://s2d.info",
-    type: "website",
+    title: 'S2D Capital Insights',
+    description: 'Financial Intelligence. Crypto. Macro. Commodities. FX. Geopolitics. Market Structure.',
+    url: 'https://s2d.info',
+    siteName: 'S2D Capital Insights',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "S2D Capital Insights",
-    description: "Financial intelligence across crypto, macro, commodities, FX, and geopolitics.",
+    card: 'summary_large_image',
+    title: 'S2D Capital Insights',
+    description: 'Financial Intelligence across six verticals.',
+    images: ['/og-image.png'],
   },
 };
 
@@ -26,16 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="de">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>{children}</body>
+    <html lang="en">
+      <body>
+        <Navbar />
+        <main>{children}</main>
+      </body>
     </html>
   );
 }
