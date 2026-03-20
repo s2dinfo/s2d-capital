@@ -122,7 +122,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
 
     {/* ══ TICKER BAR ══ */}
     <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36}}>
-      <motion.div animate={{x:['0%','-50%']}} transition={{duration:35,repeat:Infinity,ease:'linear'}} style={{display:'inline-flex',alignItems:'center',height:36}}>
+      <motion.div animate={{x:['0%','-50%']}} transition={{duration:35,repeat:Infinity,repeatType:"loop",ease:'linear'}} style={{display:'inline-flex',alignItems:'center',height:36}}>
         {[...marqueeItems,...marqueeItems].map((item,i)=><span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,marginRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
           <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
           <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>

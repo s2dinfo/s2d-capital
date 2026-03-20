@@ -1,150 +1,119 @@
-// components/Footer.tsx
-"use client";
+'use client';
+import Link from 'next/link';
 
-import Link from "next/link";
-
-export default function Footer({ lang = "de" }: { lang?: string }) {
-  const t = (de: string, en: string) => (lang === "de" ? de : en);
-
+export default function Footer() {
   return (
-    <footer
-      style={{
-        padding: "48px 48px 32px",
-        background: "var(--navy, #0f0f23)",
-        color: "rgba(255,255,255,0.65)",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "start",
-          marginBottom: 36,
-          flexWrap: "wrap",
-          gap: 32,
-        }}
-      >
+    <footer style={{
+      padding: '40px 32px 24px',
+      borderTop: '1px solid rgba(255,255,255,0.05)',
+      maxWidth: 1200,
+      margin: '0 auto',
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+        gap: 24,
+      }}>
         {/* Brand */}
         <div>
-          <div
-            style={{
-              fontFamily: "var(--serif, 'Playfair Display', serif)",
-              fontSize: "1.1rem",
-              fontWeight: 500,
-              color: "rgba(255,255,255,0.9)",
-              marginBottom: 10,
-            }}
-          >
-            <span style={{ color: "var(--gold-light, #d4a843)" }}>S2D</span> Capital Insights
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--gold-light, #D4B85C)' }}>S2D</span>
+            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '0.8rem', fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>Capital Insights</span>
           </div>
-          <div
-            style={{
-              fontSize: "0.78rem",
-              color: "rgba(255,255,255,0.35)",
-              maxWidth: 260,
-              lineHeight: 1.6,
-            }}
-          >
-            {t(
-              "Finanzielle Intelligenz über Krypto, Makro, Rohstoffe, Devisen und Geopolitik.",
-              "Financial intelligence across crypto, macro, commodities, FX, and geopolitics."
-            )}
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', color: 'rgba(255,255,255,0.2)' }}>
+            © {new Date().getFullYear()} S2D Capital Insights
           </div>
         </div>
 
-        {/* Links */}
-        <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+        {/* Navigation */}
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           <div>
-            <h4
-              style={{
-                fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--gold-light, #d4a843)",
-                marginBottom: 12,
-              }}
-            >
-              {t("Verticals", "Verticals")}
-            </h4>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.45rem', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)', marginBottom: 10, fontWeight: 600 }}>NAVIGATE</div>
             {[
-              "Crypto & Digital Assets",
-              "Macro & Central Banks",
-              "Commodities & Energy",
-              "FX & Currencies",
-              "Geopolitics & Policy",
-              "Market Structure",
-            ].map((v) => (
-              <div
-                key={v}
-                style={{
-                  fontSize: "0.82rem",
-                  color: "rgba(255,255,255,0.45)",
-                  marginBottom: 8,
-                }}
+              { l: 'Research', h: '/research' },
+              { l: 'Markets', h: '/markets' },
+              { l: 'Newsletter', h: '/newsletter' },
+              { l: 'About', h: '/about' },
+            ].map(n => (
+              <Link key={n.l} href={n.h} style={{
+                display: 'block',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.62rem',
+                color: 'rgba(255,255,255,0.4)',
+                textDecoration: 'none',
+                marginBottom: 6,
+                transition: 'color 0.2s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--gold-light, #D4B85C)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
               >
-                {v}
-              </div>
+                {n.l}
+              </Link>
             ))}
           </div>
 
           <div>
-            <h4
-              style={{
-                fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--gold-light, #d4a843)",
-                marginBottom: 12,
-              }}
-            >
-              {t("Plattform", "Platform")}
-            </h4>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.45rem', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)', marginBottom: 10, fontWeight: 600 }}>LEGAL</div>
             {[
-              { label: "Dashboard", href: "/" },
-              { label: "Research", href: "/research" },
-              { label: "Newsletter", href: "#newsletter" },
-              { label: t("Kontakt", "Contact"), href: "mailto:sami@s2d.info" },
-            ].map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                style={{
-                  display: "block",
-                  fontSize: "0.82rem",
-                  color: "rgba(255,255,255,0.45)",
-                  textDecoration: "none",
-                  marginBottom: 8,
-                  transition: "color 0.3s",
-                }}
+              { l: 'Impressum', h: '/impressum' },
+              { l: 'Datenschutz', h: '/datenschutz' },
+            ].map(n => (
+              <Link key={n.l} href={n.h} style={{
+                display: 'block',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.62rem',
+                color: 'rgba(255,255,255,0.4)',
+                textDecoration: 'none',
+                marginBottom: 6,
+                transition: 'color 0.2s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--gold-light, #D4B85C)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
               >
-                {link.label}
+                {n.l}
               </Link>
             ))}
+          </div>
+
+          <div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.45rem', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)', marginBottom: 10, fontWeight: 600 }}>CONTACT</div>
+            <a href="mailto:business@s2d.info" style={{
+              display: 'block',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.62rem',
+              color: 'rgba(255,255,255,0.4)',
+              textDecoration: 'none',
+              marginBottom: 6,
+              transition: 'color 0.2s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--gold-light, #D4B85C)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+            >
+              business@s2d.info
+            </a>
           </div>
         </div>
       </div>
 
-      {/* Bottom */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingTop: 24,
-          borderTop: "1px solid rgba(255,255,255,0.07)",
-          fontSize: "0.7rem",
-          color: "rgba(255,255,255,0.25)",
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
-        <span>© {new Date().getFullYear()} S2D Capital Insights. {t("Alle Rechte vorbehalten.", "All rights reserved.")}</span>
-        <div style={{ display: "flex", gap: 18 }}>
-          <a href="https://x.com/s2dcapital" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.3s" }}>𝕏</a>
-          <a href="https://linkedin.com" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.3s" }}>LinkedIn</a>
-          <a href="mailto:sami@s2d.info" style={{ color: "rgba(255,255,255,0.3)", textDecoration: "none", transition: "color 0.3s" }}>Email</a>
+      {/* Bottom bar */}
+      <div style={{
+        marginTop: 24,
+        paddingTop: 16,
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 8,
+      }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.15)' }}>
+          All content is for informational purposes only. Not financial advice.
+        </span>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <Link href="/impressum" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.2)', textDecoration: 'none' }}>Impressum</Link>
+          <Link href="/datenschutz" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.2)', textDecoration: 'none' }}>Datenschutz</Link>
         </div>
       </div>
     </footer>

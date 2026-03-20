@@ -13,16 +13,6 @@ export interface Article {
 
 export const articles: Article[] = [
   {
-    slug: 'clarity-act',
-    title: 'The CLARITY Act: How US Regulation Ushers in the Next Era of Institutional Crypto Adoption',
-    excerpt: 'JPMorgan calls it the most important catalyst of the year. Eight key provisions, lessons from the $1.8T crash of 2022, institutional price targets from $150K to $710K, and why this cycle is structurally different.',
-    tags: ['crypto', 'structure'],
-    date: 'March 2026',
-    readTime: '25 min',
-    featured: false,
-    published: true,
-  },
-  {
     slug: 'europe-energy-decoded',
     title: 'Europe\'s Energy System, Decoded: From the Grid to the Trading Floor',
     excerpt: 'How renewables, regulation, and geopolitics are reshaping the continent\'s energy future. The merit order, Guarantees of Origin, OTC trading, the EU ETS, biomethane, THG-Quoten — and why the Iran war just changed everything.',
@@ -33,9 +23,19 @@ export const articles: Article[] = [
     published: true,
   },
   {
+    slug: 'clarity-act',
+    title: 'The CLARITY Act: How US Regulation Ushers in the Next Era of Institutional Crypto Adoption',
+    excerpt: 'JPMorgan calls it the most important catalyst of the year. Eight key provisions, lessons from the $1.8T crash of 2022, institutional price targets from $150K to $710K, and why this cycle is structurally different.',
+    tags: ['crypto', 'structure'],
+    date: 'March 2026',
+    readTime: '25 min',
+    featured: false,
+    published: true,
+  },
+  {
     slug: 'fed-pivot-or-pause',
     title: 'Fed Pivot or Pause? What Powell\'s Language Means for Risk Assets',
-    excerpt: 'The connection between rate decisions, dollar strength, and crypto allocation - decoded across macro, FX, and digital asset markets.',
+    excerpt: 'The connection between rate decisions, dollar strength, and crypto allocation — decoded across macro, FX, and digital asset markets.',
     tags: ['macro', 'fx'],
     date: 'Coming Soon',
     readTime: '18 min',
@@ -45,7 +45,7 @@ export const articles: Article[] = [
   {
     slug: 'gold-3000-safe-haven-or-bubble',
     title: 'Gold at $3,000: Safe Haven or Bubble? BRICS, Central Banks, and De-Dollarization',
-    excerpt: 'Why central banks are buying more gold than since 1967 - and what it means for Bitcoin as a competing store of value.',
+    excerpt: 'Why central banks are buying more gold than since 1967 — and what it means for Bitcoin as a competing store of value.',
     tags: ['commodities', 'geopolitics'],
     date: 'Coming Soon',
     readTime: '20 min',
@@ -65,7 +65,7 @@ export const articles: Article[] = [
   {
     slug: 'trump-tariff-escalation-2026',
     title: 'Trump\'s 2026 Tariff Escalation: Impact on EUR/USD, Commodities, and Crypto Regulation',
-    excerpt: 'How the trade war influences midterms - and why the CLARITY Act window is shrinking faster than markets expect.',
+    excerpt: 'How the trade war influences midterms — and why the CLARITY Act window is shrinking faster than markets expect.',
     tags: ['geopolitics', 'macro'],
     date: 'Coming Soon',
     readTime: '22 min',

@@ -1,4 +1,5 @@
 "use client";
+import BackButton from "@/components/BackButton";
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
@@ -67,7 +68,7 @@ const venues = [
 ];
 
 export default function EnergyArticle() {
-  return (
+  return (<><BackButton />
     <article>
       {/* ═══ HERO ═══ */}
       <motion.div style={S.hero} {...fadeUp}>
@@ -558,6 +559,6 @@ export default function EnergyArticle() {
           <strong>Sources:</strong> IEA Electricity 2026 Report, European Commission REPowerEU, Ember Energy, E3G, Bruegel, Euronews, CNBC, European Council, ECB Economic Bulletin (2026), IMF Working Paper 2026/003, EEX Group, ICE Endex, EPEX SPOT, Association of Issuing Bodies (AIB), European Energy Exchange, Eurostat, IRU, Clean Energy Wire, Charles Schwab Global Insights, Wikipedia (Economic impact of the 2026 Iran war).
         </div>
       </div>
-    </article>
+    </article></>
   );
 }

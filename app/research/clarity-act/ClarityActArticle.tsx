@@ -1,4 +1,5 @@
 "use client";
+import BackButton from "@/components/BackButton";
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
@@ -195,7 +196,7 @@ const priceTargets = [
 ];
 
 export default function ClarityActArticle() {
-  return (
+  return (<><BackButton />
     <article>
       {/* ═══ HERO ═══ */}
       <motion.div style={S.hero} {...fadeUp}>
@@ -609,6 +610,6 @@ export default function ClarityActArticle() {
           Coinbase, KPMG, Morgan Stanley OCC Filing.
         </div>
       </div>
-    </article>
+    </article></>
   );
 }
