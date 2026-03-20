@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://s2d.info"),
   title: 'S2D Capital Insights | Financial Intelligence',
   description: 'Institutional-grade research across crypto, macro, commodities, FX, geopolitics, and market structure. We connect the dots others miss.',
   icons: {
