@@ -161,3 +161,18 @@ img { max-width: 100%; height: auto; }
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
 }
+
+/* Force dark theme site-wide */
+body {
+  background: #1A1A2E !important;
+  color: #e2e8f0 !important;
+}
+
+main {
+  background: #1A1A2E;
+}
+
+/* Fix white cards in market sub-pages */
+main div[style*="padding"] {
+  color: #e2e8f0;
+}
