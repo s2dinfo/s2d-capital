@@ -39,7 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Navbar />
-        <main style={{background:"#1A1A2E",color:"#e2e8f0",minHeight:"100vh"}}>{children}</main>
+        <main>{children}</main>
       </body>
     </html>
   );

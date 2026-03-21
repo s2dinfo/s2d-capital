@@ -162,11 +162,6 @@ img { max-width: 100%; height: auto; }
   .hide-mobile { display: none !important; }
 }
 
-/* Force dark theme site-wide */
-body {
-  background: #1A1A2E !important;
-  color: #e2e8f0 !important;
-}
 
 main {
   background: #1A1A2E;
@@ -177,17 +172,32 @@ main div[style*="padding"] {
   color: #e2e8f0;
 }
 
-/* Dark theme overrides for market sub-pages */
+
+/* ══ SITE-WIDE DARK THEME ══ */
 :root {
-  --bg-warm: rgba(255,255,255,0.03);
-  --bg-cream: rgba(255,255,255,0.05);
-  --bg-section: rgba(255,255,255,0.04);
-  --border-lt: rgba(255,255,255,0.08);
-  --border: rgba(255,255,255,0.1);
+  --bg: #1A1A2E;
+  --bg-warm: #1e2240;
+  --bg-cream: #1e2240;
+  --bg-section: #171b30;
+  --bg-primary: #1A1A2E;
+  --navy: #ffffff;
+  --navy-light: rgba(255,255,255,0.8);
   --text-h: #ffffff;
   --text-body: rgba(255,255,255,0.75);
   --text-sec: rgba(255,255,255,0.5);
   --text-muted: rgba(255,255,255,0.35);
-  --navy: #ffffff;
-  --bg: #1A1A2E;
+  --border: rgba(255,255,255,0.1);
+  --border-lt: rgba(255,255,255,0.06);
+  --green: #34d399;
+  --red: #f87171;
+}
+
+body {
+  background: #1A1A2E;
+  color: rgba(255,255,255,0.75);
+}
+
+::selection {
+  background: rgba(184,134,11,0.3);
+  color: #fff;
 }

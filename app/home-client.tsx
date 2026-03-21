@@ -110,7 +110,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
     {l:'VIX',v:vixVal?.toFixed(1)||'-',c:vixVal?(vixVal>30?'var(--red)':vixVal>20?'#E88A3C':'var(--green)'):undefined},
   ];
 
-  return <div style={{background:'var(--navy)',color:'#fff',minHeight:'100vh'}}>
+  return <div style={{background:'#1A1A2E',color:'#fff',minHeight:'100vh'}}>
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
       @keyframes ambientFloat{0%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.1)}66%{transform:translate(-20px,15px) scale(0.95)}100%{transform:translate(0,0) scale(1)}}
