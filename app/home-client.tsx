@@ -131,7 +131,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
     </div>
 
     {/* ══ MENU BUTTON (top-left) ══ */}
-    <button onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:46,left:16,zIndex:50,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
+    <button onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:44,left:20,zIndex:55,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
       onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(184,134,11,0.15)';}}
       onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.2)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.3)';}}>
       <div style={{width:18,height:2,background:'var(--gold-light)',marginBottom:4,borderRadius:1,transition:'all 0.3s',transform:sidebarOpen?'rotate(45deg) translateY(6px)':'none'}}/>
@@ -147,7 +147,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
         <motion.div initial={{x:-300,opacity:0}} animate={{x:0,opacity:1}} exit={{x:-300,opacity:0}} transition={{duration:0.3,ease:'easeOut'}}
           style={{position:'fixed',top:0,left:0,bottom:0,width:280,background:'rgba(15,15,35,0.95)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRight:'1px solid rgba(184,134,11,0.15)',zIndex:46,overflowY:'auto',padding:'24px 0'}}>
           {/* Panel logo */}
-          <div style={{padding:'0 20px 20px',borderBottom:'1px solid rgba(255,255,255,0.06)',marginBottom:16}}>
+          <div style={{padding:'48px 20px 20px',borderBottom:'1px solid rgba(255,255,255,0.06)',marginBottom:16}}>
             <Link href="/" onClick={()=>setSidebarOpen(false)} style={{textDecoration:'none',display:'flex',alignItems:'center',gap:8}}>
               <span style={{fontFamily:'var(--font-serif)',fontSize:'1.2rem',fontWeight:600,color:'var(--gold-light)'}}>S2D</span>
               <span style={{fontFamily:'var(--font-serif)',fontSize:'0.85rem',fontWeight:400,color:'rgba(255,255,255,0.6)'}}>Capital Insights</span>

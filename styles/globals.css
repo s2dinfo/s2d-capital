@@ -176,3 +176,18 @@ main {
 main div[style*="padding"] {
   color: #e2e8f0;
 }
+
+/* Dark theme overrides for market sub-pages */
+:root {
+  --bg-warm: rgba(255,255,255,0.03);
+  --bg-cream: rgba(255,255,255,0.05);
+  --bg-section: rgba(255,255,255,0.04);
+  --border-lt: rgba(255,255,255,0.08);
+  --border: rgba(255,255,255,0.1);
+  --text-h: #ffffff;
+  --text-body: rgba(255,255,255,0.75);
+  --text-sec: rgba(255,255,255,0.5);
+  --text-muted: rgba(255,255,255,0.35);
+  --navy: #ffffff;
+  --bg: #1A1A2E;
+}

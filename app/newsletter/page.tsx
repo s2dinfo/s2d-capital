@@ -70,7 +70,7 @@ export default function NewsletterPage() {
             flex: 1, padding: '15px 20px',
             fontFamily: 'var(--font-sans)', fontSize: '0.9rem',
             border: 'none', outline: 'none',
-            background: 'var(--bg-warm)', color: 'var(--navy)',
+            background: 'rgba(255,255,255,0.05)', color: '#fff',
           }}
         />
         <button
@@ -89,11 +89,11 @@ export default function NewsletterPage() {
       {picks.length > 0 && (
         <div style={{
           marginTop: 28, padding: 18,
-          background: 'var(--gold-tint)', border: '1px solid var(--gold-wash)',
+          background: 'rgba(184,134,11,0.08)', border: '1px solid rgba(184,134,11,0.2)',
           textAlign: 'left', borderRadius: 2,
         }}>
           <div className="eyebrow" style={{ fontSize: '0.52rem', marginBottom: 6 }}>Your Selection</div>
-          <div style={{ fontSize: '0.85rem', color: 'var(--navy)', lineHeight: 1.7 }}>
+          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
             {picks.map((k) => VERTICALS[k as keyof typeof VERTICALS].labelShort).join(' / ')}
           </div>
         </div>
