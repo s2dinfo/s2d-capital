@@ -173,6 +173,7 @@ main div[style*="padding"] {
 }
 
 
+
 /* ══ SITE-WIDE DARK THEME ══ */
 :root {
   --bg: #1A1A2E;
@@ -180,14 +181,16 @@ main div[style*="padding"] {
   --bg-cream: #1e2240;
   --bg-section: #171b30;
   --bg-primary: #1A1A2E;
-  --navy: #ffffff;
-  --navy-light: rgba(255,255,255,0.8);
+  --navy: #1A1A2E;
+  --navy-light: #2D2D4A;
   --text-h: #ffffff;
   --text-body: rgba(255,255,255,0.75);
   --text-sec: rgba(255,255,255,0.5);
   --text-muted: rgba(255,255,255,0.35);
   --border: rgba(255,255,255,0.1);
   --border-lt: rgba(255,255,255,0.06);
+  --gold-tint: rgba(184,134,11,0.08);
+  --gold-wash: rgba(184,134,11,0.15);
   --green: #34d399;
   --red: #f87171;
 }
@@ -197,7 +200,160 @@ body {
   color: rgba(255,255,255,0.75);
 }
 
+/* Force all headings and text that uses var(--navy) as text color to be white */
+h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+h1 em, h2 em, h3 em { color: var(--gold-light, #D4B85C) !important; }
+
+/* Fix inline styles using var(--navy) as text color */
+[style*="color: var(--navy)"],
+[style*="color:var(--navy)"] {
+  color: #ffffff !important;
+}
+
+/* Dark cards and containers */
+[style*="background: var(--bg-warm)"],
+[style*="background:var(--bg-warm)"],
+[style*="background: #fff"],
+[style*="background:#fff"],
+[style*="background: white"] {
+  background: #1e2240 !important;
+}
+
+/* Fix white callout/definition boxes in articles */
+article [style*="background: var(--gold-tint)"],
+article [style*="background:var(--gold-tint)"] {
+  background: rgba(184,134,11,0.08) !important;
+  color: rgba(255,255,255,0.8) !important;
+}
+
+/* Key figure boxes in articles */
+[style*="background: var(--navy)"] {
+  background: #1A1A2E !important;
+}
+
+/* Fix chart containers */
+[style*="background: #fff"],
+[style*="background:#fff"],
+[style*="background: white"],
+[style*="background:white"] {
+  background: #1e2240 !important;
+}
+
+/* Table styling */
+table { border-color: rgba(255,255,255,0.1) !important; }
+th { color: rgba(255,255,255,0.5) !important; border-color: rgba(255,255,255,0.1) !important; }
+td { color: rgba(255,255,255,0.7) !important; border-color: rgba(255,255,255,0.06) !important; }
+td[style*="color: var(--navy)"] { color: #ffffff !important; }
+
+/* Input fields */
+input[type="email"], input[type="text"] {
+  background: rgba(255,255,255,0.05) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+input::placeholder { color: rgba(255,255,255,0.3) !important; }
+
+/* Selection box */
 ::selection {
   background: rgba(184,134,11,0.3);
   color: #fff;
 }
+
+/* Links in articles */
+article a { color: var(--gold-light, #D4B85C); }
+
+/* Disclaimer and meta text */
+[style*="var(--text-muted)"] { color: rgba(255,255,255,0.35) !important; }
+
+/* ══ SITE-WIDE DARK THEME ══ */
+:root {
+  --bg: #1A1A2E;
+  --bg-warm: #1e2240;
+  --bg-cream: #1e2240;
+  --bg-section: #171b30;
+  --bg-primary: #1A1A2E;
+  --navy: #1A1A2E;
+  --navy-light: #2D2D4A;
+  --text-h: #ffffff;
+  --text-body: rgba(255,255,255,0.75);
+  --text-sec: rgba(255,255,255,0.5);
+  --text-muted: rgba(255,255,255,0.35);
+  --border: rgba(255,255,255,0.1);
+  --border-lt: rgba(255,255,255,0.06);
+  --gold-tint: rgba(184,134,11,0.08);
+  --gold-wash: rgba(184,134,11,0.15);
+  --green: #34d399;
+  --red: #f87171;
+}
+
+body {
+  background: #1A1A2E;
+  color: rgba(255,255,255,0.75);
+}
+
+/* Force all headings and text that uses var(--navy) as text color to be white */
+h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+h1 em, h2 em, h3 em { color: var(--gold-light, #D4B85C) !important; }
+
+/* Fix inline styles using var(--navy) as text color */
+[style*="color: var(--navy)"],
+[style*="color:var(--navy)"] {
+  color: #ffffff !important;
+}
+
+/* Dark cards and containers */
+[style*="background: var(--bg-warm)"],
+[style*="background:var(--bg-warm)"],
+[style*="background: #fff"],
+[style*="background:#fff"],
+[style*="background: white"] {
+  background: #1e2240 !important;
+}
+
+/* Fix white callout/definition boxes in articles */
+article [style*="background: var(--gold-tint)"],
+article [style*="background:var(--gold-tint)"] {
+  background: rgba(184,134,11,0.08) !important;
+  color: rgba(255,255,255,0.8) !important;
+}
+
+/* Key figure boxes in articles */
+[style*="background: var(--navy)"] {
+  background: #1A1A2E !important;
+}
+
+/* Fix chart containers */
+[style*="background: #fff"],
+[style*="background:#fff"],
+[style*="background: white"],
+[style*="background:white"] {
+  background: #1e2240 !important;
+}
+
+/* Table styling */
+table { border-color: rgba(255,255,255,0.1) !important; }
+th { color: rgba(255,255,255,0.5) !important; border-color: rgba(255,255,255,0.1) !important; }
+td { color: rgba(255,255,255,0.7) !important; border-color: rgba(255,255,255,0.06) !important; }
+td[style*="color: var(--navy)"] { color: #ffffff !important; }
+
+/* Input fields */
+input[type="email"], input[type="text"] {
+  background: rgba(255,255,255,0.05) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+
+input::placeholder { color: rgba(255,255,255,0.3) !important; }
+
+/* Selection box */
+::selection {
+  background: rgba(184,134,11,0.3);
+  color: #fff;
+}
+
+/* Links in articles */
+article a { color: var(--gold-light, #D4B85C); }
+
+/* Disclaimer and meta text */
+[style*="var(--text-muted)"] { color: rgba(255,255,255,0.35) !important; }
