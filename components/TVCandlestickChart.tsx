@@ -14,7 +14,7 @@ export default function TVCandlestickChart({data,title,height=280}:Props) {
     import("lightweight-charts").then(mod=>{
       if(cancelled||!containerRef.current) return;
       const{createChart,CandlestickSeries,CrosshairMode}=mod;
-      chart=createChart(containerRef.current,{width:containerRef.current.clientWidth,height,layout:{background:{color:'#FDFCF9'},textColor:'#9C9CAF',fontFamily:"'JetBrains Mono',monospace",fontSize:10},grid:{vertLines:{color:'rgba(232,230,224,0.6)'},horzLines:{color:'rgba(232,230,224,0.6)'}},crosshair:{mode:CrosshairMode.Normal,vertLine:{color:'rgba(184,134,11,0.3)',width:1,style:3,labelBackgroundColor:'#B8860B'},horzLine:{color:'rgba(184,134,11,0.3)',width:1,style:3,labelBackgroundColor:'#B8860B'}},rightPriceScale:{borderColor:'#E8E6E0',scaleMargins:{top:0.08,bottom:0.08}},timeScale:{borderColor:'#E8E6E0',timeVisible:false},handleScroll:{vertTouchDrag:false}});
+      chart=createChart(containerRef.current,{width:containerRef.current.clientWidth,height,layout:{background:{color:'#1A1A2E'},textColor:'rgba(255,255,255,0.4)',fontFamily:"'JetBrains Mono',monospace",fontSize:10},grid:{vertLines:{color:'rgba(255,255,255,0.05)'},horzLines:{color:'rgba(255,255,255,0.05)'}},crosshair:{mode:CrosshairMode.Normal,vertLine:{color:'rgba(184,134,11,0.3)',width:1,style:3,labelBackgroundColor:'#B8860B'},horzLine:{color:'rgba(184,134,11,0.3)',width:1,style:3,labelBackgroundColor:'#B8860B'}},rightPriceScale:{borderColor:'rgba(255,255,255,0.08)',scaleMargins:{top:0.08,bottom:0.08}},timeScale:{borderColor:'rgba(255,255,255,0.08)',timeVisible:false},handleScroll:{vertTouchDrag:false}});
       const series=chart.addSeries(CandlestickSeries,{upColor:'#2D8F5E',downColor:'#C0392B',borderUpColor:'#2D8F5E',borderDownColor:'#C0392B',wickUpColor:'rgba(45,143,94,0.5)',wickDownColor:'rgba(192,57,43,0.5)'});
       series.setData(data);chart.timeScale().fitContent();
       ro=new ResizeObserver(entries=>{if(chart&&entries[0])chart.applyOptions({width:entries[0].contentRect.width});});
@@ -23,7 +23,7 @@ export default function TVCandlestickChart({data,title,height=280}:Props) {
     return()=>{cancelled=true;ro?.disconnect();if(chart){chart.remove();chart=null;}};
   },[data,height]);
   return (
-    <div style={{background:'var(--bg-warm)',borderRadius:4,border:'1px solid var(--border-lt)',overflow:'hidden'}}>
+    <div style={{background:'#1A1A2E',borderRadius:4,border:'1px solid rgba(255,255,255,0.08)',overflow:'hidden'}}>
       <div style={{padding:'12px 14px 8px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.7rem',fontWeight:600,color:'var(--navy)',letterSpacing:'0.05em'}}>{title}</span>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'var(--text-muted)'}}>90D</span>

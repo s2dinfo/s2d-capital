@@ -357,3 +357,41 @@ article a { color: var(--gold-light, #D4B85C); }
 
 /* Disclaimer and meta text */
 [style*="var(--text-muted)"] { color: rgba(255,255,255,0.35) !important; }
+
+/* Fix white callout/definition boxes in articles */
+article div[style*="borderRadius: 8"],
+article div[style*="borderRadius:8"],
+article div[style*="border-radius: 8px"] {
+  background: #1e2240 !important;
+  color: rgba(255,255,255,0.8) !important;
+}
+
+/* Fix key figure boxes */
+article div[style*="padding: 24px 28px"],
+article div[style*="padding:24px 28px"] {
+  background: #1A1A2E !important;
+}
+
+/* Fix definition/callout boxes with light backgrounds */
+article div[style*="background: #fff"],
+article div[style*="background:#fff"],
+article div[style*="background: white"],
+article div[style*="background:white"],
+article div[style*="background: var(--bg-primary)"],
+article div[style*="background:var(--bg-primary)"] {
+  background: #1e2240 !important;
+}
+
+/* Fix all remaining white text-on-white issues */
+article p, article li, article span {
+  color: rgba(255,255,255,0.75);
+}
+
+article strong, article b {
+  color: #ffffff;
+}
+
+/* Chart container fix */
+div[style*="Powered by TradingView"] {
+  color: rgba(255,255,255,0.3) !important;
+}
