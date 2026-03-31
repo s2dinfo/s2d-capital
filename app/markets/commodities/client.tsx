@@ -29,7 +29,7 @@ export default function CommClient({ commod }: { commod: any }) {
         <KPICard label="WTI Crude" value={fmt(commod.oil)} change={commod.oilChg} color="#8B5E3C" subtitle="Light sweet crude" />
         <KPICard label="Gold" value={fmt(commod.gold, 0)} change={commod.goldChg} color="#B8860B" subtitle="Spot futures" />
         <KPICard label="Natural Gas" value={fmt(commod.natgas, 3)} change={commod.natgasChg} color="#D4A843" subtitle="Henry Hub" />
-        <KPICard label="Silver" value={"—"} color="#9CA3AF" subtitle="Spot futures" />
+        <KPICard label="Silver" value={fmt(commod.silver)} change={commod.silverChg} color="#9CA3AF" subtitle="Spot futures" />
       </div>
 
       {/* Charts — 2x2 TradingView grid */}

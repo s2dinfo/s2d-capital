@@ -7,7 +7,8 @@ import CrossRef from "@/components/CrossRef";
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
 export default function MacroClient({ macro }: { macro: any }) {
-  const spread = macro?.yieldSpread ? parseFloat(macro.yieldSpread) : null;
+  const rawSpread = macro?.yieldSpread ? parseFloat(macro.yieldSpread) : NaN;
+  const spread = Number.isNaN(rawSpread) ? null : rawSpread;
   const spreadLabel = spread !== null ? (spread >= 0 ? "Normal" : "Inverted") : "";
   const spreadColor = spread !== null ? (spread >= 0 ? "#34d399" : "#f87171") : "rgba(255,255,255,0.3)";
 
@@ -30,7 +31,7 @@ export default function MacroClient({ macro }: { macro: any }) {
         <KPICard label="Fed Rate" value={macro?.fedRate ? macro.fedRate + "%" : "—"} color="#3B6CB4" subtitle="Federal Reserve" />
         <KPICard label="10Y Yield" value={macro?.t10y ? macro.t10y + "%" : "—"} color="#3B6CB4" subtitle="US Treasury" />
         <KPICard label="Yield Curve" value={macro?.yieldSpread ? macro.yieldSpread + "%" : "—"} color={spreadColor} subtitle={spreadLabel} />
-        <KPICard label="VIX" value="—" color="#C0392B" subtitle="Fear index" />
+        <KPICard label="VIX" value={macro?.vix != null ? macro.vix.toFixed(1) : "—"} color="#C0392B" subtitle="Fear index" />
       </div>
 
       {/* Charts */}

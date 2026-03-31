@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { ResponsiveContainer, AreaChart, Area } from "recharts";
 
 interface KPICardProps {
@@ -13,6 +13,7 @@ interface KPICardProps {
 
 export default function KPICard({ label, value, change, subtitle, color = "#B8860B", sparkline }: KPICardProps) {
   const [h, setH] = useState(false);
+  const gradId = useId();
   const hasChange = change !== null && change !== undefined;
   const isPos = (change ?? 0) >= 0;
 
@@ -40,7 +41,7 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
         <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.1em", color, fontWeight: 500, textTransform: "uppercase" }}>{label}</span>
         {hasChange && (
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", fontWeight: 600, color: isPos ? "#34d399" : "#f87171" }}>
-            {isPos ? "+" : ""}{change!.toFixed(1)}%
+            {isPos ? "▲" : "▼"} {isPos ? "+" : ""}{change!.toFixed(1)}%
           </span>
         )}
       </div>
@@ -63,12 +64,12 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
           <ResponsiveContainer width="100%" height={36}>
             <AreaChart data={sparkData} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
               <defs>
-                <linearGradient id={`kpi-${label.replace(/\W/g, "")}`} x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={color} stopOpacity={0.2} />
                   <stop offset="100%" stopColor={color} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#kpi-${label.replace(/\W/g, "")})`} dot={false} />
+              <Area type="monotone" dataKey="v" stroke={color} strokeWidth={1.5} fill={`url(#${gradId})`} dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>

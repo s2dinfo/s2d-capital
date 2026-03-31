@@ -14,7 +14,8 @@ const geoEvents = [
 ];
 
 export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
-  const spread = macro?.yieldSpread ? parseFloat(macro.yieldSpread) : null;
+  const rawSpread = macro?.yieldSpread ? parseFloat(macro.yieldSpread) : NaN;
+  const spread = Number.isNaN(rawSpread) ? null : rawSpread;
   const spreadLabel = spread !== null ? (spread >= 0 ? "Normal" : "Inverted") : "";
   const spreadColor = spread !== null ? (spread >= 0 ? "#34d399" : "#f87171") : "rgba(255,255,255,0.3)";
 
@@ -42,8 +43,8 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
         <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#8B2252", fontWeight: 600, textTransform: "uppercase" }}>Active Geopolitical Events</span>
         </div>
-        {geoEvents.map((e, i) => (
-          <div key={i} style={{ padding: "16px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 16, alignItems: "flex-start" }}>
+        {geoEvents.map((e) => (
+          <div key={e.title} style={{ padding: "16px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 16, alignItems: "flex-start" }}>
             <div style={{ flex: "0 0 auto" }}>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", fontWeight: 700, letterSpacing: "0.06em", color: e.statusColor, background: e.statusColor + "15", padding: "3px 8px", borderRadius: 3 }}>{e.status}</span>
             </div>

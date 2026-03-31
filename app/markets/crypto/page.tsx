@@ -6,7 +6,11 @@ export const dynamic = "force-dynamic";
 
 export default async function CryptoPage() {
   const [coins, global, fg, trending, defi] = await Promise.all([
-    getCryptoMarkets(), getGlobal(), getFearGreed(), getTrending(), getDefiTvl(),
+    getCryptoMarkets().catch(() => null),
+    getGlobal().catch(() => null),
+    getFearGreed().catch(() => null),
+    getTrending().catch(() => null),
+    getDefiTvl().catch(() => null),
   ]);
   return <CryptoClient coins={coins} global={global} fg={fg} trending={trending} defi={defi} />;
 }

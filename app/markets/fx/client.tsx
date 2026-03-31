@@ -7,19 +7,22 @@ import CrossRef from "@/components/CrossRef";
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
 export default function FxClient({ fx, macro }: { fx: any; macro: any }) {
+  const inv = (v: number | undefined) => v ? (1 / v).toFixed(4) : "—";
+  const fix = (v: number | undefined, d = 4) => v != null ? v.toFixed(d) : "—";
+
   const pairs = fx ? [
-    { p: "EUR/USD", v: (1 / fx.EUR).toFixed(4), major: true },
-    { p: "GBP/USD", v: (1 / fx.GBP).toFixed(4), major: true },
-    { p: "USD/JPY", v: fx.JPY?.toFixed(2), major: true },
-    { p: "USD/CHF", v: fx.CHF?.toFixed(4), major: true },
-    { p: "AUD/USD", v: (1 / fx.AUD).toFixed(4) },
-    { p: "USD/CAD", v: fx.CAD?.toFixed(4) },
-    { p: "NZD/USD", v: (1 / fx.NZD).toFixed(4) },
-    { p: "EUR/GBP", v: (fx.GBP / fx.EUR).toFixed(4) },
-    { p: "USD/CNY", v: fx.CNY?.toFixed(4) },
-    { p: "USD/TRY", v: fx.TRY?.toFixed(2) },
-    { p: "USD/BRL", v: fx.BRL?.toFixed(4) },
-    { p: "USD/INR", v: fx.INR?.toFixed(2) },
+    { p: "EUR/USD", v: inv(fx.EUR), major: true },
+    { p: "GBP/USD", v: inv(fx.GBP), major: true },
+    { p: "USD/JPY", v: fix(fx.JPY, 2), major: true },
+    { p: "USD/CHF", v: fix(fx.CHF), major: true },
+    { p: "AUD/USD", v: inv(fx.AUD) },
+    { p: "USD/CAD", v: fix(fx.CAD) },
+    { p: "NZD/USD", v: inv(fx.NZD) },
+    { p: "EUR/GBP", v: fx.GBP && fx.EUR ? (fx.GBP / fx.EUR).toFixed(4) : "—" },
+    { p: "USD/CNY", v: fix(fx.CNY) },
+    { p: "USD/TRY", v: fix(fx.TRY, 2) },
+    { p: "USD/BRL", v: fix(fx.BRL) },
+    { p: "USD/INR", v: fix(fx.INR, 2) },
   ] : [];
 
   const centralBanks = [
@@ -35,9 +38,9 @@ export default function FxClient({ fx, macro }: { fx: any; macro: any }) {
 
       {/* KPI Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 24 }}>
-        <KPICard label="EUR/USD" value={fx ? (1 / fx.EUR).toFixed(4) : "—"} color="#B8860B" />
-        <KPICard label="USD/JPY" value={fx?.JPY?.toFixed(2) ?? "—"} color="#C0392B" />
-        <KPICard label="GBP/USD" value={fx ? (1 / fx.GBP).toFixed(4) : "—"} color="#2D8F5E" />
+        <KPICard label="EUR/USD" value={inv(fx?.EUR)} color="#B8860B" />
+        <KPICard label="USD/JPY" value={fix(fx?.JPY, 2)} color="#C0392B" />
+        <KPICard label="GBP/USD" value={inv(fx?.GBP)} color="#2D8F5E" />
         <KPICard label="DXY" value={macro?.dxy ?? "—"} color="#3B6CB4" subtitle="Trade-weighted dollar" />
       </div>
 

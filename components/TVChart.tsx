@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
+const spinKeyframes = <style>{`@keyframes tvchart-spin{to{transform:rotate(360deg)}}`}</style>;
+
 interface TVChartProps {
   symbol: string;
   title: string;
@@ -43,11 +45,11 @@ export default function TVChart({
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
         const result = json?.chart?.result?.[0];
-        if (!result || !mounted) { setError(true); setLoading(false); return; }
+        if (!result || !mounted) { if (mounted) { setError(true); setLoading(false); } return; }
 
         const timestamps = result.timestamp;
         const quote = result.indicators?.quote?.[0];
-        if (!timestamps || !quote) { setError(true); setLoading(false); return; }
+        if (!timestamps || !quote) { if (mounted) { setError(true); setLoading(false); } return; }
 
         // Build data
         const areaData: { time: string; value: number }[] = [];
@@ -67,7 +69,7 @@ export default function TVChart({
           });
         }
 
-        if (areaData.length === 0 || !mounted) { setError(true); setLoading(false); return; }
+        if (areaData.length === 0 || !mounted) { if (mounted) { setError(true); setLoading(false); } return; }
 
         const last = areaData[areaData.length - 1].value;
         const first = areaData[0].value;
@@ -144,14 +146,13 @@ export default function TVChart({
         setLoading(false);
       } catch (e) {
         console.error("TVChart error:", e);
-        if (mounted) setError(true);
-        setLoading(false);
+        if (mounted) { setError(true); setLoading(false); }
       }
     }
 
     init();
     return () => { mounted = false; ro?.disconnect(); if (chartRef.current) { chartRef.current.remove(); chartRef.current = null; } };
-  }, [symbol, type, range, height, color]);
+  }, [symbol, type, range, height, color, showPrice]);
 
   const isPos = (change ?? 0) >= 0;
   const rangeLabel = range.toUpperCase();
@@ -181,7 +182,7 @@ export default function TVChart({
       <div style={{ position: "relative", height }}>
         {loading && (
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ width: 24, height: 24, border: "2px solid rgba(184,134,11,0.3)", borderTopColor: "#B8860B", borderRadius: "50%", animation: "tvchart-spin 0.8s linear infinite" }} />
+            <div role="status" aria-label="Loading chart" style={{ width: 24, height: 24, border: "2px solid rgba(184,134,11,0.3)", borderTopColor: "#B8860B", borderRadius: "50%", animation: "tvchart-spin 0.8s linear infinite" }} />
           </div>
         )}
         {error && <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-mono)", fontSize: "0.65rem" }}>Unable to load data</div>}
@@ -192,7 +193,7 @@ export default function TVChart({
         <span>Yahoo Finance</span>
         <span>S2D Capital Insights</span>
       </div>
-      <style>{`@keyframes tvchart-spin{to{transform:rotate(360deg)}}`}</style>
+      {spinKeyframes}
     </div>
   );
 }

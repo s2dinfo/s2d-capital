@@ -5,6 +5,9 @@ export const metadata = { title: 'Global Macro & Policy Signals | S2D Capital In
 export const dynamic = "force-dynamic";
 
 export default async function GeopoliticsPage() {
-  const [macro, gdp] = await Promise.all([getMacro(), getWorldGdp()]);
+  const [macro, gdp] = await Promise.all([
+    getMacro().catch(() => ({})),
+    getWorldGdp().catch(() => null),
+  ]);
   return <GeoClient macro={macro} gdp={gdp} />;
 }
