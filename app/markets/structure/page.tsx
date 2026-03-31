@@ -12,7 +12,7 @@ export default async function StructurePage() {
       <Link href="/markets" style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.15em',color:'var(--gold)',marginBottom:16,display:'inline-block'}}>&#8592; ALL MARKETS</Link>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
         <div style={{width:6,height:32,background:'#5B4FA0',borderRadius:2}}/>
-        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>DeFi &amp; <em style={{fontStyle:'italic',color:'#5B4FA0'}}>On-Chain Structure</em></h1>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'#fff'}}>DeFi &amp; <em style={{fontStyle:'italic',color:'#5B4FA0'}}>On-Chain Structure</em></h1>
       </div>
       <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>DeFi TVL by chain, protocol metrics, and on-chain ecosystem data. Data from DefiLlama &amp; CoinGecko.</p>
 
@@ -38,7 +38,7 @@ export default async function StructurePage() {
             {chains.map((c:any,i:number)=>(
               <div key={c.name} style={{padding:'14px',background:'var(--bg-cream)',border:'1px solid var(--border-lt)'}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
-                  <span style={{fontSize:'0.75rem',fontWeight:600,color:'var(--navy)'}}><span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'var(--text-muted)',marginRight:6}}>#{i+1}</span>{c.name}</span>
+                  <span style={{fontSize:'0.75rem',fontWeight:600,color:'#fff'}}><span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'var(--text-muted)',marginRight:6}}>#{i+1}</span>{c.name}</span>
                   <span style={{fontFamily:'var(--font-mono)',fontSize:'0.85rem',fontWeight:500,color:'#5B4FA0'}}>${(c.tvl/1e9).toFixed(1)}B</span>
                 </div>
                 <div style={{width:'100%',height:4,background:'var(--border-lt)',borderRadius:2}}>

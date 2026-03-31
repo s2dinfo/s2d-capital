@@ -19,25 +19,25 @@ const S = {
   article: { maxWidth: 780, margin: "0 auto", padding: "0 24px 80px", fontFamily: "var(--sans, 'Outfit', sans-serif)", color: "var(--text-body, rgba(255,255,255,0.75))", lineHeight: 1.85, fontSize: "1.02rem" } as React.CSSProperties,
   hero: { textAlign: "center" as const, padding: "72px 24px 48px", background: "linear-gradient(180deg, var(--gold-tint, rgba(184,134,11,0.08)) 0%, var(--bg-primary, #fff) 100%)", borderBottom: "1px solid var(--border, rgba(255,255,255,0.1))" } as React.CSSProperties,
   eyebrow: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.62rem", letterSpacing: "0.3em", textTransform: "uppercase" as const, color: "var(--gold, #b8860b)", marginBottom: 18 } as React.CSSProperties,
-  h1: { fontFamily: "var(--serif, 'Playfair Display', serif)", fontSize: "clamp(2rem, 4.5vw, 3rem)", fontWeight: 400, lineHeight: 1.15, color: "var(--navy, #ffffff)", marginBottom: 18, maxWidth: 720, marginLeft: "auto", marginRight: "auto" } as React.CSSProperties,
+  h1: { fontFamily: "var(--serif, 'Playfair Display', serif)", fontSize: "clamp(2rem, 4.5vw, 3rem)", fontWeight: 400, lineHeight: 1.15, color: "#ffffff", marginBottom: 18, maxWidth: 720, marginLeft: "auto", marginRight: "auto" } as React.CSSProperties,
   subtitle: { fontSize: "1.05rem", color: "var(--text-secondary, rgba(255,255,255,0.5))", maxWidth: 620, margin: "0 auto 24px", lineHeight: 1.7, fontWeight: 300 } as React.CSSProperties,
   meta: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.62rem", letterSpacing: "0.12em", color: "var(--text-muted, rgba(255,255,255,0.35))", display: "flex" as const, justifyContent: "center" as const, gap: 20, flexWrap: "wrap" as const } as React.CSSProperties,
-  h2: { fontFamily: "var(--serif, 'Playfair Display', serif)", fontSize: "1.6rem", fontWeight: 400, color: "var(--navy, #ffffff)", marginTop: 56, marginBottom: 20, lineHeight: 1.25 } as React.CSSProperties,
-  h3: { fontFamily: "var(--serif, 'Playfair Display', serif)", fontSize: "1.2rem", fontWeight: 500, color: "var(--navy, #ffffff)", marginTop: 36, marginBottom: 14, lineHeight: 1.3 } as React.CSSProperties,
+  h2: { fontFamily: "var(--serif, 'Playfair Display', serif)", fontSize: "1.6rem", fontWeight: 400, color: "#ffffff", marginTop: 56, marginBottom: 20, lineHeight: 1.25 } as React.CSSProperties,
+  h3: { fontFamily: "var(--serif, 'Playfair Display', serif)", fontSize: "1.2rem", fontWeight: 500, color: "#ffffff", marginTop: 36, marginBottom: 14, lineHeight: 1.3 } as React.CSSProperties,
   callout: { background: "var(--gold-tint, rgba(184,134,11,0.08))", borderLeft: "3px solid var(--gold, #b8860b)", padding: "20px 24px", margin: "28px 0", borderRadius: "0 6px 6px 0", fontSize: "0.95rem", lineHeight: 1.8 } as React.CSSProperties,
   calloutLabel: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.58rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: "var(--gold, #b8860b)", marginBottom: 8, fontWeight: 600 } as React.CSSProperties,
-  defBox: { background: "#f8f7f4", border: "1px solid var(--border, rgba(255,255,255,0.1))", borderRadius: 8, padding: "20px 24px", margin: "24px 0" } as React.CSSProperties,
+  defBox: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, padding: "20px 24px", margin: "24px 0" } as React.CSSProperties,
   defLabel: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: "var(--gold, #b8860b)", marginBottom: 6, fontWeight: 600 } as React.CSSProperties,
-  keyFigure: { background: "var(--navy, #ffffff)", color: "#fff", borderRadius: 8, padding: "24px 28px", margin: "28px 0", display: "flex" as const, justifyContent: "space-between" as const, alignItems: "center" as const, flexWrap: "wrap" as const, gap: 16 } as React.CSSProperties,
+  keyFigure: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", borderRadius: 8, padding: "24px 28px", margin: "28px 0", display: "flex" as const, justifyContent: "space-between" as const, alignItems: "center" as const, flexWrap: "wrap" as const, gap: 16 } as React.CSSProperties,
   keyFigureNum: { fontFamily: "var(--serif, 'Playfair Display', serif)", fontSize: "2rem", fontWeight: 400, color: "var(--gold-light, #d4a843)" } as React.CSSProperties,
   keyFigureLabel: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.62rem", letterSpacing: "0.12em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" as const } as React.CSSProperties,
   table: { width: "100%", borderCollapse: "collapse" as const, margin: "24px 0", fontSize: "0.88rem", fontFamily: "var(--sans, 'Outfit', sans-serif)" } as React.CSSProperties,
   th: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: "var(--text-muted, rgba(255,255,255,0.35))", borderBottom: "2px solid var(--border, rgba(255,255,255,0.1))", padding: "10px 12px", textAlign: "left" as const, fontWeight: 600 } as React.CSSProperties,
   td: { padding: "12px 12px", borderBottom: "1px solid var(--border, rgba(255,255,255,0.1))", verticalAlign: "top" as const } as React.CSSProperties,
   disclaimer: { marginTop: 48, padding: "24px 0", borderTop: "1px solid var(--border, rgba(255,255,255,0.1))", fontSize: "0.72rem", color: "var(--text-muted, rgba(255,255,255,0.35))", lineHeight: 1.7 } as React.CSSProperties,
-  analogy: { background: "linear-gradient(135deg, #f0efe8, #faf8f3)", border: "1px dashed var(--gold, #b8860b)", borderRadius: 8, padding: "18px 22px", margin: "24px 0", fontSize: "0.95rem", lineHeight: 1.8 } as React.CSSProperties,
-  analogyLabel: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.52rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: "#8B5E3C", marginBottom: 6, fontWeight: 600 } as React.CSSProperties,
-  skillBox: { background: "var(--navy, #ffffff)", color: "#fff", borderRadius: 8, padding: "18px 22px", margin: "24px 0", fontSize: "0.9rem", lineHeight: 1.75, borderLeft: "3px solid var(--gold, #b8860b)" } as React.CSSProperties,
+  analogy: { background: "rgba(139,94,60,0.08)", border: "1px dashed rgba(184,134,11,0.3)", borderRadius: 8, padding: "18px 22px", margin: "24px 0", fontSize: "0.95rem", lineHeight: 1.8 } as React.CSSProperties,
+  analogyLabel: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.52rem", letterSpacing: "0.2em", textTransform: "uppercase" as const, color: "#D4A843", marginBottom: 6, fontWeight: 600 } as React.CSSProperties,
+  skillBox: { background: "rgba(184,134,11,0.06)", color: "#fff", borderRadius: 8, padding: "18px 22px", margin: "24px 0", fontSize: "0.9rem", lineHeight: 1.75, borderLeft: "3px solid var(--gold, #b8860b)" } as React.CSSProperties,
   skillLabel: { fontFamily: "var(--mono, 'JetBrains Mono', monospace)", fontSize: "0.52rem", letterSpacing: "0.2em", color: "var(--gold-light, #d4a843)", marginBottom: 6, fontWeight: 600 } as React.CSSProperties,
 };
 
@@ -45,7 +45,7 @@ const fadeUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, 
 
 /* ── Definition Box ── */
 function Def({ term, children }: { term: string; children: React.ReactNode }) {
-  return <div style={S.defBox}><div style={S.defLabel}>Definition</div><p style={{ margin: 0 }}><strong style={{ color: "var(--navy, #ffffff)" }}>{term}:</strong> {children}</p></div>;
+  return <div style={S.defBox}><div style={S.defLabel}>Definition</div><p style={{ margin: 0 }}><strong style={{ color: "#ffffff" }}>{term}:</strong> {children}</p></div>;
 }
 
 /* ── Think of it like... Box ── */
@@ -309,7 +309,7 @@ export default function EnergyArticle() {
             <tbody>
               {venues.map((row, i) => (
                 <tr key={i}>
-                  <td style={{ ...S.td, fontWeight: 500, color: "var(--navy, #ffffff)" }}>{row.venue}</td>
+                  <td style={{ ...S.td, fontWeight: 500, color: "#ffffff" }}>{row.venue}</td>
                   <td style={{ ...S.td, fontFamily: "var(--mono)", fontSize: "0.85rem", color: "var(--gold, #b8860b)" }}>{row.type}</td>
                   <td style={{ ...S.td, color: "var(--text-secondary, rgba(255,255,255,0.5))", fontSize: "0.88rem" }}>{row.products}</td>
                   <td style={{ ...S.td, fontSize: "0.85rem" }}>{row.settlement}</td>
@@ -334,7 +334,7 @@ export default function EnergyArticle() {
         </div>
 
         <Def term="TTF (Title Transfer Facility)">
-          The Dutch gas trading hub that serves as Europe&apos;s benchmark for natural gas pricing — the &ldquo;Brent of gas.&rdquo; TTF futures on ICE Endex are the most liquid gas contracts in Europe. When media report &ldquo;European gas prices,&rdquo; they almost always mean the TTF month-ahead contract. However, TTF is not the only gas trading hub in Europe. Each major market has its own: Germany trades at THE (Trading Hub Europe), Spain at PVB (Punto Virtual de Balance), Italy at PSV (Punto di Scambio Virtuale), and France at PEG (Point d\u2019Échange de Gaz). These national hubs generally track TTF but can diverge significantly during local supply stress, pipeline constraints, or regulatory shifts. However, TTF is not the only gas trading hub in Europe. Each major market has its own: Germany trades at THE (Trading Hub Europe), Spain at PVB (Punto Virtual de Balance), Italy at PSV (Punto di Scambio Virtuale), and France at PEG (Point d\u2019Échange de Gaz). These national hubs generally track TTF but can diverge significantly during local supply stress, pipeline constraints, or regulatory shifts.
+          The Dutch gas trading hub that serves as Europe&apos;s benchmark for natural gas pricing — the &ldquo;Brent of gas.&rdquo; TTF futures on ICE Endex are the most liquid gas contracts in Europe. When media report &ldquo;European gas prices,&rdquo; they almost always mean the TTF month-ahead contract. However, TTF is not the only gas trading hub in Europe. Each major market has its own: Germany trades at THE (Trading Hub Europe), Spain at PVB (Punto Virtual de Balance), Italy at PSV (Punto di Scambio Virtuale), and France at PEG (Point d&apos;Échange de Gaz). These national hubs generally track TTF but can diverge significantly during local supply stress, pipeline constraints, or regulatory shifts.
         </Def>
 
         <h3 style={S.h3}>5.3 Over-the-Counter (OTC): The Hidden Market</h3>
@@ -406,27 +406,17 @@ export default function EnergyArticle() {
 
         <div style={S.callout}>
           <div style={S.calloutLabel}>Why This Matters</div>
-
-        <div style={S.callout}>
-          <div style={S.calloutLabel}>Important Distinction</div>
-          <strong>THE (Trading Hub Europe)</strong> is Germany{`'`}s gas trading hub — the German equivalent of TTF.
-          When this article discusses {`"`}European gas prices,{`"`} it refers to TTF, the continental benchmark.
-          But for German-specific gas supply, storage, and industrial pricing, THE is the relevant reference point.
-          German gas storage levels, the Russian pipeline gas ban{`'`}s impact on Germany, and industrial gas costs
-          are most directly reflected in THE prices — which can trade at a premium or discount to TTF depending on
-          pipeline flows, storage levels, and cross-border capacity constraints.
-        </div>
-
-        <div style={S.callout}>
-          <div style={S.calloutLabel}>Important Distinction</div>
-          <strong>THE (Trading Hub Europe)</strong> is Germany{`'`}s gas trading hub — the German equivalent of TTF.
-          When this article discusses {`"`}European gas prices,{`"`} it refers to TTF, the continental benchmark.
-          But for German-specific gas supply, storage, and industrial pricing, THE is the relevant reference point.
-          German gas storage levels, the Russian pipeline gas ban{`'`}s impact on Germany, and industrial gas costs
-          are most directly reflected in THE prices — which can trade at a premium or discount to TTF depending on
-          pipeline flows, storage levels, and cross-border capacity constraints.
-        </div>
           Each of these regulations creates a market. The EU ETS creates the carbon market. The THG-Quote creates the renewable fuels certificate market. CSRD creates demand for GOs. The Russian gas ban creates demand for LNG, biomethane, and pipeline alternatives. Understanding regulation is understanding where the money flows.
+        </div>
+
+        <div style={S.callout}>
+          <div style={S.calloutLabel}>Important Distinction</div>
+          <strong>THE (Trading Hub Europe)</strong> is Germany{`'`}s gas trading hub — the German equivalent of TTF.
+          When this article discusses {`"`}European gas prices,{`"`} it refers to TTF, the continental benchmark.
+          But for German-specific gas supply, storage, and industrial pricing, THE is the relevant reference point.
+          German gas storage levels, the Russian pipeline gas ban{`'`}s impact on Germany, and industrial gas costs
+          are most directly reflected in THE prices — which can trade at a premium or discount to TTF depending on
+          pipeline flows, storage levels, and cross-border capacity constraints.
         </div>
 
         {/* ── 7. THE IRAN SHOCK ── */}
@@ -547,7 +537,7 @@ export default function EnergyArticle() {
 
         {/* ── SIGN-OFF ── */}
         <div style={{ textAlign: "center", margin: "48px 0 0" }}>
-          <p style={{ fontWeight: 500, color: "var(--navy, #ffffff)" }}>Sami Samii</p>
+          <p style={{ fontWeight: 500, color: "#ffffff" }}>Sami Samii</p>
           <p style={{ fontFamily: "var(--mono)", fontSize: "0.68rem", letterSpacing: "0.15em", color: "var(--gold, #b8860b)" }}>S2D CAPITAL INSIGHTS</p>
           <p style={{ color: "var(--text-muted, rgba(255,255,255,0.35))", fontSize: "0.85rem" }}>March 2026</p>
         </div>

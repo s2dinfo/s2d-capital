@@ -1,6 +1,6 @@
 'use client';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-const tip={fontSize:'0.7rem',background:'#fff',border:'1px solid #F0EDE6',borderRadius:2};
+const tip={fontSize:'0.7rem',background:'#1e2240',border:'1px solid rgba(255,255,255,0.1)',borderRadius:2,color:'rgba(255,255,255,0.8)'};
 
 export default function MacroCharts({fedC,yieldC,cpiC,unempC}:any) {
   return (
@@ -20,11 +20,11 @@ function C({label,color,data,type,fmt,tip:tipLabel}:{label:string;color:string;d
       <p style={{fontFamily:'var(--font-mono)',fontSize:'0.48rem',letterSpacing:'0.18em',textTransform:'uppercase',color,marginBottom:10}}>{label}</p>
       <ResponsiveContainer width="100%" height={200}>
         {type==='step'?(
-          <LineChart data={data}><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} tickFormatter={fmt}/><Tooltip contentStyle={tip} formatter={(v:number)=>[fmt(v),tipLabel]}/><Line type="stepAfter" dataKey="value" stroke={color} strokeWidth={2} dot={{r:2,fill:color}}/></LineChart>
+          <LineChart data={data}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} tickFormatter={fmt}/><Tooltip contentStyle={tip} formatter={(v:number)=>[fmt(v),tipLabel]}/><Line type="stepAfter" dataKey="value" stroke={color} strokeWidth={2} dot={{r:2,fill:color}}/></LineChart>
         ):type==='area'?(
-          <AreaChart data={data}><defs><linearGradient id={label.slice(0,3)} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.15}/><stop offset="95%" stopColor={color} stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} tickFormatter={fmt}/><Tooltip contentStyle={tip} formatter={(v:number)=>[fmt(v),tipLabel]}/><Area type="monotone" dataKey="value" stroke={color} strokeWidth={2} fill={`url(#${label.slice(0,3)})`}/></AreaChart>
+          <AreaChart data={data}><defs><linearGradient id={label.slice(0,3)} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.15}/><stop offset="95%" stopColor={color} stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} tickFormatter={fmt}/><Tooltip contentStyle={tip} formatter={(v:number)=>[fmt(v),tipLabel]}/><Area type="monotone" dataKey="value" stroke={color} strokeWidth={2} fill={`url(#${label.slice(0,3)})`}/></AreaChart>
         ):(
-          <LineChart data={data}><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} tickFormatter={fmt}/><Tooltip contentStyle={tip} formatter={(v:number)=>[fmt(v),tipLabel]}/><Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false}/></LineChart>
+          <LineChart data={data}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} tickFormatter={fmt}/><Tooltip contentStyle={tip} formatter={(v:number)=>[fmt(v),tipLabel]}/><Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false}/></LineChart>
         )}
       </ResponsiveContainer>
     </div>

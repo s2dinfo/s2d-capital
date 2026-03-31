@@ -58,6 +58,18 @@ function DataCard({title,color,rows}:{title:string;color:string;rows:{l:string;v
   </div>;
 }
 
+/* ── Loading Skeleton for Market Pulse ── */
+function PulseSkeleton() {
+  return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10}}>
+    {[1,2,3,4,5,6].map(i=><div key={i} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',padding:'16px 14px',borderRadius:6,overflow:'hidden',position:'relative'}}>
+      <div style={{width:'40%',height:10,background:'rgba(255,255,255,0.06)',borderRadius:3,marginBottom:12}}/>
+      <div style={{width:'65%',height:20,background:'rgba(255,255,255,0.04)',borderRadius:3,marginBottom:8}}/>
+      <div style={{width:'100%',height:44,background:'rgba(255,255,255,0.02)',borderRadius:3}}/>
+      <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.02),transparent)',animation:'shimmer 1.5s infinite'}}/>
+    </div>)}
+  </div>;
+}
+
 /* ── Topic Selector Card ── */
 const TOPICS = [
   {key:'crypto',icon:'₿',label:'Crypto & Digital Assets',sub:'CLARITY Act, ETFs, DeFi',color:'#B8860B',dataHref:'/markets/crypto',articleHref:'/research'},
@@ -122,6 +134,7 @@ export default function HomeClient(){
   return <div style={{background:'#1A1A2E',color:'#fff',minHeight:'100vh'}}>
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
+      @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
       @keyframes ambientFloat{0%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.1)}66%{transform:translate(-20px,15px) scale(0.95)}100%{transform:translate(0,0) scale(1)}}
       .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:ambientFloat 20s ease-in-out infinite}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 32px}
@@ -293,14 +306,14 @@ export default function HomeClient(){
         <span style={{marginLeft:'auto',fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.3)'}}>{time}</span>
       </div>
 
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10,marginBottom:12}}>
+      {_loading ? <PulseSkeleton/> : <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10,marginBottom:12}}>
         <StatCard name="S&P 500" val={indices?.sp500?.val||5780} chg={indices?.sp500?.chg} color="#B8860B" spark={fakeSparkline(5700,150)}/>
         <StatCard name="BITCOIN" val={btc?.usd||68980} chg={btc?.usd_24h_change} color="#B8860B" prefix="$" spark={fakeSparkline(67000,2500)}/>
         <StatCard name="GOLD" val={commod?.gold||2920} chg={commod?.goldChg} color="#D4A843" prefix="$" spark={fakeSparkline(2900,60)}/>
         <StatCard name="WTI OIL" val={commod?.oil||67.4} chg={commod?.oilChg} color="#D4A843" prefix="$" dec={2} spark={fakeSparkline(68,3)}/>
         <StatCard name="VIX" val={vixVal||25.7} chg={indices?.vix?.chg} color="#C0392B" dec={1} spark={fakeSparkline(24,4)}/>
         <StatCard name="NAT GAS" val={commod?.natgas||4.12} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={fakeSparkline(4,0.5)}/>
-      </div>
+      </div>}
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:10,marginBottom:12}}>
         <TVCandlestickChart data={btcCandles} title="BTC / USD" height={300}/>

@@ -25,7 +25,7 @@ export default function TVCandlestickChart({data,title,height=280}:Props) {
   return (
     <div style={{background:'#1A1A2E',borderRadius:4,border:'1px solid rgba(255,255,255,0.08)',overflow:'hidden'}}>
       <div style={{padding:'12px 14px 8px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.7rem',fontWeight:600,color:'var(--navy)',letterSpacing:'0.05em'}}>{title}</span>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.7rem',fontWeight:600,color:'#fff',letterSpacing:'0.05em'}}>{title}</span>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'var(--text-muted)'}}>90D</span>
       </div>
       <div ref={containerRef} style={{width:'100%',height}}/>

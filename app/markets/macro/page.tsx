@@ -28,7 +28,7 @@ export default async function MacroPage() {
       <Link href="/markets" style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.15em',color:'var(--gold)',marginBottom:16,display:'inline-block'}}>&#8592; ALL MARKETS</Link>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
         <div style={{width:6,height:32,background:'#3B6CB4',borderRadius:2}}/>
-        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Macro &amp; <em style={{fontStyle:'italic',color:'#3B6CB4'}}>Central Banks</em></h1>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'#fff'}}>Macro &amp; <em style={{fontStyle:'italic',color:'#3B6CB4'}}>Central Banks</em></h1>
       </div>
       <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>Federal Reserve data, treasury yields, inflation metrics, and recession indicators. Data from FRED.</p>
 
@@ -36,7 +36,7 @@ export default async function MacroPage() {
         {cards.map(m=>(
           <div key={m.l} style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'18px 16px',borderLeft:`4px solid ${m.c}`}}>
             <p style={{fontFamily:'var(--font-mono)',fontSize:'0.48rem',letterSpacing:'0.12em',textTransform:'uppercase',color:m.c,marginBottom:3}}>{m.l}</p>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'1.5rem',fontWeight:600,color:'var(--navy)',lineHeight:1,marginBottom:3}}>{m.v}</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'1.5rem',fontWeight:600,color:'#fff',lineHeight:1,marginBottom:3}}>{m.v}</div>
             <p style={{fontSize:'0.62rem',color:'var(--text-muted)'}}>{m.s}</p>
           </div>
         ))}

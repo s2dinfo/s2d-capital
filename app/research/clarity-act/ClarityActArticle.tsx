@@ -59,7 +59,7 @@ const S = {
     fontSize: "clamp(2rem, 4.5vw, 3rem)",
     fontWeight: 400,
     lineHeight: 1.15,
-    color: "var(--navy, #ffffff)",
+    color: "#ffffff",
     marginBottom: 18,
     maxWidth: 720,
     marginLeft: "auto",
@@ -87,7 +87,7 @@ const S = {
     fontFamily: "var(--serif, 'Playfair Display', serif)",
     fontSize: "1.6rem",
     fontWeight: 400,
-    color: "var(--navy, #ffffff)",
+    color: "#ffffff",
     marginTop: 56,
     marginBottom: 20,
     lineHeight: 1.25,
@@ -96,7 +96,7 @@ const S = {
     fontFamily: "var(--serif, 'Playfair Display', serif)",
     fontSize: "1.2rem",
     fontWeight: 500,
-    color: "var(--navy, #ffffff)",
+    color: "#ffffff",
     marginTop: 36,
     marginBottom: 14,
     lineHeight: 1.3,
@@ -120,7 +120,7 @@ const S = {
     fontWeight: 600,
   } as React.CSSProperties,
   keyFigure: {
-    background: "var(--navy, #ffffff)",
+    background: "rgba(255,255,255,0.04)",
     color: "#fff",
     borderRadius: 8,
     padding: "24px 28px",
@@ -462,7 +462,7 @@ export default function ClarityActArticle() {
             <tbody>
               {priceTargets.map((row, i) => (
                 <tr key={i}>
-                  <td style={{ ...S.td, fontWeight: 500, color: "var(--navy, #ffffff)" }}>
+                  <td style={{ ...S.td, fontWeight: 500, color: "#ffffff" }}>
                     {row.institution}
                   </td>
                   <td
@@ -583,7 +583,7 @@ export default function ClarityActArticle() {
         </p>
 
         <div style={{ textAlign: "center", margin: "48px 0 0" }}>
-          <p style={{ fontWeight: 500, color: "var(--navy, #ffffff)" }}>Sami Samii</p>
+          <p style={{ fontWeight: 500, color: "#ffffff" }}>Sami Samii</p>
           <p style={{
             fontFamily: "var(--mono)",
             fontSize: "0.68rem",

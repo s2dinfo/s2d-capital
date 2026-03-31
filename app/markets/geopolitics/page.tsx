@@ -15,7 +15,7 @@ export default async function GeopoliticsPage() {
       <Link href="/markets" style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.15em',color:'var(--gold)',marginBottom:16,display:'inline-block'}}>&#8592; ALL MARKETS</Link>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
         <div style={{width:6,height:32,background:'#8B2252',borderRadius:2}}/>
-        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Global Macro &amp; <em style={{fontStyle:'italic',color:'#8B2252'}}>Policy Signals</em></h1>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'#fff'}}>Global Macro &amp; <em style={{fontStyle:'italic',color:'#8B2252'}}>Policy Signals</em></h1>
       </div>
       <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>Recession indicators, liquidity metrics, and macro policy signals that drive cross-market moves. Data from FRED &amp; World Bank.</p>
 
@@ -28,12 +28,12 @@ export default async function GeopoliticsPage() {
         </div>
         <div style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'22px 20px',borderTop:'4px solid #2D8F5E'}}>
           <p style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',textTransform:'uppercase',color:'#2D8F5E',marginBottom:6}}>US DOLLAR INDEX</p>
-          <div style={{fontFamily:'var(--font-mono)',fontSize:'2rem',fontWeight:700,color:'var(--navy)',lineHeight:1,marginBottom:4}}>{macro.dxy||'-'}</div>
+          <div style={{fontFamily:'var(--font-mono)',fontSize:'2rem',fontWeight:700,color:'#fff',lineHeight:1,marginBottom:4}}>{macro.dxy||'-'}</div>
           <p style={{fontSize:'0.72rem',color:'var(--text-sec)',lineHeight:1.5}}>Dollar strength impacts EM currencies, commodities pricing, and capital flows globally.</p>
         </div>
         <div style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'22px 20px',borderTop:'4px solid #3B6CB4'}}>
           <p style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',textTransform:'uppercase',color:'#3B6CB4',marginBottom:6}}>M2 MONEY SUPPLY</p>
-          <div style={{fontFamily:'var(--font-mono)',fontSize:'2rem',fontWeight:700,color:'var(--navy)',lineHeight:1,marginBottom:4}}>{macro.m2?'$'+(parseFloat(macro.m2)/1e3).toFixed(1)+'T':'-'}</div>
+          <div style={{fontFamily:'var(--font-mono)',fontSize:'2rem',fontWeight:700,color:'#fff',lineHeight:1,marginBottom:4}}>{macro.m2?'$'+(parseFloat(macro.m2)/1e3).toFixed(1)+'T':'-'}</div>
           <p style={{fontSize:'0.72rem',color:'var(--text-sec)',lineHeight:1.5}}>Global liquidity driver. M2 expansion historically correlates with BTC and risk asset rallies.</p>
         </div>
       </div>
@@ -45,7 +45,7 @@ export default async function GeopoliticsPage() {
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:10}}>
             {gdpData.sort((a:any,b:any)=>b.gdp-a.gdp).map((c:any)=>(
               <div key={c.code} style={{padding:'12px 14px',background:'var(--bg-cream)',border:'1px solid var(--border-lt)'}}>
-                <div style={{fontSize:'0.72rem',fontWeight:600,color:'var(--navy)',marginBottom:2}}>{c.country}</div>
+                <div style={{fontSize:'0.72rem',fontWeight:600,color:'#fff',marginBottom:2}}>{c.country}</div>
                 <div style={{fontFamily:'var(--font-mono)',fontSize:'1rem',fontWeight:500,color:'#8B2252'}}>{fmtP(c.gdp)}</div>
                 <div style={{width:'100%',height:3,background:'var(--border-lt)',borderRadius:2,marginTop:4}}>
                   <div style={{height:'100%',background:'#8B2252',borderRadius:2,width:`${Math.min(100,(c.gdp/gdpData.sort((a:any,b:any)=>b.gdp-a.gdp)[0].gdp)*100)}%`}}/>

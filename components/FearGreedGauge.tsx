@@ -15,12 +15,12 @@ export default function FearGreedGauge({ value=50, label="Neutral" }: Props) {
       <div style={{position:'relative',width:160,height:100}}>
         <svg width="160" height="100" viewBox="0 0 180 110" style={{overflow:"visible"}}>
           <defs><linearGradient id="fgGaugeGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#C0392B"/><stop offset="25%" stopColor="#E88A3C"/><stop offset="50%" stopColor="#B8860B"/><stop offset="75%" stopColor="#2D8F5E"/><stop offset="100%" stopColor="#1A8A7A"/></linearGradient></defs>
-          <path d="M 15 100 A 75 75 0 0 1 165 100" fill="none" stroke="#E8E6E0" strokeWidth="8" strokeLinecap="round"/>
+          <path d="M 15 100 A 75 75 0 0 1 165 100" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" strokeLinecap="round"/>
           <path d="M 15 100 A 75 75 0 0 1 165 100" fill="none" stroke="url(#fgGaugeGrad)" strokeWidth="8" strokeLinecap="round" opacity="0.9"/>
           {[0,25,50,75,100].map(tick=>{const angle=(-135+(tick/100)*270)*(Math.PI/180);return <line key={tick} x1={90+80*Math.cos(angle)} y1={100+80*Math.sin(angle)} x2={90+86*Math.cos(angle)} y2={100+86*Math.sin(angle)} stroke="#9C9CAF" strokeWidth="1.5"/>;})}
         </svg>
-        <motion.div style={{position:'absolute',bottom:10,left:'50%',width:2,height:52,background:'linear-gradient(to top,#1A1A2E,transparent)',transformOrigin:'bottom center',rotate:rotation,marginLeft:-1,borderRadius:1}}/>
-        <div style={{position:'absolute',bottom:5,left:'50%',width:8,height:8,background:'#1A1A2E',borderRadius:'50%',transform:'translateX(-50%)',boxShadow:'0 0 4px rgba(26,26,46,0.2)'}}/>
+        <motion.div style={{position:'absolute',bottom:10,left:'50%',width:2,height:52,background:'linear-gradient(to top,rgba(255,255,255,0.9),transparent)',transformOrigin:'bottom center',rotate:rotation,marginLeft:-1,borderRadius:1}}/>
+        <div style={{position:'absolute',bottom:5,left:'50%',width:8,height:8,background:'rgba(255,255,255,0.9)',borderRadius:'50%',transform:'translateX(-50%)',boxShadow:'0 0 6px rgba(255,255,255,0.3)'}}/>
       </div>
       <div style={{textAlign:'center',marginTop:-2}}>
         <motion.div style={{fontFamily:'var(--font-mono)',fontSize:'1.4rem',fontWeight:700,color}}>{displayVal}</motion.div>

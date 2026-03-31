@@ -18,7 +18,7 @@ export default async function FxPage() {
       <Link href="/markets" style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.15em',color:'var(--gold)',marginBottom:16,display:'inline-block'}}>&#8592; ALL MARKETS</Link>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
         <div style={{width:6,height:32,background:'#2D8F5E',borderRadius:2}}/>
-        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>FX &amp; <em style={{fontStyle:'italic',color:'#2D8F5E'}}>Currencies</em></h1>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'#fff'}}>FX &amp; <em style={{fontStyle:'italic',color:'#2D8F5E'}}>Currencies</em></h1>
       </div>
       <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>Live exchange rates for 12 major pairs. Dollar Index tracking. Data from Open Exchange Rates &amp; FRED.</p>
 
@@ -30,7 +30,7 @@ export default async function FxPage() {
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10,marginBottom:28}}>
         {pairs.map(f=>(
           <div key={f.p} style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'14px 14px'}}>
-            <div style={{fontSize:'0.68rem',fontWeight:700,color:'var(--navy)',marginBottom:3}}>{f.p}</div>
+            <div style={{fontSize:'0.68rem',fontWeight:700,color:'#fff',marginBottom:3}}>{f.p}</div>
             <div style={{fontFamily:'var(--font-mono)',fontSize:'1.1rem',fontWeight:500,color:'#2D8F5E'}}>{f.v}</div>
           </div>
         ))}

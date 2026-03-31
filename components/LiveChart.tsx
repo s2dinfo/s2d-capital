@@ -32,7 +32,6 @@ export default function LiveChart({
       try {
         const { createChart, AreaSeries } = await import("lightweight-charts");
 
-        // Fetch via our server-side proxy (avoids CORS)
         const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${range}`);
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
@@ -66,20 +65,20 @@ export default function LiveChart({
           height,
           layout: {
             background: { color: "transparent" },
-            textColor: "#9C9CAF",
+            textColor: "rgba(255,255,255,0.4)",
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 10,
           },
           grid: {
-            vertLines: { color: "rgba(232,230,224,0.3)" },
-            horzLines: { color: "rgba(232,230,224,0.3)" },
+            vertLines: { color: "rgba(255,255,255,0.05)" },
+            horzLines: { color: "rgba(255,255,255,0.05)" },
           },
           crosshair: {
             vertLine: { color: "rgba(184,134,11,0.3)", width: 1, style: 2 },
             horzLine: { color: "rgba(184,134,11,0.3)", width: 1, style: 2 },
           },
-          rightPriceScale: { borderColor: "rgba(232,230,224,0.4)" },
-          timeScale: { borderColor: "rgba(232,230,224,0.4)", timeVisible: false },
+          rightPriceScale: { borderColor: "rgba(255,255,255,0.08)" },
+          timeScale: { borderColor: "rgba(255,255,255,0.08)", timeVisible: false },
           handleScroll: { vertTouchDrag: false },
         });
 
@@ -92,7 +91,7 @@ export default function LiveChart({
           lineWidth: 2,
           crosshairMarkerRadius: 4,
           crosshairMarkerBorderColor: "#b8860b",
-          crosshairMarkerBackgroundColor: "#fff",
+          crosshairMarkerBackgroundColor: "#1A1A2E",
         });
 
         series.setData(candles);
@@ -123,31 +122,31 @@ export default function LiveChart({
   const isPositive = (priceChange ?? 0) >= 0;
 
   return (
-    <div style={{ border: "1px solid var(--border, #E8E6E0)", borderRadius: 8, overflow: "hidden", background: "var(--bg-primary, #fff)", margin: "28px 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border, #E8E6E0)", background: "var(--bg-warm, #fdfcfa)" }}>
+    <div style={{ border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, overflow: "hidden", background: "rgba(255,255,255,0.02)", margin: "28px 0" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontFamily: "var(--mono)", fontSize: "0.72rem", fontWeight: 700, color: "var(--navy, #0f0f23)", letterSpacing: "0.05em" }}>{label}</span>
-          <span style={{ fontFamily: "var(--mono)", fontSize: "0.58rem", letterSpacing: "0.1em", color: "var(--text-muted, #9C9CAF)", textTransform: "uppercase" as const, background: "rgba(184,134,11,0.06)", padding: "2px 6px", borderRadius: 3 }}>LIVE · {range.toUpperCase()}</span>
+          <span style={{ fontFamily: "var(--mono)", fontSize: "0.72rem", fontWeight: 700, color: "#ffffff", letterSpacing: "0.05em" }}>{label}</span>
+          <span style={{ fontFamily: "var(--mono)", fontSize: "0.58rem", letterSpacing: "0.1em", color: "rgba(255,255,255,0.35)", textTransform: "uppercase" as const, background: "rgba(184,134,11,0.1)", padding: "2px 6px", borderRadius: 3 }}>LIVE · {range.toUpperCase()}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {currentPrice != null && (
-            <span style={{ fontFamily: "var(--serif)", fontSize: "1.1rem", fontWeight: 500, color: "var(--navy, #0f0f23)" }}>
+            <span style={{ fontFamily: "var(--serif)", fontSize: "1.1rem", fontWeight: 500, color: "#ffffff" }}>
               ${currentPrice.toLocaleString("en-US", { maximumFractionDigits: currentPrice > 100 ? 0 : 2 })}
             </span>
           )}
           {priceChange != null && (
-            <span style={{ fontFamily: "var(--mono)", fontSize: "0.7rem", fontWeight: 600, color: isPositive ? "#4ade80" : "#f87171", background: isPositive ? "rgba(74,222,128,0.08)" : "rgba(248,113,113,0.08)", padding: "3px 8px", borderRadius: 4 }}>
+            <span style={{ fontFamily: "var(--mono)", fontSize: "0.7rem", fontWeight: 600, color: isPositive ? "#34d399" : "#f87171", background: isPositive ? "rgba(52,211,153,0.1)" : "rgba(248,113,113,0.1)", padding: "3px 8px", borderRadius: 4 }}>
               {isPositive ? "+" : ""}{priceChange.toFixed(2)}%
             </span>
           )}
         </div>
       </div>
       <div style={{ position: "relative", height }}>
-        {loading && <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontFamily: "var(--mono)", fontSize: "0.72rem" }}>Loading chart data...</div>}
+        {loading && <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.35)", fontFamily: "var(--mono)", fontSize: "0.72rem" }}>Loading chart data...</div>}
         {error && <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#f87171", fontFamily: "var(--mono)", fontSize: "0.72rem" }}>Unable to load chart</div>}
         <div ref={containerRef} style={{ width: "100%", height }} />
       </div>
-      <div style={{ padding: "8px 20px", borderTop: "1px solid var(--border, #E8E6E0)", background: "var(--bg-warm, #fdfcfa)", fontFamily: "var(--mono)", fontSize: "0.56rem", color: "var(--text-muted)", letterSpacing: "0.08em", display: "flex", justifyContent: "space-between" }}>
+      <div style={{ padding: "8px 20px", borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", fontFamily: "var(--mono)", fontSize: "0.56rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.08em", display: "flex", justifyContent: "space-between" }}>
         <span>Source: Yahoo Finance · Auto-refresh 60s</span>
         <span>S2D Capital Insights</span>
       </div>

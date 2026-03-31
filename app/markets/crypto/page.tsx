@@ -20,7 +20,7 @@ export default async function CryptoPage() {
       <Link href="/markets" style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.15em',color:'var(--gold)',marginBottom:16,display:'inline-block'}}>&#8592; ALL MARKETS</Link>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
         <div style={{width:6,height:32,background:'#B8860B',borderRadius:2}}/>
-        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Crypto &amp; <em style={{fontStyle:'italic',color:'#B8860B'}}>Digital Assets</em></h1>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'#fff'}}>Crypto &amp; <em style={{fontStyle:'italic',color:'#B8860B'}}>Digital Assets</em></h1>
       </div>
       <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>Live prices, charts, sentiment, and trending coins. Data from CoinGecko &amp; Alternative.me.</p>
 
@@ -31,7 +31,7 @@ export default async function CryptoPage() {
             {[{l:'Total MCap',v:fmtP(global.totalMcap),s:fmtPct(global.mcapChg),c:pctCol(global.mcapChg)},{l:'24h Volume',v:fmtP(global.vol24h)},{l:'BTC Dom',v:(global.btcDom?.toFixed(1)||'-')+'%'},{l:'ETH Dom',v:(global.ethDom?.toFixed(1)||'-')+'%'},{l:'DeFi TVL',v:defi?.current?'$'+(defi.current/1e9).toFixed(1)+'B':'-'}].map((x,i)=>(
               <div key={i} style={{background:'var(--bg-warm)',border:'1px solid var(--border-lt)',padding:'14px 12px'}}>
                 <span style={{fontFamily:'var(--font-mono)',fontSize:'0.48rem',letterSpacing:'0.12em',textTransform:'uppercase',color:'#B8860B',display:'block',marginBottom:3}}>{x.l}</span>
-                <span style={{fontFamily:'var(--font-mono)',fontSize:'1.1rem',fontWeight:600,color:'var(--navy)'}}>{x.v}</span>
+                <span style={{fontFamily:'var(--font-mono)',fontSize:'1.1rem',fontWeight:600,color:'#fff'}}>{x.v}</span>
                 {x.s&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:x.c,display:'block'}}>{x.s}</span>}
               </div>
             ))}

@@ -1,34 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
+/* ══════════════════════════════════════════════════
+   S2D Capital Insights — Dark Theme Design System
+   ══════════════════════════════════════════════════ */
+
 :root {
-  /* Gold palette - from logo */
+  /* Gold palette */
   --gold-dark: #8B6914;
   --gold: #B8860B;
   --gold-mid: #C9A84C;
   --gold-light: #D4B85C;
   --gold-pale: #E8D48B;
-  --gold-wash: #F5EFD7;
-  --gold-tint: #FBF8F0;
+  --gold-wash: rgba(184,134,11,0.15);
+  --gold-tint: rgba(184,134,11,0.08);
 
-  /* Navy - from "CAPITAL INSIGHTS" text */
+  /* Navy / Backgrounds */
   --navy: #1A1A2E;
   --navy-light: #2D2D4A;
+  --bg: #1A1A2E;
+  --bg-warm: #1e2240;
+  --bg-cream: #1e2240;
+  --bg-section: #171b30;
+  --bg-primary: #1A1A2E;
 
-  /* Neutrals */
-  --bg: #FFFFFF;
-  --bg-warm: #FDFCF9;
-  --bg-cream: #FAF8F3;
-  --bg-section: #F7F5F0;
-  --text-h: #1A1A2E;
-  --text-body: #3D3D56;
-  --text-sec: #6B6B82;
-  --text-muted: #9C9CAF;
-  --border: #E8E6E0;
-  --border-lt: #F0EDE6;
+  /* Text */
+  --text-h: #ffffff;
+  --text-body: rgba(255,255,255,0.75);
+  --text-sec: rgba(255,255,255,0.5);
+  --text-secondary: rgba(255,255,255,0.5);
+  --text-muted: rgba(255,255,255,0.35);
+
+  /* Borders */
+  --border: rgba(255,255,255,0.1);
+  --border-lt: rgba(255,255,255,0.06);
 
   /* Accents */
-  --green: #2D8F5E;
-  --red: #C0392B;
+  --green: #34d399;
+  --red: #f87171;
 
   /* Vertical colors */
   --v-crypto: #B8860B;
@@ -42,8 +50,12 @@
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
+/* Reset */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 
@@ -52,7 +64,7 @@ body {
   font-size: 16px;
   line-height: 1.7;
   color: var(--text-body);
-  background: var(--bg);
+  background: #1A1A2E;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -60,14 +72,13 @@ body {
 }
 
 ::selection {
-  background: var(--gold-wash);
-  color: var(--navy);
+  background: rgba(184,134,11,0.3);
+  color: #fff;
 }
 
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; height: auto; }
 
-/* Typography utilities */
 .serif { font-family: var(--font-serif); }
 .mono { font-family: var(--font-mono); }
 
@@ -84,15 +95,11 @@ img { max-width: 100%; height: auto; }
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
   font-weight: 400;
   line-height: 1.2;
-  color: var(--navy);
+  color: #ffffff;
 }
 
-.section-title em {
-  font-style: italic;
-  color: var(--gold);
-}
+.section-title em { font-style: italic; color: var(--gold-light); }
 
-/* Buttons */
 .btn-gold {
   display: inline-block;
   font-family: var(--font-sans);
@@ -101,18 +108,14 @@ img { max-width: 100%; height: auto; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 15px 36px;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
   color: #fff;
   border: none;
   cursor: pointer;
   transition: all 0.4s ease;
-  box-shadow: 0 4px 16px rgba(184, 134, 11, 0.18);
+  box-shadow: 0 4px 16px rgba(184,134,11,0.18);
 }
-
-.btn-gold:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(184, 134, 11, 0.28);
-}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(184,134,11,0.28); }
 
 .btn-outline {
   display: inline-block;
@@ -123,313 +126,59 @@ img { max-width: 100%; height: auto; }
   text-transform: uppercase;
   padding: 15px 36px;
   background: transparent;
-  color: var(--navy);
-  border: 1.5px solid var(--border);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.15);
   cursor: pointer;
   transition: all 0.3s;
 }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(184,134,11,0.06); }
 
-.btn-outline:hover {
-  border-color: var(--gold);
-  color: var(--gold-dark);
-  background: var(--gold-tint);
-}
-
-/* Gold divider */
 .gold-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-wash), var(--gold-pale), var(--gold-wash), transparent);
+  background: linear-gradient(90deg, transparent, rgba(184,134,11,0.3), rgba(184,134,11,0.15), transparent);
 }
 
-/* Animations */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 { color: #ffffff; }
+h1 em, h2 em, h3 em { color: var(--gold-light); }
+
+main { background: #1A1A2E; }
+
+/* ══ Article Styling ══ */
+article p { color: rgba(255,255,255,0.75); }
+article strong, article b { color: #ffffff; }
+article h2, article h3 { color: #ffffff; }
+article em { color: #D4B85C; }
+article a { color: var(--gold-light); }
+
+article table { border-color: rgba(255,255,255,0.1); }
+article table th { color: rgba(255,255,255,0.5) !important; border-bottom-color: rgba(255,255,255,0.1) !important; }
+article table td { color: rgba(255,255,255,0.65) !important; border-bottom-color: rgba(255,255,255,0.06) !important; }
+article table td:first-child { color: #ffffff !important; font-weight: 500; }
+
+article div[style*="borderLeft: 3px"] strong:first-of-type,
+article div[style*="border-left: 3px"] strong:first-of-type,
+article div[style*="borderLeft:3px"] strong:first-of-type,
+article div[style*="border-left:3px"] strong:first-of-type {
+  color: #D4B85C !important;
+  font-weight: 700;
 }
 
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+div[style*="Powered by TradingView"] { color: rgba(255,255,255,0.3) !important; }
 
-@keyframes ticker {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+/* Form Inputs */
+input[type="email"], input[type="text"] {
+  background: rgba(255,255,255,0.05) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.1) !important;
 }
+input::placeholder { color: rgba(255,255,255,0.3) !important; }
 
 /* Responsive */
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
 }
-
-
-main {
-  background: #1A1A2E;
-}
-
-/* Fix white cards in market sub-pages */
-main div[style*="padding"] {
-  color: #e2e8f0;
-}
-
-
-
-/* ══ SITE-WIDE DARK THEME ══ */
-:root {
-  --bg: #1A1A2E;
-  --bg-warm: #1e2240;
-  --bg-cream: #1e2240;
-  --bg-section: #171b30;
-  --bg-primary: #1A1A2E;
-  --navy: #1A1A2E;
-  --navy-light: #2D2D4A;
-  --text-h: #ffffff;
-  --text-body: rgba(255,255,255,0.75);
-  --text-sec: rgba(255,255,255,0.5);
-  --text-muted: rgba(255,255,255,0.35);
-  --border: rgba(255,255,255,0.1);
-  --border-lt: rgba(255,255,255,0.06);
-  --gold-tint: rgba(184,134,11,0.08);
-  --gold-wash: rgba(184,134,11,0.15);
-  --green: #34d399;
-  --red: #f87171;
-}
-
-body {
-  background: #1A1A2E;
-  color: rgba(255,255,255,0.75);
-}
-
-/* Force all headings and text that uses var(--navy) as text color to be white */
-h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
-h1 em, h2 em, h3 em { color: var(--gold-light, #D4B85C) !important; }
-
-/* Fix inline styles using var(--navy) as text color */
-[style*="color: var(--navy)"],
-[style*="color:var(--navy)"] {
-  color: #ffffff !important;
-}
-
-/* Dark cards and containers */
-[style*="background: var(--bg-warm)"],
-[style*="background:var(--bg-warm)"],
-[style*="background: #fff"],
-[style*="background:#fff"],
-[style*="background: white"] {
-  background: #1e2240 !important;
-}
-
-/* Fix white callout/definition boxes in articles */
-article [style*="background: var(--gold-tint)"],
-article [style*="background:var(--gold-tint)"] {
-  background: rgba(184,134,11,0.08) !important;
-  color: rgba(255,255,255,0.8) !important;
-}
-
-/* Key figure boxes in articles */
-[style*="background: var(--navy)"] {
-  background: #1A1A2E !important;
-}
-
-/* Fix chart containers */
-[style*="background: #fff"],
-[style*="background:#fff"],
-[style*="background: white"],
-[style*="background:white"] {
-  background: #1e2240 !important;
-}
-
-/* Table styling */
-table { border-color: rgba(255,255,255,0.1) !important; }
-th { color: rgba(255,255,255,0.5) !important; border-color: rgba(255,255,255,0.1) !important; }
-td { color: rgba(255,255,255,0.7) !important; border-color: rgba(255,255,255,0.06) !important; }
-td[style*="color: var(--navy)"] { color: #ffffff !important; }
-
-/* Input fields */
-input[type="email"], input[type="text"] {
-  background: rgba(255,255,255,0.05) !important;
-  color: #ffffff !important;
-  border-color: rgba(255,255,255,0.1) !important;
-}
-
-input::placeholder { color: rgba(255,255,255,0.3) !important; }
-
-/* Selection box */
-::selection {
-  background: rgba(184,134,11,0.3);
-  color: #fff;
-}
-
-/* Links in articles */
-article a { color: var(--gold-light, #D4B85C); }
-
-/* Disclaimer and meta text */
-[style*="var(--text-muted)"] { color: rgba(255,255,255,0.35) !important; }
-
-/* ══ SITE-WIDE DARK THEME ══ */
-:root {
-  --bg: #1A1A2E;
-  --bg-warm: #1e2240;
-  --bg-cream: #1e2240;
-  --bg-section: #171b30;
-  --bg-primary: #1A1A2E;
-  --navy: #1A1A2E;
-  --navy-light: #2D2D4A;
-  --text-h: #ffffff;
-  --text-body: rgba(255,255,255,0.75);
-  --text-sec: rgba(255,255,255,0.5);
-  --text-muted: rgba(255,255,255,0.35);
-  --border: rgba(255,255,255,0.1);
-  --border-lt: rgba(255,255,255,0.06);
-  --gold-tint: rgba(184,134,11,0.08);
-  --gold-wash: rgba(184,134,11,0.15);
-  --green: #34d399;
-  --red: #f87171;
-}
-
-body {
-  background: #1A1A2E;
-  color: rgba(255,255,255,0.75);
-}
-
-/* Force all headings and text that uses var(--navy) as text color to be white */
-h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
-h1 em, h2 em, h3 em { color: var(--gold-light, #D4B85C) !important; }
-
-/* Fix inline styles using var(--navy) as text color */
-[style*="color: var(--navy)"],
-[style*="color:var(--navy)"] {
-  color: #ffffff !important;
-}
-
-/* Dark cards and containers */
-[style*="background: var(--bg-warm)"],
-[style*="background:var(--bg-warm)"],
-[style*="background: #fff"],
-[style*="background:#fff"],
-[style*="background: white"] {
-  background: #1e2240 !important;
-}
-
-/* Fix white callout/definition boxes in articles */
-article [style*="background: var(--gold-tint)"],
-article [style*="background:var(--gold-tint)"] {
-  background: rgba(184,134,11,0.08) !important;
-  color: rgba(255,255,255,0.8) !important;
-}
-
-/* Key figure boxes in articles */
-[style*="background: var(--navy)"] {
-  background: #1A1A2E !important;
-}
-
-/* Fix chart containers */
-[style*="background: #fff"],
-[style*="background:#fff"],
-[style*="background: white"],
-[style*="background:white"] {
-  background: #1e2240 !important;
-}
-
-/* Table styling */
-table { border-color: rgba(255,255,255,0.1) !important; }
-th { color: rgba(255,255,255,0.5) !important; border-color: rgba(255,255,255,0.1) !important; }
-td { color: rgba(255,255,255,0.7) !important; border-color: rgba(255,255,255,0.06) !important; }
-td[style*="color: var(--navy)"] { color: #ffffff !important; }
-
-/* Input fields */
-input[type="email"], input[type="text"] {
-  background: rgba(255,255,255,0.05) !important;
-  color: #ffffff !important;
-  border-color: rgba(255,255,255,0.1) !important;
-}
-
-input::placeholder { color: rgba(255,255,255,0.3) !important; }
-
-/* Selection box */
-::selection {
-  background: rgba(184,134,11,0.3);
-  color: #fff;
-}
-
-/* Links in articles */
-article a { color: var(--gold-light, #D4B85C); }
-
-/* Disclaimer and meta text */
-[style*="var(--text-muted)"] { color: rgba(255,255,255,0.35) !important; }
-
-/* Fix white callout/definition boxes in articles */
-article div[style*="borderRadius: 8"],
-article div[style*="borderRadius:8"],
-article div[style*="border-radius: 8px"] {
-  background: #1e2240 !important;
-  color: rgba(255,255,255,0.8) !important;
-}
-
-/* Fix key figure boxes */
-article div[style*="padding: 24px 28px"],
-article div[style*="padding:24px 28px"] {
-  background: #1A1A2E !important;
-}
-
-/* Fix definition/callout boxes with light backgrounds */
-article div[style*="background: #fff"],
-article div[style*="background:#fff"],
-article div[style*="background: white"],
-article div[style*="background:white"],
-article div[style*="background: var(--bg-primary)"],
-article div[style*="background:var(--bg-primary)"] {
-  background: #1e2240 !important;
-}
-
-/* Fix all remaining white text-on-white issues */
-article p, article li, article span {
-  color: rgba(255,255,255,0.75);
-}
-
-article strong, article b {
-  color: #ffffff;
-}
-
-/* Chart container fix */
-div[style*="Powered by TradingView"] {
-  color: rgba(255,255,255,0.3) !important;
-}
-
-/* ── Definition boxes: gold term names ── */
-article div[style*="borderLeft: 3px"] strong:first-of-type,
-article div[style*="border-left: 3px"] strong:first-of-type,
-article div[style*="borderLeft:3px"] strong:first-of-type,
-article div[style*="border-left:3px"] strong:first-of-type {
-  color: #D4B85C !important;
-  font-weight: 700;
-}
-div[style*="Powered by TradingView"] { color: rgba(255,255,255,0.3) !important; }
-article p { color: rgba(255,255,255,0.75); }
-article strong, article b { color: #ffffff; }
-article h2, article h3 { color: #ffffff; }
-article em { color: #D4B85C; }
-article table th { color: rgba(255,255,255,0.5) !important; border-bottom-color: rgba(255,255,255,0.1) !important; }
-article table td { color: rgba(255,255,255,0.65) !important; border-bottom-color: rgba(255,255,255,0.06) !important; }
-article table td:first-child { color: #ffffff !important; font-weight: 500; }
-input[type="email"], input[type="text"] { background: rgba(255,255,255,0.05) !important; color: #ffffff !important; }
-input::placeholder { color: rgba(255,255,255,0.3) !important; }
-
-/* ── S2D Dark Theme Article Fixes ── */
-article div[style*="borderLeft: 3px"] strong:first-of-type,
-article div[style*="border-left: 3px"] strong:first-of-type,
-article div[style*="borderLeft:3px"] strong:first-of-type,
-article div[style*="border-left:3px"] strong:first-of-type {
-  color: #D4B85C !important;
-  font-weight: 700;
-}
-div[style*="Powered by TradingView"] { color: rgba(255,255,255,0.3) !important; }
-article p { color: rgba(255,255,255,0.75); }
-article strong, article b { color: #ffffff; }
-article h2, article h3 { color: #ffffff; }
-article em { color: #D4B85C; }
-article table th { color: rgba(255,255,255,0.5) !important; border-bottom-color: rgba(255,255,255,0.1) !important; }
-article table td { color: rgba(255,255,255,0.65) !important; border-bottom-color: rgba(255,255,255,0.06) !important; }
-article table td:first-child { color: #ffffff !important; font-weight: 500; }
-input[type="email"], input[type="text"] { background: rgba(255,255,255,0.05) !important; color: #ffffff !important; }
-input::placeholder { color: rgba(255,255,255,0.3) !important; }

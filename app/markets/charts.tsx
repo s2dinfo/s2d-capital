@@ -21,7 +21,7 @@ export default function MarketCharts({ sparklineCoins, btcChart, ethChart, fedRa
   const pC = (v?:number) => v&&v>0?'#2D8F5E':'#C0392B';
   const pF = (v?:number) => v?(v>0?'+':'')+v.toFixed(1)+'%':'-';
   const fP = (n:number) => { if(n>=1e12) return '$'+(n/1e12).toFixed(1)+'T'; if(n>=1e9) return '$'+(n/1e9).toFixed(1)+'B'; if(n>=1000) return '$'+n.toLocaleString('en-US',{maximumFractionDigits:0}); if(n>=1) return '$'+n.toFixed(2); return '$'+n.toFixed(4); };
-  const tip = {fontSize:'0.72rem',background:'#fff',border:'1px solid #F0EDE6',borderRadius:2,boxShadow:'0 2px 8px rgba(0,0,0,0.06)'};
+  const tip = {fontSize:'0.72rem',background:'#1e2240',border:'1px solid rgba(255,255,255,0.1)',borderRadius:2,boxShadow:'0 2px 8px rgba(0,0,0,0.06)'};
 
   return (
     <div className={styles.chartsSection}>
@@ -57,7 +57,7 @@ export default function MarketCharts({ sparklineCoins, btcChart, ethChart, fedRa
           <div className={styles.chartCard}>
             <div className={styles.cHeader}><div><p className={styles.cLabel} style={{color:'#3B6CB4'}}>FED FUNDS RATE / 2Y</p><span className={styles.cSub}>Macro - Interest rates</span></div></div>
             <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={fedRateChart}><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} tickFormatter={(v:number)=>v+'%'}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v+'%','Fed Rate']}/><Line type="stepAfter" dataKey="value" stroke="#3B6CB4" strokeWidth={2} dot={{r:2,fill:'#3B6CB4'}}/></LineChart>
+              <LineChart data={fedRateChart}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} tickFormatter={(v:number)=>v+'%'}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v+'%','Fed Rate']}/><Line type="stepAfter" dataKey="value" stroke="#3B6CB4" strokeWidth={2} dot={{r:2,fill:'#3B6CB4'}}/></LineChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -65,7 +65,7 @@ export default function MarketCharts({ sparklineCoins, btcChart, ethChart, fedRa
           <div className={styles.chartCard}>
             <div className={styles.cHeader}><div><p className={styles.cLabel} style={{color:'#8B2252'}}>YIELD CURVE (10Y-2Y) / 2Y</p><span className={styles.cSub}>Geopolitics - Recession indicator</span></div></div>
             <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={yieldCurveChart}><defs><linearGradient id="yg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8B2252" stopOpacity={0.2}/><stop offset="95%" stopColor="#8B2252" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} tickFormatter={(v:number)=>v+'%'}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v+'%','Spread']}/><Area type="monotone" dataKey="value" stroke="#8B2252" strokeWidth={2} fill="url(#yg)"/></AreaChart>
+              <AreaChart data={yieldCurveChart}><defs><linearGradient id="yg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#8B2252" stopOpacity={0.2}/><stop offset="95%" stopColor="#8B2252" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval={3}/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} tickFormatter={(v:number)=>v+'%'}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v+'%','Spread']}/><Area type="monotone" dataKey="value" stroke="#8B2252" strokeWidth={2} fill="url(#yg)"/></AreaChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -73,7 +73,7 @@ export default function MarketCharts({ sparklineCoins, btcChart, ethChart, fedRa
           <div className={styles.chartCard}>
             <div className={styles.cHeader}><div><p className={styles.cLabel} style={{color:'#2D8F5E'}}>US DOLLAR INDEX / 30 DAYS</p><span className={styles.cSub}>FX - Dollar strength</span></div></div>
             <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={dxyChart}><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval={4}/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v.toFixed(1),'DXY']}/><Line type="monotone" dataKey="value" stroke="#2D8F5E" strokeWidth={2} dot={false}/></LineChart>
+              <LineChart data={dxyChart}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval={4}/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v.toFixed(1),'DXY']}/><Line type="monotone" dataKey="value" stroke="#2D8F5E" strokeWidth={2} dot={false}/></LineChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -81,7 +81,7 @@ export default function MarketCharts({ sparklineCoins, btcChart, ethChart, fedRa
           <div className={styles.chartCard}>
             <div className={styles.cHeader}><div><p className={styles.cLabel}>FEAR &amp; GREED / 14 DAYS</p><span className={styles.cSub}>Crypto - Market sentiment</span></div></div>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={fearGreedHistory}><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:8,fill:'#9C9CAF'}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} domain={[0,100]}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v,v<=25?'Extreme Fear':v<=45?'Fear':v<=55?'Neutral':v<=75?'Greed':'Extreme Greed']}/><Bar dataKey="value" radius={[2,2,0,0]} fill="#B8860B"/></BarChart>
+              <BarChart data={fearGreedHistory}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:8,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} domain={[0,100]}/><Tooltip contentStyle={tip} formatter={(v:number)=>[v,v<=25?'Extreme Fear':v<=45?'Fear':v<=55?'Neutral':v<=75?'Greed':'Extreme Greed']}/><Bar dataKey="value" radius={[2,2,0,0]} fill="#B8860B"/></BarChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -89,7 +89,7 @@ export default function MarketCharts({ sparklineCoins, btcChart, ethChart, fedRa
           <div className={styles.chartCard}>
             <div className={styles.cHeader}><div><p className={styles.cLabel} style={{color:'#5B4FA0'}}>DEFI TVL / 30 DAYS</p><span className={styles.cSub}>Structure - Total Value Locked</span></div></div>
             <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={defiTvlChart}><defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#5B4FA0" stopOpacity={0.2}/><stop offset="95%" stopColor="#5B4FA0" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/><XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/><YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} tickFormatter={(v:number)=>'$'+v+'B'}/><Tooltip contentStyle={tip} formatter={(v:number)=>['$'+v+'B','TVL']}/><Area type="monotone" dataKey="tvl" stroke="#5B4FA0" strokeWidth={2} fill="url(#tg)"/></AreaChart>
+              <AreaChart data={defiTvlChart}><defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#5B4FA0" stopOpacity={0.2}/><stop offset="95%" stopColor="#5B4FA0" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/><XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/><YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} tickFormatter={(v:number)=>'$'+v+'B'}/><Tooltip contentStyle={tip} formatter={(v:number)=>['$'+v+'B','TVL']}/><Area type="monotone" dataKey="tvl" stroke="#5B4FA0" strokeWidth={2} fill="url(#tg)"/></AreaChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -99,7 +99,7 @@ export default function MarketCharts({ sparklineCoins, btcChart, ethChart, fedRa
 }
 
 function ChartBox({label,color,data,dataKey,price,change,yFmt,tipFmt,gradId,sub}:{label:string;color:string;data:any[];dataKey:string;price?:number;change?:number;yFmt:(v:number)=>string;tipFmt:string;gradId:string;sub?:string}) {
-  const tip = {fontSize:'0.72rem',background:'#fff',border:'1px solid #F0EDE6',borderRadius:2};
+  const tip = {fontSize:'0.72rem',background:'#1e2240',border:'1px solid rgba(255,255,255,0.1)',borderRadius:2,color:'rgba(255,255,255,0.8)'};
   return (
     <div className={styles.chartCard}>
       <div className={styles.cHeader}>
@@ -109,9 +109,9 @@ function ChartBox({label,color,data,dataKey,price,change,yFmt,tipFmt,gradId,sub}
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={data}>
           <defs><linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={color} stopOpacity={0.2}/><stop offset="95%" stopColor={color} stopOpacity={0}/></linearGradient></defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#F0EDE6"/>
-          <XAxis dataKey="date" tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/>
-          <YAxis tick={{fontSize:9,fill:'#9C9CAF'}} axisLine={false} tickLine={false} tickFormatter={yFmt}/>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)"/>
+          <XAxis dataKey="date" tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/>
+          <YAxis tick={{fontSize:9,fill:'rgba(255,255,255,0.35)'}} axisLine={false} tickLine={false} tickFormatter={yFmt}/>
           <Tooltip contentStyle={tip} formatter={(v:number)=>['$'+v.toLocaleString(),tipFmt]}/>
           <Area type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} fill={`url(#${gradId})`}/>
         </AreaChart>
