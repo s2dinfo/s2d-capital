@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getMacro, fredChart, getWorldGdp, fmtP } from '@/lib/api';
 import GeoCharts from './charts';
 
-export const metadata = { title: 'Geopolitics & Policy | S2D Capital Insights' };
+export const metadata = { title: 'Global Macro & Policy Signals | S2D Capital Insights' };
 export const revalidate = 300;
 
 export default async function GeopoliticsPage() {
@@ -15,7 +15,7 @@ export default async function GeopoliticsPage() {
       <Link href="/markets" style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.15em',color:'var(--gold)',marginBottom:16,display:'inline-block'}}>&#8592; ALL MARKETS</Link>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
         <div style={{width:6,height:32,background:'#8B2252',borderRadius:2}}/>
-        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Geopolitics &amp; <em style={{fontStyle:'italic',color:'#8B2252'}}>Policy</em></h1>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Global Macro &amp; <em style={{fontStyle:'italic',color:'#8B2252'}}>Policy Signals</em></h1>
       </div>
       <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>Recession indicators, liquidity metrics, and macro policy signals that drive cross-market moves. Data from FRED &amp; World Bank.</p>
 

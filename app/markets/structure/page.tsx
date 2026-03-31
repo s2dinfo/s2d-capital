@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getDefiTvl, getChains, getGlobal } from '@/lib/api';
 import StructCharts from './charts';
 
-export const metadata = { title: 'Market Structure | S2D Capital Insights' };
+export const metadata = { title: 'DeFi & On-Chain Structure | S2D Capital Insights' };
 export const revalidate = 300;
 
 export default async function StructurePage() {
@@ -12,7 +12,7 @@ export default async function StructurePage() {
       <Link href="/markets" style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.15em',color:'var(--gold)',marginBottom:16,display:'inline-block'}}>&#8592; ALL MARKETS</Link>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
         <div style={{width:6,height:32,background:'#5B4FA0',borderRadius:2}}/>
-        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Market <em style={{fontStyle:'italic',color:'#5B4FA0'}}>Structure</em></h1>
+        <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>DeFi &amp; <em style={{fontStyle:'italic',color:'#5B4FA0'}}>On-Chain Structure</em></h1>
       </div>
       <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>DeFi TVL by chain, protocol metrics, and on-chain ecosystem data. Data from DefiLlama &amp; CoinGecko.</p>
 

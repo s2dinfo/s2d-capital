@@ -51,7 +51,7 @@ export async function getCryptoPrices() {
 
 export async function getGlobal() {
   try {
-    const r=await fetch('https://api.coingecko.com/api/v3/global',{headers:cg,next:{revalidate:600}});
+    const r=await fetch('https://api.coingecko.com/api/v3/global',{headers:cg,cache:'no-store'});
     if(!r.ok) return null;
     const d=(await r.json()).data;
     return {totalMcap:d.total_market_cap?.usd,vol24h:d.total_volume?.usd,btcDom:d.market_cap_percentage?.btc,ethDom:d.market_cap_percentage?.eth,active:d.active_cryptocurrencies,mcapChg:d.market_cap_change_percentage_24h_usd};
@@ -60,7 +60,7 @@ export async function getGlobal() {
 
 export async function getCoinChart(id:string,days=30) {
   try {
-    const r=await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`,{headers:cg,next:{revalidate:600}});
+    const r=await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`,{headers:cg,cache:'no-store'});
     if(!r.ok) return null;
     const d=await r.json();
     return d.prices?.filter((_:any,i:number)=>i%12===0).map(([t,p]:[number,number])=>({date:new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric'}),price:Math.round(p)}));
@@ -69,7 +69,7 @@ export async function getCoinChart(id:string,days=30) {
 
 export async function getTrending() {
   try {
-    const r=await fetch('https://api.coingecko.com/api/v3/search/trending',{headers:cg,next:{revalidate:600}});
+    const r=await fetch('https://api.coingecko.com/api/v3/search/trending',{headers:cg,cache:'no-store'});
     if(!r.ok) return null;
     const d=await r.json();
     return d.coins?.slice(0,8).map((c:any)=>({name:c.item.name,symbol:c.item.symbol,thumb:c.item.thumb,chg:c.item.data?.price_change_percentage_24h?.usd}));
