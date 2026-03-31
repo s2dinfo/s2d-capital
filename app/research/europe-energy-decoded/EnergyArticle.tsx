@@ -106,7 +106,7 @@ export default function EnergyArticle() {
           On February 28, 2026, the United States and Israel launched military strikes against Iran. Within days, the Strait of Hormuz — through which 20% of the world&apos;s oil supply flows — was effectively shut down. QatarEnergy, responsible for roughly a fifth of global liquefied natural gas (LNG) production, halted all output after Iranian drone attacks on its facilities. Brent crude surged from $70 to $120 per barrel. European gas prices jumped 57%.
         </p>
         <p>
-          For Europe, the timing could hardly have been worse. Gas storage levels started 2026 at just 46 billion cubic metres — compared to 60 bcm in 2025 and 77 bcm in 2024. The EU&apos;s regulation phasing out Russian gas imports formally took effect on February 3, 2026, with the stepwise ban beginning on March 18 — today.
+          For Europe, the timing could hardly have been worse. Gas storage levels started 2026 at just 46 billion cubic metres — compared to 60 bcm in 2025 and 77 bcm in 2024. The EU&apos;s regulation phasing out Russian gas imports formally took effect on February 3, 2026, with the stepwise ban beginning on March 18, 2026.
         </p>
         <p>
           But this article is not just about the current crisis. It is a comprehensive guide to how Europe&apos;s energy system actually works — where the energy comes from, how it reaches your home and factory, how it&apos;s priced, how it&apos;s traded, what &ldquo;green energy&rdquo; really means in practice, and why these crises keep happening. By the time you finish reading, you will understand Europe&apos;s energy landscape better than most professionals working in it.

@@ -35,7 +35,7 @@ export async function getCommodities() {
 
 export async function getCryptoMarkets() {
   try {
-    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,ripple,dogecoin,cardano&sparkline=true&price_change_percentage=7d',{headers:cg,next:{revalidate:300}});
+    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,ripple,dogecoin,cardano&sparkline=true&price_change_percentage=7d',{headers:cg,cache:'no-store'});
     if(!r.ok) return null;
     return r.json();
   } catch{return null;}
@@ -43,7 +43,7 @@ export async function getCryptoMarkets() {
 
 export async function getCryptoPrices() {
   try {
-    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,dogecoin,cardano&vs_currencies=usd&include_24hr_change=true&include_market_cap=true',{headers:cg,next:{revalidate:300}});
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple,dogecoin,cardano&vs_currencies=usd&include_24hr_change=true&include_market_cap=true',{headers:cg,cache:'no-store'});
     if(!r.ok) return FB();
     return r.json();
   } catch{return FB();}
@@ -78,7 +78,7 @@ export async function getTrending() {
 
 export async function getFearGreed() {
   try {
-    const r=await fetch('https://api.alternative.me/fng/?limit=30',{next:{revalidate:3600}});
+    const r=await fetch('https://api.alternative.me/fng/?limit=30',{cache:'no-store'});
     if(!r.ok) return null;
     const d=await r.json();
     return {current:{value:parseInt(d.data[0].value),label:d.data[0].value_classification},history:d.data.slice(0,14).reverse().map((x:any)=>({date:new Date(parseInt(x.timestamp)*1000).toLocaleDateString('en-US',{month:'short',day:'numeric'}),value:parseInt(x.value)}))};
@@ -88,7 +88,7 @@ export async function getFearGreed() {
 async function fred(id:string) {
   if(!FR) return null;
   try {
-    const r=await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${id}&api_key=${FR}&file_type=json&sort_order=desc&limit=2`,{next:{revalidate:3600}});
+    const r=await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${id}&api_key=${FR}&file_type=json&sort_order=desc&limit=2`,{cache:'no-store'});
     if(!r.ok) return null;
     const obs=(await r.json()).observations?.filter((o:any)=>o.value!=='.');
     return obs?.[0]||null;
@@ -98,7 +98,7 @@ async function fred(id:string) {
 export async function fredChart(id:string,n=24) {
   if(!FR) return null;
   try {
-    const r=await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${id}&api_key=${FR}&file_type=json&sort_order=desc&limit=${n}`,{next:{revalidate:3600}});
+    const r=await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${id}&api_key=${FR}&file_type=json&sort_order=desc&limit=${n}`,{cache:'no-store'});
     if(!r.ok) return null;
     return (await r.json()).observations?.filter((o:any)=>o.value!=='.').reverse().map((o:any)=>({date:new Date(o.date).toLocaleDateString('en-US',{month:'short',day:'numeric'}),value:parseFloat(o.value)||0}));
   } catch{return null;}
@@ -111,7 +111,7 @@ export async function getMacro() {
 
 export async function getFx() {
   try {
-    const r=await fetch('https://open.er-api.com/v6/latest/USD',{next:{revalidate:3600}});
+    const r=await fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'});
     if(!r.ok) return null;
     return (await r.json()).rates;
   } catch{return null;}
@@ -119,7 +119,7 @@ export async function getFx() {
 
 export async function getDefiTvl() {
   try {
-    const r=await fetch('https://api.llama.fi/v2/historicalChainTvl',{next:{revalidate:3600}});
+    const r=await fetch('https://api.llama.fi/v2/historicalChainTvl',{cache:'no-store'});
     if(!r.ok) return null;
     const d=await r.json();
     const s=d.slice(-30);
@@ -129,7 +129,7 @@ export async function getDefiTvl() {
 
 export async function getChains() {
   try {
-    const r=await fetch('https://api.llama.fi/v2/chains',{next:{revalidate:3600}});
+    const r=await fetch('https://api.llama.fi/v2/chains',{cache:'no-store'});
     if(!r.ok) return null;
     const d=await r.json();
     return d.sort((a:any,b:any)=>(b.tvl||0)-(a.tvl||0)).slice(0,10).map((c:any)=>({name:c.name,tvl:c.tvl}));
@@ -138,7 +138,7 @@ export async function getChains() {
 
 export async function getWorldGdp() {
   try {
-    const r=await fetch('https://api.worldbank.org/v2/country/USA;DEU;CHN;GBR;JPN;FRA;IND;BRA/indicator/NY.GDP.MKTP.CD?format=json&per_page=8&date=2023',{next:{revalidate:86400}});
+    const r=await fetch('https://api.worldbank.org/v2/country/USA;DEU;CHN;GBR;JPN;FRA;IND;BRA/indicator/NY.GDP.MKTP.CD?format=json&per_page=8&date=2023',{cache:'no-store'});
     if(!r.ok) return null;
     const d=await r.json();
     return d[1]?.filter((x:any)=>x.value).map((x:any)=>({country:x.country.value,code:x.countryiso3code,gdp:x.value,year:x.date}));
