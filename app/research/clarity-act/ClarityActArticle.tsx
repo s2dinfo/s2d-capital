@@ -12,13 +12,13 @@ const LiveChart = dynamic(() => import("@/components/LiveChart"), {
     <div
       style={{
         height: 300,
-        border: "1px solid var(--border, #E8E6E0)",
+        border: "1px solid var(--border, rgba(255,255,255,0.1))",
         borderRadius: 8,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         margin: "28px 0",
-        color: "var(--text-muted, #9C9CAF)",
+        color: "var(--text-muted, rgba(255,255,255,0.35))",
         fontFamily: "var(--mono)",
         fontSize: "0.72rem",
       }}
@@ -35,7 +35,7 @@ const S = {
     margin: "0 auto",
     padding: "0 24px 80px",
     fontFamily: "var(--sans, 'Outfit', sans-serif)",
-    color: "var(--text-body, #3a3a4a)",
+    color: "var(--text-body, rgba(255,255,255,0.75))",
     lineHeight: 1.85,
     fontSize: "1.02rem",
   } as React.CSSProperties,
@@ -43,8 +43,8 @@ const S = {
     textAlign: "center" as const,
     padding: "72px 24px 48px",
     background:
-      "linear-gradient(180deg, var(--gold-tint, #faf6ee) 0%, var(--bg-primary, #fff) 100%)",
-    borderBottom: "1px solid var(--border, #E8E6E0)",
+      "linear-gradient(180deg, var(--gold-tint, rgba(184,134,11,0.08)) 0%, var(--bg-primary, #fff) 100%)",
+    borderBottom: "1px solid var(--border, rgba(255,255,255,0.1))",
   } as React.CSSProperties,
   eyebrow: {
     fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
@@ -59,7 +59,7 @@ const S = {
     fontSize: "clamp(2rem, 4.5vw, 3rem)",
     fontWeight: 400,
     lineHeight: 1.15,
-    color: "var(--navy, #0f0f23)",
+    color: "var(--navy, #ffffff)",
     marginBottom: 18,
     maxWidth: 720,
     marginLeft: "auto",
@@ -67,7 +67,7 @@ const S = {
   } as React.CSSProperties,
   subtitle: {
     fontSize: "1.05rem",
-    color: "var(--text-secondary, #6B6B82)",
+    color: "var(--text-secondary, rgba(255,255,255,0.5))",
     maxWidth: 560,
     margin: "0 auto 24px",
     lineHeight: 1.7,
@@ -77,7 +77,7 @@ const S = {
     fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
     fontSize: "0.62rem",
     letterSpacing: "0.12em",
-    color: "var(--text-muted, #9C9CAF)",
+    color: "var(--text-muted, rgba(255,255,255,0.35))",
     display: "flex" as const,
     justifyContent: "center" as const,
     gap: 20,
@@ -87,7 +87,7 @@ const S = {
     fontFamily: "var(--serif, 'Playfair Display', serif)",
     fontSize: "1.6rem",
     fontWeight: 400,
-    color: "var(--navy, #0f0f23)",
+    color: "var(--navy, #ffffff)",
     marginTop: 56,
     marginBottom: 20,
     lineHeight: 1.25,
@@ -96,13 +96,13 @@ const S = {
     fontFamily: "var(--serif, 'Playfair Display', serif)",
     fontSize: "1.2rem",
     fontWeight: 500,
-    color: "var(--navy, #0f0f23)",
+    color: "var(--navy, #ffffff)",
     marginTop: 36,
     marginBottom: 14,
     lineHeight: 1.3,
   } as React.CSSProperties,
   callout: {
-    background: "var(--gold-tint, #faf6ee)",
+    background: "var(--gold-tint, rgba(184,134,11,0.08))",
     borderLeft: "3px solid var(--gold, #b8860b)",
     padding: "20px 24px",
     margin: "28px 0",
@@ -120,7 +120,7 @@ const S = {
     fontWeight: 600,
   } as React.CSSProperties,
   keyFigure: {
-    background: "var(--navy, #0f0f23)",
+    background: "var(--navy, #ffffff)",
     color: "#fff",
     borderRadius: 8,
     padding: "24px 28px",
@@ -156,23 +156,23 @@ const S = {
     fontSize: "0.6rem",
     letterSpacing: "0.2em",
     textTransform: "uppercase" as const,
-    color: "var(--text-muted, #9C9CAF)",
-    borderBottom: "2px solid var(--border, #E8E6E0)",
+    color: "var(--text-muted, rgba(255,255,255,0.35))",
+    borderBottom: "2px solid var(--border, rgba(255,255,255,0.1))",
     padding: "10px 12px",
     textAlign: "left" as const,
     fontWeight: 600,
   } as React.CSSProperties,
   td: {
     padding: "12px 12px",
-    borderBottom: "1px solid var(--border, #E8E6E0)",
+    borderBottom: "1px solid var(--border, rgba(255,255,255,0.1))",
     verticalAlign: "top" as const,
   } as React.CSSProperties,
   disclaimer: {
     marginTop: 48,
     padding: "24px 0",
-    borderTop: "1px solid var(--border, #E8E6E0)",
+    borderTop: "1px solid var(--border, rgba(255,255,255,0.1))",
     fontSize: "0.72rem",
-    color: "var(--text-muted, #9C9CAF)",
+    color: "var(--text-muted, rgba(255,255,255,0.35))",
     lineHeight: 1.7,
   } as React.CSSProperties,
 };
@@ -462,7 +462,7 @@ export default function ClarityActArticle() {
             <tbody>
               {priceTargets.map((row, i) => (
                 <tr key={i}>
-                  <td style={{ ...S.td, fontWeight: 500, color: "var(--navy, #0f0f23)" }}>
+                  <td style={{ ...S.td, fontWeight: 500, color: "var(--navy, #ffffff)" }}>
                     {row.institution}
                   </td>
                   <td
@@ -475,7 +475,7 @@ export default function ClarityActArticle() {
                   >
                     {row.target}
                   </td>
-                  <td style={{ ...S.td, color: "var(--text-secondary, #6B6B82)", fontSize: "0.88rem" }}>
+                  <td style={{ ...S.td, color: "var(--text-secondary, rgba(255,255,255,0.5))", fontSize: "0.88rem" }}>
                     {row.basis}
                   </td>
                 </tr>
@@ -583,7 +583,7 @@ export default function ClarityActArticle() {
         </p>
 
         <div style={{ textAlign: "center", margin: "48px 0 0" }}>
-          <p style={{ fontWeight: 500, color: "var(--navy, #0f0f23)" }}>Sami Samii</p>
+          <p style={{ fontWeight: 500, color: "var(--navy, #ffffff)" }}>Sami Samii</p>
           <p style={{
             fontFamily: "var(--mono)",
             fontSize: "0.68rem",
@@ -592,7 +592,7 @@ export default function ClarityActArticle() {
           }}>
             S2D CAPITAL INSIGHTS
           </p>
-          <p style={{ color: "var(--text-muted, #9C9CAF)", fontSize: "0.85rem" }}>March 2026</p>
+          <p style={{ color: "var(--text-muted, rgba(255,255,255,0.35))", fontSize: "0.85rem" }}>March 2026</p>
         </div>
 
         {/* ── Disclaimer ── */}
