@@ -101,12 +101,13 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
 export default function HomeClient(){
   const { data: _md, loading: _loading } = useMarketData();
   const prices = _md?.symbols ? { bitcoin: { usd: _md.symbols.BTC?.price, usd_24h_change: _md.symbols.BTC?.change, usd_market_cap: null }, ethereum: { usd: _md.symbols.ETH?.price, usd_24h_change: _md.symbols.ETH?.change }, solana: { usd: _md.symbols.SOL?.price }, ripple: { usd: _md.symbols.XRP?.price } } : null;
-  const macro = _md ? { fedRate: _md.fedRate, t10y: _md.symbols?.US10Y?.price?.toFixed(2), t2y: _md.symbols?.US2Y?.price?.toFixed(2), cpi: null, unemp: null, yieldSpread: _md.symbols?.US10Y?.price && _md.symbols?.US2Y?.price ? (_md.symbols.US10Y.price - _md.symbols.US2Y.price).toFixed(2) : null, m2: null, dxy: null } : null;
+  const macro = _md ? { fedRate: _md.fedRate, t10y: _md.symbols?.US10Y?.price?.toFixed(2), t2y: _md.symbols?.US2Y?.price?.toFixed(2), cpi: (_md as any)?.cpi ?? null, unemp: (_md as any)?.unemp ? (_md as any).unemp + '%' : null, yieldSpread: _md.symbols?.US10Y?.price && _md.symbols?.US2Y?.price ? (_md.symbols.US10Y.price - _md.symbols.US2Y.price).toFixed(2) : null, m2: null, dxy: _md.symbols?.DXY?.price?.toFixed(2) ?? (_md as any)?.dxy ?? null } : null;
   const commod = _md?.symbols ? { oil: _md.symbols.OIL?.price, oilChg: _md.symbols.OIL?.change, gold: _md.symbols.GOLD?.price, goldChg: _md.symbols.GOLD?.change, natgas: _md.symbols.NATGAS?.price, natgasChg: _md.symbols.NATGAS?.change } : null;
   const fx = _md?.symbols ? { EUR: _md.symbols.EURUSD?.price ? 1/_md.symbols.EURUSD.price : null, GBP: _md.symbols.GBPUSD?.price ? 1/_md.symbols.GBPUSD.price : null, JPY: _md.symbols.USDJPY?.price, CHF: _md.symbols.USDCHF?.price } : null;
   const fg = _md?.fearGreed ? { current: { value: _md.fearGreed.value, label: _md.fearGreed.label }, history: _md.fearGreed.history } : null;
   const global = _md?.cryptoGlobal ?? null;
-  const indices = _md?.symbols ? { sp500: { val: _md.symbols.SPX?.price, chg: _md.symbols.SPX?.change }, djia: { val: _md.symbols.DJI?.price, chg: _md.symbols.DJI?.change }, nasdaq: { val: _md.symbols.NDX?.price, chg: _md.symbols.NDX?.change }, vix: { val: _md.symbols.VIX?.price, chg: _md.symbols.VIX?.change } } : null;
+  const indices = _md?.symbols ? { sp500: { val: _md.symbols.SPX?.price, chg: _md.symbols.SPX?.change, spark: _md.symbols.SPX?.sparkline }, djia: { val: _md.symbols.DJI?.price, chg: _md.symbols.DJI?.change }, nasdaq: { val: _md.symbols.NDX?.price, chg: _md.symbols.NDX?.change }, vix: { val: _md.symbols.VIX?.price, chg: _md.symbols.VIX?.change, spark: _md.symbols.VIX?.sparkline } } : null;
+  const sp = (key: string) => _md?.symbols?.[key]?.sparkline?.length ? _md.symbols[key].sparkline : fakeSparkline(100, 10);
   const[time,setTime]=useState('');
   const[selectedTopic,setSelectedTopic]=useState<string|null>(null);
   const[sidebarOpen,setSidebarOpen]=useState(false);
@@ -303,16 +304,16 @@ export default function HomeClient(){
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
         <div className="s2d-pulse" style={{width:7,height:7,borderRadius:'50%',background:'var(--green)',boxShadow:'0 0 6px rgba(45,143,94,0.4)'}}/>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.18em',color:'var(--green)',fontWeight:500}}>MARKET PULSE</span>
-        <span style={{marginLeft:'auto',fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.3)'}}>{time}</span>
+        <span style={{marginLeft:'auto',fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.3)'}}>{time}{_md?.timestamp ? ' · Updated '+new Date(_md.timestamp).toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit'}) : ''}</span>
       </div>
 
       {_loading ? <PulseSkeleton/> : <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10,marginBottom:12}}>
-        <StatCard name="S&P 500" val={indices?.sp500?.val||5780} chg={indices?.sp500?.chg} color="#B8860B" spark={fakeSparkline(5700,150)}/>
-        <StatCard name="BITCOIN" val={btc?.usd||68980} chg={btc?.usd_24h_change} color="#B8860B" prefix="$" spark={fakeSparkline(67000,2500)}/>
-        <StatCard name="GOLD" val={commod?.gold||2920} chg={commod?.goldChg} color="#D4A843" prefix="$" spark={fakeSparkline(2900,60)}/>
-        <StatCard name="WTI OIL" val={commod?.oil||67.4} chg={commod?.oilChg} color="#D4A843" prefix="$" dec={2} spark={fakeSparkline(68,3)}/>
-        <StatCard name="VIX" val={vixVal||25.7} chg={indices?.vix?.chg} color="#C0392B" dec={1} spark={fakeSparkline(24,4)}/>
-        <StatCard name="NAT GAS" val={commod?.natgas||4.12} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={fakeSparkline(4,0.5)}/>
+        <StatCard name="S&P 500" val={indices?.sp500?.val} chg={indices?.sp500?.chg} color="#B8860B" spark={sp('SPX')}/>
+        <StatCard name="BITCOIN" val={btc?.usd} chg={btc?.usd_24h_change} color="#B8860B" prefix="$" spark={sp('BTC')}/>
+        <StatCard name="GOLD" val={commod?.gold} chg={commod?.goldChg} color="#D4A843" prefix="$" spark={sp('GOLD')}/>
+        <StatCard name="WTI OIL" val={commod?.oil} chg={commod?.oilChg} color="#D4A843" prefix="$" dec={2} spark={sp('OIL')}/>
+        <StatCard name="VIX" val={vixVal} chg={indices?.vix?.chg} color="#C0392B" dec={1} spark={sp('VIX')}/>
+        <StatCard name="NAT GAS" val={commod?.natgas} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={sp('NATGAS')}/>
       </div>}
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:10,marginBottom:12}}>
@@ -321,7 +322,7 @@ export default function HomeClient(){
       </div>
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:10}}>
-        <DataCard title="MACRO & CENTRAL BANKS" color="#6B9BD2" rows={[{l:'Fed Rate',v:(macro?.fedRate||'-')+'%',c:'#6B9BD2'},{l:'10Y Yield',v:(macro?.t10y||'-')+'%',c:'#6B9BD2'},{l:'CPI',v:macro?.cpi||'-',c:'#D4A843'},{l:'Unemployment',v:(macro?.unemp||'-')+'%',c:'#E06B6B'},{l:'Dollar (DXY)',v:macro?.dxy||'-',c:'#4CAF7D'}]}/>
+        <DataCard title="MACRO & CENTRAL BANKS" color="#6B9BD2" rows={[{l:'Fed Rate',v:(macro?.fedRate||'-')+'%',c:'#6B9BD2'},{l:'10Y Yield',v:(macro?.t10y||'-')+'%',c:'#6B9BD2'},{l:'CPI',v:macro?.cpi||'-',c:'#D4A843'},{l:'Unemployment',v:macro?.unemp||'-',c:'#E06B6B'},{l:'Dollar (DXY)',v:macro?.dxy||'-',c:'#4CAF7D'}]}/>
         <DataCard title="FX RATES" color="#4CAF7D" rows={fx?[{l:'EUR/USD',v:fx.EUR?(1/fx.EUR).toFixed(4):'-',c:'#4CAF7D'},{l:'GBP/USD',v:fx.GBP?(1/fx.GBP).toFixed(4):'-',c:'#4CAF7D'},{l:'USD/JPY',v:fx.JPY?fx.JPY.toFixed(2):'-',c:'#4CAF7D'},{l:'USD/CHF',v:fx.CHF?fx.CHF.toFixed(4):'-',c:'#4CAF7D'}]:[]}/>
         <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',padding:'16px 12px',textAlign:'center',borderRadius:6}}>
           <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',color:'var(--gold-light)',display:'block',marginBottom:10,fontWeight:600}}>FEAR & GREED INDEX</span>

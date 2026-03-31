@@ -6,7 +6,7 @@ export const metadata = { title: 'FX & Currencies | S2D Capital Insights' };
 export const dynamic = "force-dynamic";
 
 export default async function FxPage() {
-  const [fx, macro, dxyC] = await Promise.all([getFx(), getMacro(), fredChart('DTWEXBGS',30)]);
+  const [fx, macro, dxyC, eurusdC, usdjpyC] = await Promise.all([getFx(), getMacro(), fredChart('DTWEXBGS',30), fredChart('DEXUSEU',30), fredChart('DEXJPUS',30)]);
   const pairs = fx ? [
     {p:'EUR/USD',v:(1/fx.EUR).toFixed(4)},{p:'GBP/USD',v:(1/fx.GBP).toFixed(4)},{p:'USD/JPY',v:fx.JPY?.toFixed(2)},{p:'USD/CHF',v:fx.CHF?.toFixed(4)},
     {p:'AUD/USD',v:(1/fx.AUD).toFixed(4)},{p:'USD/CAD',v:fx.CAD?.toFixed(4)},{p:'NZD/USD',v:(1/fx.NZD).toFixed(4)},{p:'EUR/GBP',v:(fx.GBP/fx.EUR).toFixed(4)},
@@ -36,7 +36,7 @@ export default async function FxPage() {
         ))}
       </div>
 
-      <FxCharts dxyC={dxyC} />
+      <FxCharts dxyC={dxyC} eurusdC={eurusdC} usdjpyC={usdjpyC} />
     </div>
   );
 }

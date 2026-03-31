@@ -1,5 +1,5 @@
 // app/api/market-data/route.ts
-// Unified market data API — Yahoo Finance + CoinGecko global + Fear & Greed
+// Unified market data API — Yahoo Finance + CoinGecko global + Fear & Greed + FRED
 import { NextResponse } from "next/server";
 
 const SYMBOLS: Record<string, { symbol: string; label: string; sector: string }> = {
@@ -11,10 +11,12 @@ const SYMBOLS: Record<string, { symbol: string; label: string; sector: string }>
   OIL:    { symbol: "CL=F",     label: "WTI Crude",  sector: "commodities" },
   SILVER: { symbol: "SI=F",     label: "Silver",     sector: "commodities" },
   NATGAS: { symbol: "NG=F",     label: "Nat Gas",    sector: "commodities" },
+  COPPER: { symbol: "HG=F",     label: "Copper",     sector: "commodities" },
   EURUSD: { symbol: "EURUSD=X", label: "EUR/USD",    sector: "fx" },
   GBPUSD: { symbol: "GBPUSD=X", label: "GBP/USD",    sector: "fx" },
   USDJPY: { symbol: "USDJPY=X", label: "USD/JPY",    sector: "fx" },
   USDCHF: { symbol: "USDCHF=X", label: "USD/CHF",    sector: "fx" },
+  DXY:    { symbol: "DX-Y.NYB", label: "Dollar Index", sector: "fx" },
   SPX:    { symbol: "^GSPC",    label: "S&P 500",    sector: "macro" },
   DJI:    { symbol: "^DJI",     label: "Dow Jones",  sector: "macro" },
   NDX:    { symbol: "^IXIC",    label: "NASDAQ",     sector: "macro" },
@@ -28,7 +30,7 @@ const CACHE_TTL = 60_000; // 1 minute
 
 async function fetchYahoo(symbol: string) {
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1mo`;
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0" },
       next: { revalidate: 60 },
@@ -42,7 +44,7 @@ async function fetchYahoo(symbol: string) {
     const prevClose = meta.chartPreviousClose ?? meta.previousClose ?? price;
     const change = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
     const closes = result.indicators?.quote?.[0]?.close?.filter((v: any) => v != null) ?? [];
-    return { price, change, prevClose, sparkline: closes.slice(-20) };
+    return { price, change, prevClose, sparkline: closes.slice(-30) };
   } catch {
     return null;
   }
@@ -86,12 +88,12 @@ async function fetchCryptoGlobal() {
   }
 }
 
-async function fetchFredRate() {
+async function fetchFredSeries(seriesId: string): Promise<string | null> {
   try {
     const FR = process.env.FRED_API_KEY || "";
     if (!FR) return null;
     const res = await fetch(
-      `https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key=${FR}&file_type=json&sort_order=desc&limit=1`,
+      `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FR}&file_type=json&sort_order=desc&limit=1`,
       { next: { revalidate: 3600 } }
     );
     if (!res.ok) return null;
@@ -112,11 +114,14 @@ export async function GET() {
 
   // Fetch everything in parallel
   const entries = Object.entries(SYMBOLS);
-  const [yahooResults, fearGreed, cryptoGlobal, fedRate] = await Promise.all([
+  const [yahooResults, fearGreed, cryptoGlobal, fedRate, cpi, unemp, dxyFred] = await Promise.all([
     Promise.allSettled(entries.map(([, v]) => fetchYahoo(v.symbol))),
     fetchFearGreed(),
     fetchCryptoGlobal(),
-    fetchFredRate(),
+    fetchFredSeries("FEDFUNDS"),
+    fetchFredSeries("CPIAUCSL"),
+    fetchFredSeries("UNRATE"),
+    fetchFredSeries("DTWEXBGS"),
   ]);
 
   // Build symbols data
@@ -138,6 +143,9 @@ export async function GET() {
     fearGreed,
     cryptoGlobal,
     fedRate,
+    cpi,
+    unemp,
+    dxy: dxyFred,
     timestamp: new Date().toISOString(),
   };
 
