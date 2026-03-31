@@ -3,7 +3,7 @@ import { getDefiTvl, getChains, getGlobal } from '@/lib/api';
 import StructCharts from './charts';
 
 export const metadata = { title: 'DeFi & On-Chain Structure | S2D Capital Insights' };
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function StructurePage() {
   const [defi, chains, global] = await Promise.all([getDefiTvl(), getChains(), getGlobal()]);

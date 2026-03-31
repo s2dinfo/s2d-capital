@@ -3,7 +3,7 @@ import { getCryptoMarkets, getGlobal, getFearGreed, getTrending, getCoinChart, g
 import CryptoCharts from './charts';
 
 export const metadata = { title: 'Crypto & Digital Assets | S2D Capital Insights' };
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function CryptoPage() {
   const [coins, global, fg, trending, btcC, ethC, solC, defi] = await Promise.all([

@@ -3,7 +3,7 @@ import { getFx, getMacro, fredChart } from '@/lib/api';
 import FxCharts from './charts';
 
 export const metadata = { title: 'FX & Currencies | S2D Capital Insights' };
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function FxPage() {
   const [fx, macro, dxyC] = await Promise.all([getFx(), getMacro(), fredChart('DTWEXBGS',30)]);

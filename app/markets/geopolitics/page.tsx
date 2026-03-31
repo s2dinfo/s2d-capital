@@ -3,7 +3,7 @@ import { getMacro, fredChart, getWorldGdp, fmtP } from '@/lib/api';
 import GeoCharts from './charts';
 
 export const metadata = { title: 'Global Macro & Policy Signals | S2D Capital Insights' };
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function GeopoliticsPage() {
   const [macro, yieldC, m2C, gdpData] = await Promise.all([getMacro(), fredChart('T10Y2Y',36), fredChart('M2SL',24), getWorldGdp()]);

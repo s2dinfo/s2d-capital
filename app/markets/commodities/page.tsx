@@ -3,7 +3,7 @@ import { getCommodities, fredChart, fmtPct, pctCol } from '@/lib/api';
 import CommCharts from './charts';
 
 export const metadata = { title: 'Commodities & Energy | S2D Capital Insights' };
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export default async function CommoditiesPage() {
   const [commod, oilC, goldC] = await Promise.all([getCommodities(), fredChart('DCOILWTICO',60), fredChart('DCOILBRENTEU',60)]);
