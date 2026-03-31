@@ -1,4 +1,5 @@
 'use client';
+import { useMarketData } from '@/hooks/useMarketData';
 import { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { PieChart, Pie, Cell, AreaChart, Area, ResponsiveContainer } from 'recharts';
@@ -85,7 +86,15 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
 }
 
 /* ══════════════════════════════════════════════ */
-export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:any){
+export default function HomeClient(){
+  const { data: _md, loading: _loading } = useMarketData();
+  const prices = _md?.symbols ? { bitcoin: { usd: _md.symbols.BTC?.price, usd_24h_change: _md.symbols.BTC?.change, usd_market_cap: null }, ethereum: { usd: _md.symbols.ETH?.price, usd_24h_change: _md.symbols.ETH?.change }, solana: { usd: _md.symbols.SOL?.price }, ripple: { usd: _md.symbols.XRP?.price } } : null;
+  const macro = _md ? { fedRate: _md.fedRate, t10y: _md.symbols?.US10Y?.price?.toFixed(2), t2y: _md.symbols?.US2Y?.price?.toFixed(2), cpi: null, unemp: null, yieldSpread: _md.symbols?.US10Y?.price && _md.symbols?.US2Y?.price ? (_md.symbols.US10Y.price - _md.symbols.US2Y.price).toFixed(2) : null, m2: null, dxy: null } : null;
+  const commod = _md?.symbols ? { oil: _md.symbols.OIL?.price, oilChg: _md.symbols.OIL?.change, gold: _md.symbols.GOLD?.price, goldChg: _md.symbols.GOLD?.change, natgas: _md.symbols.NATGAS?.price, natgasChg: _md.symbols.NATGAS?.change } : null;
+  const fx = _md?.symbols ? { EUR: _md.symbols.EURUSD?.price ? 1/_md.symbols.EURUSD.price : null, GBP: _md.symbols.GBPUSD?.price ? 1/_md.symbols.GBPUSD.price : null, JPY: _md.symbols.USDJPY?.price, CHF: _md.symbols.USDCHF?.price } : null;
+  const fg = _md?.fearGreed ? { current: { value: _md.fearGreed.value, label: _md.fearGreed.label }, history: _md.fearGreed.history } : null;
+  const global = _md?.cryptoGlobal ?? null;
+  const indices = _md?.symbols ? { sp500: { val: _md.symbols.SPX?.price, chg: _md.symbols.SPX?.change }, djia: { val: _md.symbols.DJI?.price, chg: _md.symbols.DJI?.change }, nasdaq: { val: _md.symbols.NDX?.price, chg: _md.symbols.NDX?.change }, vix: { val: _md.symbols.VIX?.price, chg: _md.symbols.VIX?.change } } : null;
   const[time,setTime]=useState('');
   const[selectedTopic,setSelectedTopic]=useState<string|null>(null);
   const[sidebarOpen,setSidebarOpen]=useState(false);
@@ -105,7 +114,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
     {l:'BTC',v:'$'+(btc?.usd?.toLocaleString('en-US',{maximumFractionDigits:0})||'-'),c:pc(btc?.usd_24h_change)},
     {l:'GOLD',v:'$'+(commod?.gold?.toFixed(0)||'-'),c:pc(commod?.goldChg)},
     {l:'OIL',v:'$'+(commod?.oil?.toFixed(2)||'-'),c:pc(commod?.oilChg)},
-    {l:'EUR/USD',v:fx?(1/fx.EUR).toFixed(4):'-'},
+    {l:'EUR/USD',v:fx&&fx.EUR?(1/fx.EUR).toFixed(4):'-'},
     {l:'FED',v:(macro?.fedRate||'-')+'%'},
     {l:'VIX',v:vixVal?.toFixed(1)||'-',c:vixVal?(vixVal>30?'var(--red)':vixVal>20?'#E88A3C':'var(--green)'):undefined},
   ];
@@ -253,7 +262,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
           <p style={{fontSize:'0.88rem',color:'rgba(255,255,255,0.5)',lineHeight:1.7,maxWidth:640}}>{featured.excerpt}</p>
           <div style={{display:'flex',alignItems:'center',gap:12,marginTop:16,fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.35)',flexWrap:'wrap'}}>
             <span>BTC ${btc?.usd?.toLocaleString('en-US',{maximumFractionDigits:0})||'-'}</span>
-            <span style={{color:btc?.usd_24h_change>0?'var(--green)':'var(--red)'}}>{btc?.usd_24h_change>0?'+':''}{btc?.usd_24h_change?.toFixed(1)}%</span>
+            <span style={{color:(btc?.usd_24h_change??0)>0?'var(--green)':'var(--red)'}}>{(btc?.usd_24h_change??0)>0?'+':''}{btc?.usd_24h_change?.toFixed(1)}%</span>
             <span style={{marginLeft:'auto',color:'var(--gold-light)'}}>{featured.date} · {featured.readTime} → Read Article</span>
           </div>
         </div>
@@ -300,7 +309,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:10}}>
         <DataCard title="MACRO & CENTRAL BANKS" color="#6B9BD2" rows={[{l:'Fed Rate',v:(macro?.fedRate||'-')+'%',c:'#6B9BD2'},{l:'10Y Yield',v:(macro?.t10y||'-')+'%',c:'#6B9BD2'},{l:'CPI',v:macro?.cpi||'-',c:'#D4A843'},{l:'Unemployment',v:(macro?.unemp||'-')+'%',c:'#E06B6B'},{l:'Dollar (DXY)',v:macro?.dxy||'-',c:'#4CAF7D'}]}/>
-        <DataCard title="FX RATES" color="#4CAF7D" rows={fx?[{l:'EUR/USD',v:(1/fx.EUR).toFixed(4),c:'#4CAF7D'},{l:'GBP/USD',v:(1/fx.GBP).toFixed(4),c:'#4CAF7D'},{l:'USD/JPY',v:fx.JPY?.toFixed(2),c:'#4CAF7D'},{l:'USD/CHF',v:fx.CHF?.toFixed(4),c:'#4CAF7D'}]:[]}/>
+        <DataCard title="FX RATES" color="#4CAF7D" rows={fx?[{l:'EUR/USD',v:fx.EUR?(1/fx.EUR).toFixed(4):'-',c:'#4CAF7D'},{l:'GBP/USD',v:fx.GBP?(1/fx.GBP).toFixed(4):'-',c:'#4CAF7D'},{l:'USD/JPY',v:fx.JPY?fx.JPY.toFixed(2):'-',c:'#4CAF7D'},{l:'USD/CHF',v:fx.CHF?fx.CHF.toFixed(4):'-',c:'#4CAF7D'}]:[]}/>
         <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',padding:'16px 12px',textAlign:'center',borderRadius:6}}>
           <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',color:'var(--gold-light)',display:'block',marginBottom:10,fontWeight:600}}>FEAR & GREED INDEX</span>
           <FearGreedGauge value={fgVal} label={fgLabel}/>
