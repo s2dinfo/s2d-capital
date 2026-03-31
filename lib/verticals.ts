@@ -45,13 +45,13 @@ export const VERTICALS = {
     tags: ['Tariffs', 'Sanctions', 'EU'],
   },
   structure: {
-    label: 'Market Structure',
+    label: 'DeFi & On-Chain Structure',
     labelShort: 'Structure',
     icon: 'Structure',
     color: 'var(--v-structure)',
     hex: '#5B4FA0',
-    description: 'Institutional Flows, ETF Architecture, TradFi',
-    tags: ['ETF Flows', 'OCC', 'Wall St'],
+    description: 'DeFi TVL, Chain Metrics, Protocol Data',
+    tags: ['DeFi TVL', 'Chains', 'Protocols'],
   },
 } as const;
 

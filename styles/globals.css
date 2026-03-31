@@ -414,3 +414,22 @@ article table td { color: rgba(255,255,255,0.65) !important; border-bottom-color
 article table td:first-child { color: #ffffff !important; font-weight: 500; }
 input[type="email"], input[type="text"] { background: rgba(255,255,255,0.05) !important; color: #ffffff !important; }
 input::placeholder { color: rgba(255,255,255,0.3) !important; }
+
+/* ── S2D Dark Theme Article Fixes ── */
+article div[style*="borderLeft: 3px"] strong:first-of-type,
+article div[style*="border-left: 3px"] strong:first-of-type,
+article div[style*="borderLeft:3px"] strong:first-of-type,
+article div[style*="border-left:3px"] strong:first-of-type {
+  color: #D4B85C !important;
+  font-weight: 700;
+}
+div[style*="Powered by TradingView"] { color: rgba(255,255,255,0.3) !important; }
+article p { color: rgba(255,255,255,0.75); }
+article strong, article b { color: #ffffff; }
+article h2, article h3 { color: #ffffff; }
+article em { color: #D4B85C; }
+article table th { color: rgba(255,255,255,0.5) !important; border-bottom-color: rgba(255,255,255,0.1) !important; }
+article table td { color: rgba(255,255,255,0.65) !important; border-bottom-color: rgba(255,255,255,0.06) !important; }
+article table td:first-child { color: #ffffff !important; font-weight: 500; }
+input[type="email"], input[type="text"] { background: rgba(255,255,255,0.05) !important; color: #ffffff !important; }
+input::placeholder { color: rgba(255,255,255,0.3) !important; }

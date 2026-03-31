@@ -328,7 +328,7 @@ export default function HomeClient({prices,macro,commod,fx,fg,global,indices}:an
           {shortLabel:'Commodities',title:'Commodities & Energy',subtitle:'Oil, Gold, Agriculture, Supply Chains',tags:['Gold','Oil','Copper'],color:'#8B5E3C',href:'/markets/commodities'},
           {shortLabel:'FX',title:'FX & Currencies',subtitle:'Dollar, EUR/USD, EM Currencies, Stablecoins',tags:['DXY','EUR','Stablecoins'],color:'#2D8F5E',href:'/markets/fx'},
           {shortLabel:'Geopolitics',title:'Geopolitics & Policy',subtitle:'Trade Wars, Sanctions, Elections',tags:['Tariffs','Sanctions','EU'],color:'#8B2252',href:'/markets/geopolitics'},
-          {shortLabel:'Structure',title:'Market Structure',subtitle:'Institutional Flows, ETF Architecture, TradFi',tags:['ETF Flows','OCC','Wall St'],color:'#5B4FA0',href:'/markets/structure'},
+          {shortLabel:'Structure',title:'DeFi & On-Chain Structure',subtitle:'DeFi TVL, Chain Metrics, Protocol Data',tags:['DeFi TVL','Chains','Protocols'],color:'#5B4FA0',href:'/markets/structure'},
         ].map((v,i)=><InteractiveVerticalCard key={v.shortLabel} index={i} {...v}/>)}
       </div>
       <p style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.4)',textAlign:'center',marginTop:20,maxWidth:600,margin:'20px auto 0'}}><strong style={{color:'#fff'}}>Fed rate decision</strong> → Dollar → Gold & Oil → EM Currencies → Crypto allocation. <strong style={{color:'#fff'}}>We connect these dots.</strong></p>

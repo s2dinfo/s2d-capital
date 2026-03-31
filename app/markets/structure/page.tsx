@@ -14,7 +14,7 @@ export default async function StructurePage() {
         <div style={{width:6,height:32,background:'#5B4FA0',borderRadius:2}}/>
         <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Market <em style={{fontStyle:'italic',color:'#5B4FA0'}}>Structure</em></h1>
       </div>
-      <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>DeFi TVL by chain, institutional infrastructure, and ecosystem metrics. Data from DefiLlama &amp; CoinGecko.</p>
+      <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>DeFi TVL by chain, protocol metrics, and on-chain ecosystem data. Data from DefiLlama &amp; CoinGecko.</p>
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:10,marginBottom:28}}>
         {[

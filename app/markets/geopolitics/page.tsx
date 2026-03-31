@@ -17,7 +17,7 @@ export default async function GeopoliticsPage() {
         <div style={{width:6,height:32,background:'#8B2252',borderRadius:2}}/>
         <h1 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'var(--navy)'}}>Geopolitics &amp; <em style={{fontStyle:'italic',color:'#8B2252'}}>Policy</em></h1>
       </div>
-      <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>Recession signals, liquidity indicators, and global GDP. Data from FRED &amp; World Bank.</p>
+      <p style={{fontSize:'0.82rem',color:'var(--text-sec)',fontWeight:300,marginBottom:28}}>Recession indicators, liquidity metrics, and macro policy signals that drive cross-market moves. Data from FRED &amp; World Bank.</p>
 
       {/* Signal cards */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:14,marginBottom:28}}>
