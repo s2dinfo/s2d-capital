@@ -2,6 +2,7 @@
 import BackButton from "@/components/BackButton";
 
 import ArticleProgress from "@/components/ArticleProgress";
+import RelatedArticles from "@/components/RelatedArticles";
 import Term from "@/components/Term";
 import ThesisTracker from "@/components/ThesisTracker";
 import { motion } from "framer-motion";
@@ -573,6 +574,8 @@ export default function EnergyArticle() {
           <strong>Sources:</strong> IEA Electricity 2026 Report, European Commission REPowerEU, Ember Energy, E3G, Bruegel, Euronews, CNBC, European Council, ECB Economic Bulletin (2026), IMF Working Paper 2026/003, EEX Group, ICE Endex, EPEX SPOT, Association of Issuing Bodies (AIB), European Energy Exchange, Eurostat, IRU, Clean Energy Wire, Charles Schwab Global Insights, Wikipedia (Economic impact of the 2026 Iran war).
         </div>
       </div>
-    </article></>
+    </article>
+      <RelatedArticles currentSlug="europe-energy-decoded" tags={['commodities','geopolitics']} />
+    </>
   );
 }

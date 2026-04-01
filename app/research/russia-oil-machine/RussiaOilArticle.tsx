@@ -2,6 +2,8 @@
 import BackButton from "@/components/BackButton";
 
 import ArticleProgress from "@/components/ArticleProgress";
+import RelatedArticles from "@/components/RelatedArticles";
+import Footnote from "@/components/Footnote";
 import Term from "@/components/Term";
 import ThesisTracker from "@/components/ThesisTracker";
 
@@ -146,7 +148,7 @@ export default function RussiaOilArticle() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
           <h2 id="sec-1" style={S.h2}>1. Executive Summary</h2>
           <p>
-            On March 19, 2026, the overnight yuan lending rate on the Moscow Exchange hit 44%, up from near zero a year earlier. Russian banks were paying extraordinary premiums to borrow Chinese currency for twelve hours. At that rate, a 500-million-yuan overnight loan costs roughly $87,000 in interest. A year ago, the same loan cost $2,400.
+            On March 19, 2026, the overnight yuan lending rate on the Moscow Exchange hit 44%<Footnote id={1} source="Moscow Exchange (MOEX)" detail="RUSFAR CNY overnight rate, March 19, 2026" />, up from near zero a year earlier. Russian banks were paying extraordinary premiums to borrow Chinese currency for twelve hours. At that rate, a 500-million-yuan overnight loan costs roughly $87,000 in interest. A year ago, the same loan cost $2,400.
           </p>
           <p>
             Russia is the world&apos;s second-largest oil exporter. It produces 10 million barrels per day. It earned over $100 billion from energy exports last year. And yet its banking system cannot reliably access the one foreign currency it needs to function.
@@ -185,7 +187,7 @@ export default function RussiaOilArticle() {
           </div>
 
           <p>
-            Russian Urals has an API gravity of approximately 31&deg; and sulfur content of 1.3%. That makes it medium-density and sour. Compare that to <strong style={{ color: "#fff" }}><Term definition="The world's most important oil price benchmark. Originally a North Sea crude grade, now refers to a basket of five grades (BFOET). ~80% of global oil contracts are priced relative to Brent." href="https://www.investopedia.com/terms/b/brentblend.asp">Brent</Term></strong> (the world&apos;s most important benchmark, API ~38&deg;, sulfur ~0.37%) or <strong style={{ color: "#fff" }}><Term definition="West Texas Intermediate — the US oil benchmark. Lighter and sweeter than Brent. Trades on NYMEX with physical delivery at Cushing, Oklahoma." href="https://www.investopedia.com/terms/w/wti.asp">WTI</Term></strong>, West Texas Intermediate, the American benchmark (API ~39&deg;, sulfur ~0.24%). Both are lighter and sweeter, meaning a refinery produces more high-value products from them.
+            Russian Urals has an API gravity of approximately 31&deg;<Footnote id={2} source="S&P Global Platts" detail="Urals crude specifications" href="https://www.spglobal.com/commodityinsights/" /> and sulfur content of 1.3%. That makes it medium-density and sour. Compare that to <strong style={{ color: "#fff" }}><Term definition="The world's most important oil price benchmark. Originally a North Sea crude grade, now refers to a basket of five grades (BFOET). ~80% of global oil contracts are priced relative to Brent." href="https://www.investopedia.com/terms/b/brentblend.asp">Brent</Term></strong> (the world&apos;s most important benchmark, API ~38&deg;, sulfur ~0.37%) or <strong style={{ color: "#fff" }}><Term definition="West Texas Intermediate — the US oil benchmark. Lighter and sweeter than Brent. Trades on NYMEX with physical delivery at Cushing, Oklahoma." href="https://www.investopedia.com/terms/w/wti.asp">WTI</Term></strong>, West Texas Intermediate, the American benchmark (API ~39&deg;, sulfur ~0.24%). Both are lighter and sweeter, meaning a refinery produces more high-value products from them.
           </p>
           <p>
             Before sanctions, this quality difference meant Urals traded at a discount of $1&ndash;2 per barrel to Brent. Today, the discount sits in the range of $6&ndash;12. The extra $5&ndash;10 has nothing to do with chemistry. It has everything to do with what happened after February 2022.
@@ -269,7 +271,7 @@ export default function RussiaOilArticle() {
             The tanker is 19 years old, well past the point where most Western operators would retire it. It is owned by a limited liability company in the Marshall Islands, itself owned by another LLC in Dubai, managed by an entity in Hong Kong whose beneficial owner is unknown. It flies the flag of Gabon.
           </p>
           <p>
-            Russia has assembled approximately 600 such vessels since 2022. They are old (average age 15&ndash;18 years), owned through nested shell companies, flagged in jurisdictions with minimal oversight, and operated with frequently disabled tracking systems.
+            Russia has assembled approximately 600 such vessels since 2022<Footnote id={3} source="Kpler & Windward AI" detail="Shadow fleet vessel tracking, March 2026" />. They are old (average age 15&ndash;18 years), owned through nested shell companies, flagged in jurisdictions with minimal oversight, and operated with frequently disabled tracking systems.
           </p>
 
           <h3 style={S.h3}>5.2 The Insurance Gap</h3>
@@ -435,7 +437,7 @@ export default function RussiaOilArticle() {
           </div>
 
           <p>
-            In a healthy system, the overnight rate hovers near the central bank&apos;s target. A 44% overnight rate means the system is not healthy. It means more banks need yuan than have yuan, and the bidding war has become extreme.
+            In a healthy system, the overnight rate hovers near the central bank&apos;s target. A 44% overnight rate<Footnote id={4} source="Central Bank of Russia" detail="Interbank lending rates, MOEX data" /> means the system is not healthy. It means more banks need yuan than have yuan, and the bidding war has become extreme.
           </p>
 
           <h3 style={S.h3}>8.2 Why It Happened: Three Simultaneous Shocks</h3>
@@ -558,7 +560,7 @@ export default function RussiaOilArticle() {
           <div style={S.warnBox}>
             <div style={S.warnLabel}>Important Distinction</div>
             <p style={{ margin: 0 }}>
-              Russia maintains a nominal trade surplus with China ($129.3 billion in exports vs. $115.5 billion in imports in 2024). But the surplus depends entirely on volatile commodity prices. Russia exports raw materials at discounted prices; China exports finished goods at full prices. When oil prices fall, the surplus vanishes. When they rise, the revenues arrive with a 1&ndash;2 month lag that creates the yuan shortage. The &ldquo;surplus&rdquo; masks a structural dependency.
+              Russia maintains a nominal trade surplus with China ($129.3 billion in exports<Footnote id={5} source="MERICS China-Russia Dashboard" detail="Bilateral trade data, 2024 figures" /> vs. $115.5 billion in imports in 2024). But the surplus depends entirely on volatile commodity prices. Russia exports raw materials at discounted prices; China exports finished goods at full prices. When oil prices fall, the surplus vanishes. When they rise, the revenues arrive with a 1&ndash;2 month lag that creates the yuan shortage. The &ldquo;surplus&rdquo; masks a structural dependency.
             </p>
           </div>
         </motion.div>
@@ -793,6 +795,7 @@ export default function RussiaOilArticle() {
         </motion.div>
 
       </article>
+      <RelatedArticles currentSlug="russia-oil-machine" tags={['commodities','geopolitics','fx']} />
     </>
   );
 }

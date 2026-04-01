@@ -2,6 +2,7 @@
 import BackButton from "@/components/BackButton";
 
 import ArticleProgress from "@/components/ArticleProgress";
+import RelatedArticles from "@/components/RelatedArticles";
 import Term from "@/components/Term";
 import ThesisTracker from "@/components/ThesisTracker";
 import { motion } from "framer-motion";
@@ -632,6 +633,8 @@ export default function ClarityActArticle() {
           Coinbase, KPMG, Morgan Stanley OCC Filing.
         </div>
       </div>
-    </article></>
+    </article>
+      <RelatedArticles currentSlug="clarity-act" tags={['crypto','structure']} />
+    </>
   );
 }
