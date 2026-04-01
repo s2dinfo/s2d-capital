@@ -144,24 +144,32 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile menu overlay */}
       {mobileOpen && (
         <div
           style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(4px)", zIndex: 98,
+            position: "fixed", inset: 0, background: "rgba(15,15,35,0.98)",
+            backdropFilter: "blur(8px)", zIndex: 200,
+            display: "flex", flexDirection: "column",
           }}
-          onClick={() => setMobileOpen(false)}
         >
-          <div
+          {/* Close button — top left */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
             style={{
-              position: "absolute", top: 60, left: 0, right: 0,
-              background: "rgba(15,15,35,0.98)",
-              borderBottom: "1px solid rgba(184,134,11,0.15)",
-              padding: "16px 0",
+              position: "absolute", top: 16, left: 16,
+              background: "none", border: "none", cursor: "pointer",
+              color: "var(--gold-light, #D4B85C)", fontSize: "1.5rem",
+              width: 40, height: 40,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 201,
             }}
-            onClick={(e) => e.stopPropagation()}
           >
+            ✕
+          </button>
+
+          <div style={{ paddingTop: 72, paddingBottom: 32 }}>
             {links.map((l) => (
               <Link
                 key={l.label}
@@ -169,11 +177,11 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 style={{
                   display: "block",
-                  padding: "14px 32px",
+                  padding: "18px 32px",
                   fontFamily: "var(--font-mono)",
-                  fontSize: "0.72rem",
+                  fontSize: "0.82rem",
                   letterSpacing: "0.06em",
-                  color: "rgba(255,255,255,0.6)",
+                  color: "rgba(255,255,255,0.7)",
                   textDecoration: "none",
                   borderBottom: "1px solid rgba(255,255,255,0.04)",
                   transition: "all 0.2s",
@@ -182,7 +190,7 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <div style={{ padding: "12px 32px 8px", display: "flex", gap: 16 }}>
+            <div style={{ padding: "20px 32px 8px", display: "flex", gap: 16 }}>
               <Link href="/impressum" onClick={() => setMobileOpen(false)} style={{
                 fontFamily: "var(--font-mono)", fontSize: "0.58rem",
                 color: "rgba(255,255,255,0.3)", textDecoration: "none",
