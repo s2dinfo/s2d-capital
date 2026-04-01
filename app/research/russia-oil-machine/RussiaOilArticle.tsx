@@ -1,6 +1,9 @@
 "use client";
 import BackButton from "@/components/BackButton";
 
+import ArticleProgress from "@/components/ArticleProgress";
+import Term from "@/components/Term";
+
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -45,6 +48,23 @@ export default function RussiaOilArticle() {
   return (
     <>
       <BackButton label="Back to Research" href="/research" />
+      <ArticleProgress sections={[
+        { id: "sec-1", title: "Executive Summary", number: "1" },
+        { id: "sec-2", title: "The Barrel", number: "2" },
+        { id: "sec-3", title: "Before the Break", number: "3" },
+        { id: "sec-4", title: "The Severing", number: "4" },
+        { id: "sec-5", title: "Shadow Fleet", number: "5" },
+        { id: "sec-6", title: "The Customer", number: "6" },
+        { id: "sec-7", title: "The Payment", number: "7" },
+        { id: "sec-8", title: "44% Overnight Rate", number: "8" },
+        { id: "sec-9", title: "The Spiral", number: "9" },
+        { id: "sec-10", title: "The Asymmetry", number: "10" },
+        { id: "sec-11", title: "Dollar System", number: "11" },
+        { id: "sec-12", title: "Oil Paradox", number: "12" },
+        { id: "sec-13", title: "India Route", number: "13" },
+        { id: "sec-14", title: "Yuan vs Dollar", number: "14" },
+        { id: "sec-15", title: "Implications", number: "15" },
+      ]} />
 
       {/* ═══ HERO ═══ */}
       <motion.div
@@ -113,7 +133,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 1: Executive Summary ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>1. Executive Summary</h2>
+          <h2 id="sec-1" style={S.h2}>1. Executive Summary</h2>
           <p>
             On March 19, 2026, the overnight yuan lending rate on the Moscow Exchange hit 44%, up from near zero a year earlier. Russian banks were paying extraordinary premiums to borrow Chinese currency for twelve hours. At that rate, a 500-million-yuan overnight loan costs roughly $87,000 in interest. A year ago, the same loan cost $2,400.
           </p>
@@ -130,7 +150,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 2: The Barrel ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>2. The Barrel</h2>
+          <h2 id="sec-2" style={S.h2}>2. The Barrel</h2>
           <p>
             Start with a single barrel of Russian crude. It comes from Western Siberia, from aging fields around Surgut and Nizhnevartovsk that have been producing since the Soviet era. It is pumped through the Druzhba pipeline system to Primorsk, a port on the Baltic Sea near St. Petersburg, where it will be loaded onto a tanker bound for China.
           </p>
@@ -154,7 +174,7 @@ export default function RussiaOilArticle() {
           </div>
 
           <p>
-            Russian Urals has an API gravity of approximately 31&deg; and sulfur content of 1.3%. That makes it medium-density and sour. Compare that to <strong style={{ color: "#fff" }}>Brent</strong> (the world&apos;s most important benchmark, API ~38&deg;, sulfur ~0.37%) or <strong style={{ color: "#fff" }}>WTI</strong>, West Texas Intermediate, the American benchmark (API ~39&deg;, sulfur ~0.24%). Both are lighter and sweeter, meaning a refinery produces more high-value products from them.
+            Russian Urals has an API gravity of approximately 31&deg; and sulfur content of 1.3%. That makes it medium-density and sour. Compare that to <strong style={{ color: "#fff" }}><Term definition="The world's most important oil price benchmark. Originally a North Sea crude grade, now refers to a basket of five grades (BFOET). ~80% of global oil contracts are priced relative to Brent." href="https://www.investopedia.com/terms/b/brentblend.asp">Brent</Term></strong> (the world&apos;s most important benchmark, API ~38&deg;, sulfur ~0.37%) or <strong style={{ color: "#fff" }}><Term definition="West Texas Intermediate — the US oil benchmark. Lighter and sweeter than Brent. Trades on NYMEX with physical delivery at Cushing, Oklahoma." href="https://www.investopedia.com/terms/w/wti.asp">WTI</Term></strong>, West Texas Intermediate, the American benchmark (API ~39&deg;, sulfur ~0.24%). Both are lighter and sweeter, meaning a refinery produces more high-value products from them.
           </p>
           <p>
             Before sanctions, this quality difference meant Urals traded at a discount of $1&ndash;2 per barrel to Brent. Today, the discount sits in the range of $6&ndash;12. The extra $5&ndash;10 has nothing to do with chemistry. It has everything to do with what happened after February 2022.
@@ -187,12 +207,12 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 3: Before the Break ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>3. Before the Break: How the System Used to Work</h2>
+          <h2 id="sec-3" style={S.h2}>3. Before the Break: How the System Used to Work</h2>
           <p>
             Before February 2022, our barrel&apos;s journey was unremarkable. It loaded at Primorsk onto a Greek-owned tanker (Greece controls the world&apos;s largest merchant fleet), insured by a club in London, classified by a Norwegian agency, and tracked by a transponder visible to the entire world. It sailed through the Danish Straits into the North Sea, south to a European refinery: Schwedt in Germany, Rotterdam in the Netherlands, or P&#322;ock in Poland. Voyage time: 5&ndash;7 days.
           </p>
           <p>
-            Payment was standard. The European refinery wired US dollars through SWIFT to Rosneft&apos;s account at a Western bank. Rosneft converted dollars to rubles on the Moscow Exchange. The whole process, from loading to payment, took about six weeks. It worked seamlessly because it used the same infrastructure as every other oil trade on earth.
+            Payment was standard. The European refinery wired US dollars through <Term definition="Society for Worldwide Interbank Financial Telecommunication — the global messaging network banks use to send payment instructions. Not a payment system itself, but the communication layer that makes cross-border transfers possible." href="https://www.investopedia.com/articles/personal-finance/050515/how-swift-system-works.asp">SWIFT</Term> to Rosneft&apos;s account at a Western bank. Rosneft converted dollars to rubles on the Moscow Exchange. The whole process, from loading to payment, took about six weeks. It worked seamlessly because it used the same infrastructure as every other oil trade on earth.
           </p>
           <p>
             Roughly half of Russia&apos;s crude exports went to the European Union. The ruble floated freely. Russian banks transacted on SWIFT. Oil was priced in dollars, paid in dollars, and hedged in dollars. Everything was connected to the system.
@@ -204,7 +224,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 4: The Severing ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>4. The Severing: How Sanctions Reshaped the Supply Chain</h2>
+          <h2 id="sec-4" style={S.h2}>4. The Severing: How Sanctions Reshaped the Supply Chain</h2>
           <p>The Western response came in layers, each targeting a different link in the chain.</p>
           <p>
             <strong style={{ color: "#fff" }}>Layer 1: Financial.</strong> Approximately $300 billion of the Central Bank of Russia&apos;s foreign reserves, held in Western institutions, were frozen. Major Russian banks were cut from SWIFT. Visa and Mastercard suspended operations.
@@ -230,7 +250,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 5: The Shadow Fleet ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>5. The Shadow Fleet: Russia&apos;s Parallel Maritime System</h2>
+          <h2 id="sec-5" style={S.h2}>5. The Shadow Fleet: Russia&apos;s Parallel Maritime System</h2>
           <p>Our barrel now loads at Primorsk onto a very different kind of ship.</p>
 
           <h3 style={S.h3}>5.1 The Fleet</h3>
@@ -261,7 +281,7 @@ export default function RussiaOilArticle() {
           </div>
 
           <p>
-            The shadow fleet replaces Western P&amp;I with Russian alternatives, primarily Ingosstrakh and the Russian National Reinsurance Company, offering maximum coverage of approximately $50&ndash;100 million per incident. That is less than 2% of what the International Group provides.
+            The shadow fleet replaces Western <Term definition="Protection &amp; Indemnity insurance — liability coverage for ship owners against third-party claims up to $8.5 billion per incident. Provided by 12 clubs, 9 UK/Scandinavian-based, covering ~90% of global tonnage." href="https://www.investopedia.com/terms/p/protection-and-indemnity-insurance.asp">P&amp;I</Term> with Russian alternatives, primarily Ingosstrakh and the Russian National Reinsurance Company, offering maximum coverage of approximately $50&ndash;100 million per incident. That is less than 2% of what the International Group provides.
           </p>
 
           <div style={S.callout}>
@@ -302,7 +322,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 6: The Customer ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>6. The Customer: How Russia Sells to China</h2>
+          <h2 id="sec-6" style={S.h2}>6. The Customer: How Russia Sells to China</h2>
           <p>
             Our barrel arrives in Qingdao after five weeks at sea. The buyer is a Chinese refinery: Sinopec, PetroChina, or CNOOC. But the price was not negotiated on the spot. It was set by a formula embedded in a long-term contract.
           </p>
@@ -344,7 +364,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 7: The Payment ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>7. The Payment: Where Russia&apos;s Crisis Begins</h2>
+          <h2 id="sec-7" style={S.h2}>7. The Payment: Where Russia&apos;s Crisis Begins</h2>
           <p>
             The Chinese refinery pays for our barrel in <strong style={{ color: "#fff" }}>yuan</strong>, China&apos;s currency (officially called the renminbi). Not in dollars (Russia is cut off from the dollar system), not in rubles (China has no use for an unconvertible currency). Yuan is the only option, and it is China&apos;s currency, on China&apos;s terms.
           </p>
@@ -365,7 +385,7 @@ export default function RussiaOilArticle() {
             <strong style={{ color: "#fff" }}>Step 1:</strong> Sinopec converts the dollar-equivalent contract value into yuan at the prevailing exchange rate.
           </p>
           <p>
-            <strong style={{ color: "#fff" }}>Step 2:</strong> Payment travels through <strong style={{ color: "#fff" }}>CIPS</strong> (Cross-Border Interbank Payment System, China&apos;s equivalent of SWIFT, built for yuan-denominated cross-border transactions) to Rosneft&apos;s account at a Chinese bank.
+            <strong style={{ color: "#fff" }}>Step 2:</strong> Payment travels through <strong style={{ color: "#fff" }}><Term definition="Cross-Border Interbank Payment System — China's alternative to SWIFT for yuan-denominated international transactions. Launched in 2015, processes ~$50B daily vs SWIFT's ~$5T." href="https://en.wikipedia.org/wiki/Cross-Border_Interbank_Payment_System">CIPS</Term></strong> (Cross-Border Interbank Payment System, China&apos;s equivalent of SWIFT, built for yuan-denominated cross-border transactions) to Rosneft&apos;s account at a Chinese bank.
           </p>
           <p>
             <strong style={{ color: "#fff" }}>Step 3:</strong> Rosneft transfers the yuan to its account at a Russian bank (say, Gazprombank) through CIPS correspondent channels.
@@ -389,7 +409,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 8: The 44% Overnight Rate ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>8. The 44% Overnight Rate: Anatomy of a Currency Crisis</h2>
+          <h2 id="sec-8" style={S.h2}>8. The 44% Overnight Rate: Anatomy of a Currency Crisis</h2>
 
           <h3 style={S.h3}>8.1 What an Overnight Rate Is</h3>
           <p>
@@ -399,7 +419,7 @@ export default function RussiaOilArticle() {
           <div style={S.defBox}>
             <div style={S.defLabel}>Definition</div>
             <p style={{ margin: 0 }}>
-              <strong style={{ color: "#fff" }}>Overnight Rate:</strong> The annualized interest rate at which banks lend to each other for a single night (typically 6 PM to 8 AM). In healthy markets, it sits near the central bank&apos;s policy rate. <strong style={{ color: "#fff" }}>SOFR</strong> (Secured Overnight Financing Rate) is the US equivalent, typically in the mid-3% range. <strong style={{ color: "#fff" }}>&euro;STR</strong> (Euro Short-Term Rate) is the eurozone equivalent, near the ECB&apos;s deposit facility rate. Russia&apos;s yuan overnight rate is measured by the <strong style={{ color: "#fff" }}>RUSFAR CNY</strong>, a reference rate based on collateralized yuan lending on the Moscow Exchange.
+              <strong style={{ color: "#fff" }}>Overnight Rate:</strong> The annualized interest rate at which banks lend to each other for a single night (typically 6 PM to 8 AM). In healthy markets, it sits near the central bank&apos;s policy rate. <strong style={{ color: "#fff" }}><Term definition="Secured Overnight Financing Rate — the primary US dollar overnight interest rate benchmark, based on ~$2 trillion in daily Treasury repo transactions. Replaced LIBOR in 2023." href="https://www.investopedia.com/secured-overnight-financing-rate-sofr-4683954">SOFR</Term></strong> (Secured Overnight Financing Rate) is the US equivalent, typically in the mid-3% range. <strong style={{ color: "#fff" }}>&euro;STR</strong> (Euro Short-Term Rate) is the eurozone equivalent, near the ECB&apos;s deposit facility rate. Russia&apos;s yuan overnight rate is measured by the <strong style={{ color: "#fff" }}>RUSFAR CNY</strong>, a reference rate based on collateralized yuan lending on the Moscow Exchange.
             </p>
           </div>
 
@@ -452,7 +472,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 9: The Spiral ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>9. The Spiral: How a Yuan Shortage Becomes an Economic Crisis</h2>
+          <h2 id="sec-9" style={S.h2}>9. The Spiral: How a Yuan Shortage Becomes an Economic Crisis</h2>
           <p>The 44% rate does not stay in the interbank market. It propagates through the entire economy:</p>
           <p>
             <strong style={{ color: "#fff" }}>Link 1: The ruble falls.</strong> Everyone is selling rubles to buy scarce yuan. The yuan&apos;s price in rubles surges. Since the Moscow Exchange no longer trades dollars or euros (eliminated by June 2024 sanctions), the CBR derives dollar and euro rates from the yuan rate. The ruble weakens against everything.
@@ -480,7 +500,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 10: The Asymmetry ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>10. The Asymmetry: Russia Needs China; China Needs Russia... Conveniently</h2>
+          <h2 id="sec-10" style={S.h2}>10. The Asymmetry: Russia Needs China; China Needs Russia... Conveniently</h2>
           <p>The trade relationship between Russia and China is not a partnership of equals. The numbers make this unambiguous:</p>
 
           <table style={S.table}>
@@ -534,7 +554,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 11: The Dollar System ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>11. The Dollar System: Why It Does Not Break</h2>
+          <h2 id="sec-11" style={S.h2}>11. The Dollar System: Why It Does Not Break</h2>
           <p>
             What Russia is experiencing (a 44% overnight rate, an exhausted swap line, a central bank with no effective tool) is essentially impossible in the dollar system. The architecture specifically prevents it.
           </p>
@@ -582,7 +602,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 12: The Oil Paradox ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>12. The Oil Paradox: Why Russia Cannot Cash In</h2>
+          <h2 id="sec-12" style={S.h2}>12. The Oil Paradox: Why Russia Cannot Cash In</h2>
           <p>Here is the cruel irony of early 2026: the Iran war should be a windfall.</p>
           <p>
             Oil prices have surged dramatically since hostilities began on February 28. The Strait of Hormuz, through which 20% of the world&apos;s oil normally flows, is effectively closed. The International Energy Agency has called it the &ldquo;greatest global energy security challenge in history.&rdquo; Gulf production has dropped by at least 10 million barrels per day. The world is desperate for non-Gulf oil.
@@ -612,7 +632,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 13: The India Route ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>13. The India Route: The World&apos;s Largest Oil Laundry</h2>
+          <h2 id="sec-13" style={S.h2}>13. The India Route: The World&apos;s Largest Oil Laundry</h2>
           <p>
             A significant share of Russia&apos;s western-route crude does not go to China. It goes to India, and what happens there illuminates how sanctions reshape global trade flows without stopping them.
           </p>
@@ -623,7 +643,7 @@ export default function RussiaOilArticle() {
             Russian crude enters Jamnagar as &ldquo;sanctioned oil.&rdquo; Indian diesel leaves Jamnagar as &ldquo;Indian product.&rdquo; This is legal: the sanctions target Russian crude, not refined products from third countries. But it means European consumers are, indirectly, still running their cars on Russian energy.
           </p>
           <p>
-            The <strong style={{ color: "#fff" }}>crack spread</strong>, the difference between crude input cost and refined product prices, explains why this is so profitable.
+            The <strong style={{ color: "#fff" }}><Term definition="The profit margin a refinery earns by 'cracking' crude oil into refined products like gasoline and diesel. Calculated as refined product prices minus crude input cost." href="https://www.investopedia.com/terms/c/crackspread.asp">crack spread</Term></strong>, the difference between crude input cost and refined product prices, explains why this is so profitable.
           </p>
 
           <div style={S.defBox}>
@@ -640,7 +660,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 14: Why the Yuan Cannot Replace the Dollar ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>14. Why the Yuan Cannot Replace the Dollar</h2>
+          <h2 id="sec-14" style={S.h2}>14. Why the Yuan Cannot Replace the Dollar</h2>
           <p>
             Russia&apos;s experience is the most important data point in the global debate about de-dollarization. The verdict is in, and it is definitive.
           </p>
@@ -698,7 +718,7 @@ export default function RussiaOilArticle() {
           </table>
 
           <p>
-            Xi Jinping has explicitly called for the yuan to achieve reserve currency status, publishing his ambition in the Communist Party&apos;s flagship journal <em>Qiushi</em>. But achieving it would require full capital account liberalization, which would mean accepting a level of financial openness incompatible with CCP political control. This is the <strong style={{ color: "#fff" }}>Impossible Trinity</strong>: a country can maintain at most two of free capital flows, independent monetary policy, and a managed exchange rate. China has chosen the latter two, making capital controls structurally necessary.
+            Xi Jinping has explicitly called for the yuan to achieve reserve currency status, publishing his ambition in the Communist Party&apos;s flagship journal <em>Qiushi</em>. But achieving it would require full capital account liberalization, which would mean accepting a level of financial openness incompatible with CCP political control. This is the <strong style={{ color: "#fff" }}><Term definition="A trilemma in international economics: a country can maintain at most two of (1) free capital flows, (2) independent monetary policy, and (3) a managed exchange rate. Also called the Mundell-Fleming trilemma." href="https://www.investopedia.com/terms/i/impossible-trinity.asp">Impossible Trinity</Term></strong>: a country can maintain at most two of free capital flows, independent monetary policy, and a managed exchange rate. China has chosen the latter two, making capital controls structurally necessary.
           </p>
 
           <div style={S.skillBox}>
@@ -712,7 +732,7 @@ export default function RussiaOilArticle() {
 
         {/* ── Section 15: Investment Implications & Outlook ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-          <h2 style={S.h2}>15. Investment Implications &amp; Outlook</h2>
+          <h2 id="sec-15" style={S.h2}>15. Investment Implications &amp; Outlook</h2>
           <p>For investors and market participants, Russia&apos;s oil machine reveals several structural dynamics:</p>
           <p>
             <strong style={{ color: "#fff" }}>Brent-Urals spread</strong>, currently in the $6&ndash;12 range. Sustained widening signals deepening Russian isolation; narrowing suggests sanctions erosion or enforcement fatigue. This spread is tradeable via ICE futures and OTC swaps.
