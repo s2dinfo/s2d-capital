@@ -112,6 +112,7 @@ export default function Navbar() {
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
           className="nav-hamburger"
           style={{
             display: "none",
@@ -178,7 +179,17 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <div style={{ padding: "20px 32px 8px", display: "flex", gap: 16 }}>
+            <div style={{ padding: "16px 32px" }}>
+              <Link href="/newsletter" onClick={() => setMobileOpen(false)} style={{
+                display: "block", textAlign: "center",
+                fontFamily: "var(--font-sans)", fontSize: "0.72rem", fontWeight: 600,
+                letterSpacing: "0.1em", textTransform: "uppercase" as const,
+                padding: "12px 20px",
+                background: "linear-gradient(135deg, var(--gold, #b8860b), var(--gold-dark, #8B6914))",
+                color: "#fff", textDecoration: "none", borderRadius: 4,
+              }}>Subscribe</Link>
+            </div>
+            <div style={{ padding: "8px 32px 8px", display: "flex", gap: 16 }}>
               <Link href="/impressum" onClick={() => setMobileOpen(false)} style={{
                 fontFamily: "var(--font-mono)", fontSize: "0.58rem",
                 color: "rgba(255,255,255,0.3)", textDecoration: "none",

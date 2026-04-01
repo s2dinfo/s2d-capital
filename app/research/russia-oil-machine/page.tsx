@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     publishedTime: "2026-03-31",
     authors: ["Sami Samii"],
     siteName: "S2D Capital Insights",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
 };
 

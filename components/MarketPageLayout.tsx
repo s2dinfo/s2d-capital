@@ -13,7 +13,8 @@ export default function MarketPageLayout({ title, titleAccent, accentColor, subt
   return (
     <div style={{ minHeight: "80vh", overflowX: "hidden" }}>
       <BackButton label="All Markets" href="/markets" />
-      <div style={{ padding: "28px 48px 64px", maxWidth: 1280, margin: "0 auto" }}>
+      <div className="mpl-content" style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <style>{`.mpl-content{padding:28px 48px 64px}@media(max-width:768px){.mpl-content{padding:20px 16px 48px}}`}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
         <div style={{ width: 5, height: 32, background: accentColor, borderRadius: 2 }} />
         <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(1.5rem,3vw,2.2rem)", fontWeight: 400, color: "#fff" }}>

@@ -43,7 +43,8 @@ function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
   }, [items]);
 
   // How many full copies we need to fill 2x the viewport
-  const copies = setWidth > 0 ? Math.max(2, Math.ceil((window.innerWidth * 2) / setWidth) + 1) : 3;
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1440;
+  const copies = setWidth > 0 ? Math.max(2, Math.ceil((vw * 2) / setWidth) + 1) : 3;
   const speed = 35; // px per second
   const duration = setWidth > 0 ? setWidth / speed : 30;
 
@@ -217,7 +218,7 @@ export default function HomeClient(){
     <HomeTicker items={marqueeItems} />
 
     {/* ══ MENU BUTTON (top-left) ══ */}
-    <button onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:44,left:20,zIndex:55,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
+    <button aria-label="Toggle navigation menu" aria-expanded={sidebarOpen} onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:44,left:20,zIndex:55,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
       onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.5)';e.currentTarget.style.boxShadow='0 4px 20px rgba(184,134,11,0.15)';}}
       onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.2)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.3)';}}>
       <div style={{width:18,height:2,background:'var(--gold-light)',marginBottom:4,borderRadius:1,transition:'all 0.3s',transform:sidebarOpen?'rotate(45deg) translateY(6px)':'none'}}/>
