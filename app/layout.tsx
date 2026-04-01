@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
-import LanguageToggle from '@/components/LanguageToggle';
-import { LanguageProvider } from '@/lib/LanguageContext';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s2d.info"),
@@ -61,11 +59,6 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var l=localStorage.getItem('s2d-lang');}catch(e){}})();`,
-          }}
-        />
-        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -101,11 +94,8 @@ export default function RootLayout({
         />
       </head>
       <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100%' }}>
-        <LanguageProvider>
-          <Navbar />
-          <LanguageToggle />
-          <main style={{ overflowX: 'hidden' }}>{children}</main>
-        </LanguageProvider>
+        <Navbar />
+        <main style={{ overflowX: 'hidden' }}>{children}</main>
       </body>
     </html>
   );

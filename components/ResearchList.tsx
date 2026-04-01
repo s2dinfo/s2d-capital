@@ -5,7 +5,6 @@ import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { articles } from "@/lib/articles";
 import { VERTICALS, VerticalKey } from "@/lib/verticals";
-import { useLanguage } from "@/lib/LanguageContext";
 
 const ALL_TAGS: VerticalKey[] = ["crypto", "macro", "commodities", "fx", "geopolitics", "structure"];
 
@@ -15,7 +14,6 @@ export default function ResearchList() {
   const [search, setSearch] = useState("");
   const [activeTags, setActiveTags] = useState<VerticalKey[]>([]);
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
-  const { t } = useLanguage();
 
   const toggleTag = (tag: VerticalKey) => {
     setActiveTags((prev) =>
@@ -105,7 +103,7 @@ export default function ResearchList() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('research.search')}
+                placeholder="Search articles..."
                 style={{
                   width: "100%",
                   padding: "10px 14px 10px 36px",
@@ -160,8 +158,8 @@ export default function ResearchList() {
                 backgroundPosition: "right 10px center",
               }}
             >
-              <option value="newest" style={{ background: "#1A1A2E" }}>{t('research.sort.newest')}</option>
-              <option value="oldest" style={{ background: "#1A1A2E" }}>{t('research.sort.oldest')}</option>
+              <option value="newest" style={{ background: "#1A1A2E" }}>Newest first</option>
+              <option value="oldest" style={{ background: "#1A1A2E" }}>Oldest first</option>
             </select>
           </div>
 
@@ -237,8 +235,8 @@ export default function ResearchList() {
             color: "rgba(255,255,255,0.35)",
           }}>
             {isFiltered
-              ? `${filteredCount} ${t('research.of')} ${totalCount} ${t('research.articles')}`
-              : `${totalCount} ${t('research.articles')}`}
+              ? `${filteredCount} of ${totalCount} articles`
+              : `${totalCount} articles`}
           </div>
         </div>
       </div>
@@ -297,7 +295,7 @@ export default function ResearchList() {
                   </div>
                   <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem", fontWeight: 400, color: "#fff", marginBottom: 8 }}>{a.title}</h2>
                   <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.6, marginBottom: 12 }}>{a.excerpt}</p>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--gold-light, #D4B85C)", fontWeight: 500 }}>{t('research.readArticle')}</span>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--gold-light, #D4B85C)", fontWeight: 500 }}>Read Article →</span>
                 </div>
               </Link>
             ))}
@@ -306,7 +304,7 @@ export default function ResearchList() {
 
         {upcoming.length > 0 && (
           <>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 40, marginBottom: 16, fontWeight: 600 }}>{t('research.comingSoon')}</div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 40, marginBottom: 16, fontWeight: 600 }}>Coming Soon</div>
             {upcoming.map((a) => (
               <div key={a.slug} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8, padding: "24px 32px", marginBottom: 12, opacity: 0.5 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
@@ -315,7 +313,7 @@ export default function ResearchList() {
                       <span key={t} style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.04)", padding: "3px 8px", borderRadius: 3 }}>{VERTICALS[t]?.labelShort || t}</span>
                     ))}
                   </div>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--gold-light, #D4B85C)", background: "rgba(184,134,11,0.1)", padding: "3px 10px", borderRadius: 3, fontWeight: 600 }}>{t('research.comingSoon')}</span>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--gold-light, #D4B85C)", background: "rgba(184,134,11,0.1)", padding: "3px 10px", borderRadius: 3, fontWeight: 600 }}>Coming Soon</span>
                 </div>
                 <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "1.2rem", fontWeight: 400, color: "rgba(255,255,255,0.7)", marginBottom: 6 }}>{a.title}</h2>
                 <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>{a.excerpt}</p>

@@ -6,7 +6,6 @@ import { PieChart, Pie, Cell, AreaChart, Area, ResponsiveContainer } from 'recha
 import Link from 'next/link';
 import Image from 'next/image';
 import { VERTICALS } from '@/lib/verticals';
-import { useLanguage } from '@/lib/LanguageContext';
 import { articles } from '@/lib/articles';
 import ParticleField from '@/components/ParticleField';
 import AnimatedCounter from '@/components/AnimatedCounter';
@@ -36,7 +35,6 @@ function fp(v:number|null|undefined){if(v===null||v===undefined)return'-';return
 
 /* ── Market Status Badge (NYSE hours) ── */
 function MarketStatusBadge() {
-  const { t } = useLanguage();
   const [status, setStatus] = useState<{open:boolean;text:string}>({open:false,text:''});
   useEffect(() => {
     function calc() {
@@ -82,7 +80,7 @@ function MarketStatusBadge() {
   return (
     <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:10}}>
       <div style={{width:6,height:6,borderRadius:'50%',background:status.open?'var(--green)':'#C0392B',boxShadow:status.open?'0 0 6px rgba(45,143,94,0.5)':'0 0 6px rgba(192,57,43,0.5)'}}/>
-      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.1em',color:status.open?'var(--green)':'#C0392B',fontWeight:600}}>{status.open?t('home.marketsOpen'):t('home.marketsClosed')}</span>
+      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.1em',color:status.open?'var(--green)':'#C0392B',fontWeight:600}}>{status.open?'Markets Open':'Markets Closed'}</span>
       <span style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',color:'rgba(255,255,255,0.3)',marginLeft:4}}>{status.text}</span>
     </div>
   );
@@ -213,7 +211,6 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
 
 /* ══════════════════════════════════════════════ */
 export default function HomeClient(){
-  const { t } = useLanguage();
   const { data: _md, loading: _loading } = useMarketData();
   const prices = _md?.symbols ? { bitcoin: { usd: _md.symbols.BTC?.price, usd_24h_change: _md.symbols.BTC?.change, usd_market_cap: null }, ethereum: { usd: _md.symbols.ETH?.price, usd_24h_change: _md.symbols.ETH?.change }, solana: { usd: _md.symbols.SOL?.price }, ripple: { usd: _md.symbols.XRP?.price } } : null;
   const macro = _md ? { fedRate: _md.fedRate, t10y: _md.symbols?.US10Y?.price?.toFixed(2), t2y: _md.symbols?.US2Y?.price?.toFixed(2), cpi: (_md as any)?.cpi ?? null, unemp: (_md as any)?.unemp ? (_md as any).unemp + '%' : null, yieldSpread: _md.symbols?.US10Y?.price && _md.symbols?.US2Y?.price ? (_md.symbols.US10Y.price - _md.symbols.US2Y.price).toFixed(2) : null, m2: null, dxy: _md.symbols?.DXY?.price?.toFixed(2) ?? (_md as any)?.dxy ?? null } : null;
@@ -307,7 +304,7 @@ export default function HomeClient(){
           {/* Navigation */}
           <div style={{padding:'0 8px'}}>
             <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>NAVIGATE</div>
-            {[{l:t('nav.markets'),h:'/markets'},{l:t('nav.research'),h:'/research'},{l:t('nav.newsletter'),h:'/newsletter'},{l:t('nav.about'),h:'/about'}].map(n=>
+            {[{l:'Markets',h:'/markets'},{l:'Research',h:'/research'},{l:'Newsletter',h:'/newsletter'},{l:'About',h:'/about'}].map(n=>
               <Link key={n.l} href={n.h} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
                 onMouseEnter={e=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
                 onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.55)';e.currentTarget.style.background='transparent';}}>{n.l}</Link>
@@ -317,7 +314,7 @@ export default function HomeClient(){
           {/* Verticals */}
           <div style={{padding:'0 8px'}}>
             <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>VERTICALS</div>
-            {[{l:t('v.crypto'),h:'/markets/crypto',c:'#B8860B'},{l:t('v.macro'),h:'/markets/macro',c:'#3B6CB4'},{l:t('v.commodities'),h:'/markets/commodities',c:'#8B5E3C'},{l:t('v.fx'),h:'/markets/fx',c:'#2D8F5E'},{l:t('v.geopolitics'),h:'/markets/geopolitics',c:'#8B2252'},{l:t('v.structure'),h:'/markets/structure',c:'#5B4FA0'}].map(v=>
+            {[{l:'Crypto & Digital Assets',h:'/markets/crypto',c:'#B8860B'},{l:'Macro & Central Banks',h:'/markets/macro',c:'#3B6CB4'},{l:'Commodities & Energy',h:'/markets/commodities',c:'#8B5E3C'},{l:'FX & Currencies',h:'/markets/fx',c:'#2D8F5E'},{l:'Geopolitics & Policy',h:'/markets/geopolitics',c:'#8B2252'},{l:'Market Structure',h:'/markets/structure',c:'#5B4FA0'}].map(v=>
               <Link key={v.l} href={v.h} onClick={()=>setSidebarOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2,fontWeight:500}}
                 onMouseEnter={e=>{e.currentTarget.style.color=v.c;e.currentTarget.style.background='rgba(255,255,255,0.03)';}}
                 onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.55)';e.currentTarget.style.background='transparent';}}>
@@ -359,16 +356,16 @@ export default function HomeClient(){
         </motion.div>
         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}} style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.35em',color:'var(--gold-light)',marginBottom:16}}>FINANCIAL INTELLIGENCE</motion.p>
         <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2.2rem,5vw,3.5rem)',fontWeight:400,lineHeight:1.1,color:'#ffffff',marginBottom:14,maxWidth:650,margin:'0 auto 14px',textShadow:'0 2px 30px rgba(184,134,11,0.15)'}}>
-          {t('home.tagline')}
+          Where Markets Meet Clarity
         </motion.h1>
         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.6}} style={{fontSize:'0.95rem',color:'rgba(255,255,255,0.6)',maxWidth:480,margin:'0 auto 36px',lineHeight:1.7}}>
-          {t('home.subtitle')}
+          Six verticals. One picture. Live data from global equities, crypto, macro, commodities, FX, and geopolitics.
         </motion.p>
       </div>
 
       {/* ── TOPIC SELECTOR ── */}
       <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.8}} style={{position:'relative',zIndex:2,maxWidth:900,margin:'0 auto',padding:'0 16px'}}>
-        <p style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.25em',color:'rgba(255,255,255,0.35)',marginBottom:16}}>{t('home.whatInterests')}</p>
+        <p style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.25em',color:'rgba(255,255,255,0.35)',marginBottom:16}}>WHAT INTERESTS YOU?</p>
         <div className="hp-grid-verticals" style={{marginBottom:16}}>
           {TOPICS.map(t=><TopicCard key={t.key} t={t} onSelect={setSelectedTopic} selected={selectedTopic}/>)}
         </div>
@@ -391,7 +388,7 @@ export default function HomeClient(){
     {featured&&<Section><div className="hp-section" style={{paddingTop:28,paddingBottom:28}}>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
         <div style={{width:7,height:7,borderRadius:'50%',background:'var(--gold)',boxShadow:'0 0 8px rgba(184,134,11,0.5)'}}/>
-        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:600}}>{t('home.featuredResearch')}</span>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:600}}>FEATURED RESEARCH</span>
       </div>
       <Link href={`/research/${featured.slug}`} style={{display:'block',textDecoration:'none',color:'inherit'}}>
         <div style={{background:'linear-gradient(135deg,rgba(184,134,11,0.08),rgba(184,134,11,0.02))',border:'1px solid rgba(184,134,11,0.15)',padding:'28px 24px',borderLeft:'3px solid var(--gold)',transition:'all 0.3s ease',position:'relative',overflow:'hidden',borderRadius:6,cursor:'pointer'}}
@@ -432,7 +429,7 @@ export default function HomeClient(){
       <MarketStatusBadge/>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <div className="s2d-pulse" style={{width:7,height:7,borderRadius:'50%',background:'var(--green)',boxShadow:'0 0 6px rgba(45,143,94,0.4)'}}/>
-        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.18em',color:'var(--green)',fontWeight:500}}>{t('home.marketPulse')}</span>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.18em',color:'var(--green)',fontWeight:500}}>MARKET PULSE</span>
         <span style={{marginLeft:'auto',fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.3)'}}>{time}{_md?.timestamp ? ' · Updated '+new Date(_md.timestamp).toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit'}) : ''}</span>
       </div>
 
@@ -490,9 +487,9 @@ export default function HomeClient(){
     {/* ══ VERTICALS ══ */}
     <Section delay={0.1}><div className="hp-section" style={{paddingTop:32,paddingBottom:32,position:'relative'}}>
       <div className="ambient-orb" style={{width:300,height:300,bottom:'-20%',left:'5%',background:'radial-gradient(circle,rgba(184,134,11,0.05) 0%,transparent 50%)'}}/>
-      <p style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.3em',color:'var(--gold-light)',marginBottom:8}}>{t('home.ourCoverage')}</p>
-      <h2 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.6rem,3vw,2.4rem)',fontWeight:400,color:'#fff',marginBottom:6}}>{t('home.sixPerspectives')} <em style={{fontStyle:'italic',color:'var(--gold-light)'}}>{t('home.onePicture')}</em></h2>
-      <p style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.45)',maxWidth:520,marginBottom:20,lineHeight:1.7}}>{t('home.coverageDesc')}</p>
+      <p style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.3em',color:'var(--gold-light)',marginBottom:8}}>OUR COVERAGE</p>
+      <h2 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.6rem,3vw,2.4rem)',fontWeight:400,color:'#fff',marginBottom:6}}>Six Perspectives. <em style={{fontStyle:'italic',color:'var(--gold-light)'}}>One Picture.</em></h2>
+      <p style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.45)',maxWidth:520,marginBottom:20,lineHeight:1.7}}>Markets are interconnected. We analyze each vertical independently and show how everything connects.</p>
       <div className="hp-grid-verticals">
         {[
           {shortLabel:'Crypto',title:'Crypto & Digital Assets',subtitle:'Regulation, ETFs, Tokenization, DeFi',tags:['CLARITY','ETFs','BTC','DeFi'],color:'#B8860B',href:'/markets/crypto'},
