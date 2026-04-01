@@ -13,13 +13,23 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'russia-oil-machine',
+    title: 'Russia\'s Oil Machine, Exposed: From the Wellhead to the Yuan Trap',
+    excerpt: 'How sanctions, shadow fleets, and a 44% overnight rate reveal the true architecture of global power. Tracked through a single barrel of Russian crude — from Western Siberia to the interbank market in Moscow.',
+    tags: ['commodities', 'geopolitics', 'fx'],
+    date: 'March 2026',
+    readTime: '35 min',
+    featured: true,
+    published: true,
+  },
+  {
     slug: 'europe-energy-decoded',
     title: 'Europe\'s Energy System, Decoded: From the Grid to the Trading Floor',
     excerpt: 'How renewables, regulation, and geopolitics are reshaping the continent\'s energy future. The merit order, Guarantees of Origin, OTC trading, the EU ETS, biomethane, THG-Quoten — and why the Iran war just changed everything.',
     tags: ['commodities', 'geopolitics'],
     date: 'March 2026',
     readTime: '30 min',
-    featured: true,
+    featured: false,
     published: true,
   },
   {
