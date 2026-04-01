@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import EnergyArticle from "./EnergyArticle";
+import ArticleJsonLd from "@/components/ArticleJsonLd";
 
 export const metadata: Metadata = {
   title: "Europe's Energy System, Decoded – S2D Capital Insights",
@@ -17,5 +18,16 @@ export const metadata: Metadata = {
 };
 
 export default function EnergyPage() {
-  return <EnergyArticle />;
+  return (
+    <>
+      <ArticleJsonLd
+        title="Europe's Energy System, Decoded"
+        description="From the grid to the trading floor — how renewables, regulation, and geopolitics are reshaping Europe's energy future."
+        publishDate="2026-03-18"
+        author="Sami Samii"
+        url="https://s2d.info/research/europe-energy-decoded"
+      />
+      <EnergyArticle />
+    </>
+  );
 }

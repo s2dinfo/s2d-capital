@@ -55,9 +55,48 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="alternate" type="application/rss+xml" title="S2D Capital Insights" href="https://s2d.info/feed.xml" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1A1A2E" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var l=localStorage.getItem('s2d-lang');}catch(e){}})();`,
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "S2D Capital Insights",
+              "url": "https://s2d.info",
+              "logo": "https://s2d.info/og-image.png",
+              "description": "Independent financial intelligence platform covering Crypto, Macro, Commodities, FX, Geopolitics, and Market Structure.",
+              "founder": {
+                "@type": "Person",
+                "name": "Sami Samii"
+              },
+              "sameAs": []
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "S2D Capital Insights",
+              "url": "https://s2d.info",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://s2d.info/research?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            }),
           }}
         />
       </head>

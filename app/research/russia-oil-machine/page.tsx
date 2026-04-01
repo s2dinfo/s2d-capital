@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import RussiaOilArticle from "./RussiaOilArticle";
+import ArticleJsonLd from "@/components/ArticleJsonLd";
 
 export const metadata: Metadata = {
   title: "Russia's Oil Machine, Exposed – S2D Capital Insights",
@@ -18,5 +19,16 @@ export const metadata: Metadata = {
 };
 
 export default function RussiaOilPage() {
-  return <RussiaOilArticle />;
+  return (
+    <>
+      <ArticleJsonLd
+        title="Russia's Oil Machine, Exposed"
+        description="From the wellhead to the yuan trap: how sanctions, shadow fleets, and a 44% overnight rate reveal the true architecture of global power."
+        publishDate="2026-03-31"
+        author="Sami Samii"
+        url="https://s2d.info/research/russia-oil-machine"
+      />
+      <RussiaOilArticle />
+    </>
+  );
 }
