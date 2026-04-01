@@ -61,7 +61,7 @@ function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
   return (
     <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36}}>
       {/* Hidden measure element */}
-      <div ref={measureRef} style={{position:'absolute',visibility:'hidden',display:'flex',alignItems:'center'}}>
+      <div ref={measureRef} style={{position:'absolute',left:0,top:0,visibility:'hidden',display:'flex',alignItems:'center',pointerEvents:'none'}}>
         {items.map((item,i)=>(
           <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
             <span>{item.l}</span><span>{item.v}</span>
@@ -306,7 +306,7 @@ export default function HomeClient(){
           {TOPICS.map(t=><TopicCard key={t.key} t={t} onSelect={setSelectedTopic} selected={selectedTopic}/>)}
         </div>
         <AnimatePresence>
-          {selectedTopic&&selectedTopicData&&<motion.div initial={{opacity:0,y:10,height:0}} animate={{opacity:1,y:0,height:'auto'}} exit={{opacity:0,y:-10,height:0}} transition={{duration:0.3}} style={{display:'flex',gap:12,justifyContent:'center',marginTop:8}}>
+          {selectedTopic&&selectedTopicData&&<motion.div initial={{opacity:0,y:10,height:0}} animate={{opacity:1,y:0,height:'auto'}} exit={{opacity:0,y:-10,height:0}} transition={{duration:0.3}} style={{display:'flex',gap:12,justifyContent:'center',marginTop:8,flexWrap:'wrap'}}>
             <Link href={selectedTopicData.dataHref} style={{display:'inline-flex',alignItems:'center',gap:6,fontFamily:'var(--font-sans)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',padding:'12px 28px',background:`linear-gradient(135deg,${selectedTopicData.color},${selectedTopicData.color}cc)`,color:'#fff',borderRadius:4,textDecoration:'none',boxShadow:`0 4px 20px ${selectedTopicData.color}33`,transition:'all 0.3s'}}>
               📊 Live Data
             </Link>
@@ -423,7 +423,7 @@ export default function HomeClient(){
     {/* ══ NEWSLETTER CTA ══ */}
     <Section delay={0.15}><div className="hp-section" style={{paddingTop:0,paddingBottom:48,marginTop:32}}>
       <div style={{background:'linear-gradient(135deg,rgba(184,134,11,0.1),rgba(184,134,11,0.03))',border:'1px solid rgba(184,134,11,0.15)',padding:'48px 32px',textAlign:'center',borderRadius:8,position:'relative',overflow:'hidden'}}>
-        <div className="ambient-orb" style={{width:250,height:250,top:'-30%',right:'-5%',background:'radial-gradient(circle,rgba(184,134,11,0.12) 0%,transparent 55%)'}}/>
+        <div className="ambient-orb" style={{width:250,height:250,top:'-30%',right:'0%',background:'radial-gradient(circle,rgba(184,134,11,0.12) 0%,transparent 55%)'}}/>
         <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
         <div style={{position:'relative',zIndex:1}}>
           <p style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.3em',color:'var(--gold-light)',marginBottom:12}}>NEWSLETTER</p>

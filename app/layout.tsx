@@ -37,9 +37,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}>
         <Navbar />
-        <main>{children}</main>
+        <main style={{ overflowX: 'hidden' }}>{children}</main>
       </body>
     </html>
   );
