@@ -100,11 +100,24 @@ export default function TickerBar() {
     return () => clearInterval(interval);
   }, []);
 
+  const setRef = useRef<HTMLDivElement>(null);
+  const [scrollDuration, setScrollDuration] = useState(50);
+
+  // Measure the first copy's width and set animation to scroll exactly that far
+  useEffect(() => {
+    if (setRef.current) {
+      const w = setRef.current.offsetWidth;
+      // ~60px per second feels natural
+      setScrollDuration(Math.max(20, w / 60));
+    }
+  }, [items]);
+
   if (items.length === 0) return null;
 
   const renderItems = (copy: number) =>
     items.map((item, i) => {
-      const prevSector = i > 0 ? items[i - 1]?.sector : (copy > 0 ? items[items.length - 1]?.sector : null);
+      // Identical for both copies — divider only based on position within the set
+      const prevSector = i > 0 ? items[i - 1]?.sector : null;
       const showDivider = prevSector && prevSector !== item.sector && !item.isSpecial;
 
       return (
@@ -148,18 +161,22 @@ export default function TickerBar() {
       <div style={{ position: "absolute", top: 0, left: 0, width: 60, height: "100%", background: "linear-gradient(90deg, var(--navy, #0f0f23), transparent)", zIndex: 2, pointerEvents: "none" }} />
       <div style={{ position: "absolute", top: 0, right: 0, width: 60, height: "100%", background: "linear-gradient(-90deg, var(--navy, #0f0f23), transparent)", zIndex: 2, pointerEvents: "none" }} />
 
-      <div ref={containerRef} className="ticker-track">
-        <div className="ticker-set">{renderItems(0)}</div>
+      <div
+        ref={containerRef}
+        className="ticker-track"
+        style={{ animationDuration: `${scrollDuration}s` }}
+      >
+        <div className="ticker-set" ref={setRef}>{renderItems(0)}</div>
         <div className="ticker-set">{renderItems(1)}</div>
       </div>
 
       <style>{`
         .ticker-track {
           display: flex;
-          width: max-content;
           font-family: var(--mono, 'JetBrains Mono', monospace);
           font-size: 0.7rem;
           animation: tickerScroll 50s linear infinite;
+          will-change: transform;
         }
         .ticker-set {
           display: flex;
@@ -168,8 +185,8 @@ export default function TickerBar() {
           flex-shrink: 0;
         }
         @keyframes tickerScroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
         }
       `}</style>
     </div>

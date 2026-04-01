@@ -144,36 +144,20 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile menu — sits below the sticky nav so the hamburger/X stays clickable */}
       {mobileOpen && (
         <div
           style={{
-            position: "fixed", inset: 0, background: "rgba(10,10,28,0.99)",
-            zIndex: 200,
+            position: "fixed", top: 60, left: 0, right: 0, bottom: 0,
+            background: "rgba(10,10,28,0.99)",
+            zIndex: 99,
           }}
+          onClick={() => setMobileOpen(false)}
         >
-          {/* Top bar with close button on the left */}
-          <div style={{
-            display: "flex", alignItems: "center", height: 60,
-            padding: "0 24px",
-            borderBottom: "1px solid rgba(184,134,11,0.12)",
-          }}>
-            <button
-              onClick={() => setMobileOpen(false)}
-              aria-label="Close menu"
-              style={{
-                background: "none", border: "1px solid rgba(255,255,255,0.15)",
-                borderRadius: 6, cursor: "pointer",
-                color: "#fff", fontSize: "1.1rem",
-                width: 36, height: 36,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}
-            >
-              ✕
-            </button>
-          </div>
-
-          <div style={{ paddingTop: 16, paddingBottom: 32 }}>
+          <div
+            style={{ paddingTop: 8, paddingBottom: 32 }}
+            onClick={(e) => e.stopPropagation()}
+          >
             {links.map((l) => (
               <Link
                 key={l.label}
