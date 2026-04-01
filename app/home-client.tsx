@@ -185,15 +185,30 @@ export default function HomeClient(){
     {l:'VIX',v:vixVal?.toFixed(1)||'-',c:vixVal?(vixVal>30?'var(--red)':vixVal>20?'#E88A3C':'var(--green)'):undefined},
   ];
 
-  return <div style={{background:'#1A1A2E',color:'#fff',minHeight:'100vh'}}>
+  return <div style={{background:'#1A1A2E',color:'#fff',minHeight:'100vh',width:'100%',overflowX:'hidden'}}>
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
       @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
       @keyframes ambientFloat{0%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.1)}66%{transform:translate(-20px,15px) scale(0.95)}100%{transform:translate(0,0) scale(1)}}
       .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:ambientFloat 20s ease-in-out infinite}
-      .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 32px}
+      .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 16px}
       .nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;padding:4px 0}
       .nav-link:hover{color:var(--gold-light)}
+      .hp-section{padding-left:32px;padding-right:32px;max-width:1200px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+      .hp-grid-verticals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+      .hp-grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+      .hp-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+      @media(max-width:768px){
+        .hp-section{padding-left:16px;padding-right:16px}
+        .hp-grid-verticals{grid-template-columns:repeat(2,1fr)}
+        .hp-grid-2col{grid-template-columns:1fr}
+        .gold-line{margin:0 16px}
+      }
+      @media(max-width:420px){
+        .hp-section{padding-left:12px;padding-right:12px}
+        .hp-grid-verticals{grid-template-columns:repeat(2,1fr);gap:8px}
+        .hp-grid-stats{grid-template-columns:repeat(2,1fr);gap:8px}
+      }
     `}</style>
 
     {/* ══ TICKER BAR ══ */}
@@ -261,7 +276,7 @@ export default function HomeClient(){
     </AnimatePresence>
 
     {/* ══ HERO — DARK NAVY + GOLD ══ */}
-    <div style={{position:'relative',overflow:'hidden',padding:'56px 32px 40px',textAlign:'center',minHeight:420}}>
+    <div style={{position:'relative',overflow:'hidden',padding:'56px 16px 40px',textAlign:'center',minHeight:420}}>
       {/* Ambient gold orbs */}
       <div className="ambient-orb" style={{width:600,height:600,top:'-25%',left:'10%',background:'radial-gradient(circle,rgba(184,134,11,0.14) 0%,transparent 55%)'}}/>
       <div className="ambient-orb" style={{width:500,height:500,bottom:'-20%',right:'5%',background:'radial-gradient(circle,rgba(184,134,11,0.1) 0%,transparent 55%)',animationDelay:'-8s'}}/>
@@ -285,9 +300,9 @@ export default function HomeClient(){
       </div>
 
       {/* ── TOPIC SELECTOR ── */}
-      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.8}} style={{position:'relative',zIndex:2,maxWidth:900,margin:'0 auto'}}>
+      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.8}} style={{position:'relative',zIndex:2,maxWidth:900,margin:'0 auto',padding:'0 16px'}}>
         <p style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.25em',color:'rgba(255,255,255,0.35)',marginBottom:16}}>WHAT INTERESTS YOU?</p>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:10,marginBottom:16}}>
+        <div className="hp-grid-verticals" style={{marginBottom:16}}>
           {TOPICS.map(t=><TopicCard key={t.key} t={t} onSelect={setSelectedTopic} selected={selectedTopic}/>)}
         </div>
         <AnimatePresence>
@@ -306,7 +321,7 @@ export default function HomeClient(){
     <div className="gold-line"/>
 
     {/* ══ FEATURED RESEARCH ══ */}
-    {featured&&<Section><div style={{padding:'28px 32px',maxWidth:1200,margin:'0 auto'}}>
+    {featured&&<Section><div className="hp-section" style={{paddingTop:28,paddingBottom:28}}>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
         <div style={{width:7,height:7,borderRadius:'50%',background:'var(--gold)',boxShadow:'0 0 8px rgba(184,134,11,0.5)'}}/>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:600}}>FEATURED RESEARCH</span>
@@ -328,7 +343,7 @@ export default function HomeClient(){
         </div>
       </Link>
       {/* Other articles grid */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:10,marginTop:12}}>
+      <div className="hp-grid-2col" style={{marginTop:12}}>
         {articles.filter((a:any)=>!a.featured).slice(0,3).map((a:any)=><Link key={a.slug} href={`/research/${a.slug}`} style={{textDecoration:'none',color:'inherit'}}>
           <div style={{background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.06)',padding:'18px 16px',borderRadius:6,transition:'all 0.3s',cursor:'pointer'}}
             onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.2)';e.currentTarget.style.background='rgba(184,134,11,0.04)';}}
@@ -346,14 +361,14 @@ export default function HomeClient(){
     <div className="gold-line"/>
 
     {/* ══ MARKET PULSE ══ */}
-    <Section><div style={{padding:'28px 32px',maxWidth:1200,margin:'0 auto'}}>
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16}}>
+    <Section><div className="hp-section" style={{paddingTop:28,paddingBottom:28}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <div className="s2d-pulse" style={{width:7,height:7,borderRadius:'50%',background:'var(--green)',boxShadow:'0 0 6px rgba(45,143,94,0.4)'}}/>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.18em',color:'var(--green)',fontWeight:500}}>MARKET PULSE</span>
         <span style={{marginLeft:'auto',fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.3)'}}>{time}{_md?.timestamp ? ' · Updated '+new Date(_md.timestamp).toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit'}) : ''}</span>
       </div>
 
-      {_loading ? <PulseSkeleton/> : <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10,marginBottom:12}}>
+      {_loading ? <PulseSkeleton/> : <div className="hp-grid-stats" style={{marginBottom:12}}>
         <StatCard name="S&P 500" val={indices?.sp500?.val} chg={indices?.sp500?.chg} color="#B8860B" spark={sp('SPX')}/>
         <StatCard name="BITCOIN" val={btc?.usd} chg={btc?.usd_24h_change} color="#B8860B" prefix="$" spark={sp('BTC')}/>
         <StatCard name="GOLD" val={commod?.gold} chg={commod?.goldChg} color="#D4A843" prefix="$" spark={sp('GOLD')}/>
@@ -362,12 +377,12 @@ export default function HomeClient(){
         <StatCard name="NAT GAS" val={commod?.natgas} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={sp('NATGAS')}/>
       </div>}
 
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:10,marginBottom:12}}>
+      <div className="hp-grid-2col" style={{marginBottom:12}}>
         <TVCandlestickChart data={btcCandles} title="BTC / USD" height={300}/>
         <TVCandlestickChart data={ethCandles} title="ETH / USD" height={300}/>
       </div>
 
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:10}}>
+      <div className="hp-grid-2col">
         <DataCard title="MACRO & CENTRAL BANKS" color="#6B9BD2" rows={[{l:'Fed Rate',v:(macro?.fedRate||'-')+'%',c:'#6B9BD2'},{l:'10Y Yield',v:(macro?.t10y||'-')+'%',c:'#6B9BD2'},{l:'CPI',v:macro?.cpi||'-',c:'#D4A843'},{l:'Unemployment',v:macro?.unemp||'-',c:'#E06B6B'},{l:'Dollar (DXY)',v:macro?.dxy||'-',c:'#4CAF7D'}]}/>
         <DataCard title="FX RATES" color="#4CAF7D" rows={fx?[{l:'EUR/USD',v:fx.EUR?(1/fx.EUR).toFixed(4):'-',c:'#4CAF7D'},{l:'GBP/USD',v:fx.GBP?(1/fx.GBP).toFixed(4):'-',c:'#4CAF7D'},{l:'USD/JPY',v:fx.JPY?fx.JPY.toFixed(2):'-',c:'#4CAF7D'},{l:'USD/CHF',v:fx.CHF?fx.CHF.toFixed(4):'-',c:'#4CAF7D'}]:[]}/>
         <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',padding:'16px 12px',textAlign:'center',borderRadius:6}}>
@@ -385,12 +400,12 @@ export default function HomeClient(){
     <div className="gold-line"/>
 
     {/* ══ VERTICALS ══ */}
-    <Section delay={0.1}><div style={{padding:'32px 32px',maxWidth:1200,margin:'0 auto',position:'relative'}}>
+    <Section delay={0.1}><div className="hp-section" style={{paddingTop:32,paddingBottom:32,position:'relative'}}>
       <div className="ambient-orb" style={{width:300,height:300,bottom:'-20%',left:'5%',background:'radial-gradient(circle,rgba(184,134,11,0.05) 0%,transparent 50%)'}}/>
       <p style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.3em',color:'var(--gold-light)',marginBottom:8}}>OUR COVERAGE</p>
       <h2 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.6rem,3vw,2.4rem)',fontWeight:400,color:'#fff',marginBottom:6}}>Six Perspectives. <em style={{fontStyle:'italic',color:'var(--gold-light)'}}>One Picture.</em></h2>
       <p style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.45)',maxWidth:520,marginBottom:20,lineHeight:1.7}}>Markets are interconnected. We analyze each vertical independently and show how everything connects.</p>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:10}}>
+      <div className="hp-grid-verticals">
         {[
           {shortLabel:'Crypto',title:'Crypto & Digital Assets',subtitle:'Regulation, ETFs, Tokenization, DeFi',tags:['CLARITY','ETFs','BTC','DeFi'],color:'#B8860B',href:'/markets/crypto'},
           {shortLabel:'Macro',title:'Macro & Central Banks',subtitle:'Fed, ECB, BOJ, Rates, Liquidity',tags:['Fed','ECB','Rates','CPI'],color:'#3B6CB4',href:'/markets/macro'},
@@ -406,7 +421,7 @@ export default function HomeClient(){
     <div className="gold-line"/>
 
     {/* ══ NEWSLETTER CTA ══ */}
-    <Section delay={0.15}><div style={{padding:'0 32px 48px',marginTop:32,maxWidth:1200,margin:'32px auto 0'}}>
+    <Section delay={0.15}><div className="hp-section" style={{paddingTop:0,paddingBottom:48,marginTop:32}}>
       <div style={{background:'linear-gradient(135deg,rgba(184,134,11,0.1),rgba(184,134,11,0.03))',border:'1px solid rgba(184,134,11,0.15)',padding:'48px 32px',textAlign:'center',borderRadius:8,position:'relative',overflow:'hidden'}}>
         <div className="ambient-orb" style={{width:250,height:250,top:'-30%',right:'-5%',background:'radial-gradient(circle,rgba(184,134,11,0.12) 0%,transparent 55%)'}}/>
         <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
@@ -420,7 +435,7 @@ export default function HomeClient(){
     </div></Section>
 
     {/* ══ FOOTER ══ */}
-    <footer style={{padding:'40px 32px 24px',borderTop:'1px solid rgba(255,255,255,0.05)',maxWidth:1200,margin:'0 auto'}}>
+    <footer className="hp-section" style={{paddingTop:40,paddingBottom:24,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
         <div style={{display:'flex',alignItems:'center',gap:6}}>
           <span style={{fontFamily:'var(--font-serif)',fontSize:'0.95rem',fontWeight:600,color:'var(--gold-light)'}}>S2D</span>
