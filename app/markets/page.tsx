@@ -38,10 +38,10 @@ export default function MarketsPage() {
           </p>
         </div>
       </div>
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 80px' }}>
-        <div className="markets-grid" style={{ display: 'grid', gap: 14 }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '32px 24px 80px' }}>
+        <div className="markets-grid" style={{ display: 'grid', gap: 16 }}>
           {verticals.map(v => (
-            <Link key={v.slug} href={`/markets/${v.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link key={v.slug} href={`/markets/${v.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}>
               <div style={{
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.06)',
@@ -52,6 +52,9 @@ export default function MarketsPage() {
                 borderLeft: `3px solid ${v.color}`,
                 position: 'relative',
                 overflow: 'hidden',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column' as const,
               }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.borderColor = v.color;
@@ -67,7 +70,7 @@ export default function MarketsPage() {
               >
                 <div style={{ fontSize: '1.5rem', marginBottom: 10 }}>{v.icon}</div>
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 500, color: '#fff', marginBottom: 6 }}>{v.label}</h2>
-                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>{v.desc}</p>
+                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, flex: 1 }}>{v.desc}</p>
                 <span style={{ display: 'inline-block', marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: v.color, fontWeight: 600 }}>View Data →</span>
               </div>
             </Link>
@@ -76,7 +79,8 @@ export default function MarketsPage() {
       </div>
       <style>{`
         .markets-grid { grid-template-columns: repeat(3, 1fr); }
-        @media (max-width: 768px) { .markets-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .markets-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 540px) { .markets-grid { grid-template-columns: 1fr; } }
       `}</style>
     </div>
   );

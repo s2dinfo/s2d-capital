@@ -24,14 +24,14 @@ export default function BackButton({ label = 'Back', href = '/' }: BackButtonPro
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 8,
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.65rem',
-            letterSpacing: '0.06em',
-            color: 'rgba(255,255,255,0.5)',
+            gap: 10,
+            fontFamily: 'var(--font-sans)',
+            fontSize: '0.88rem',
+            letterSpacing: '0.02em',
+            color: 'rgba(255,255,255,0.55)',
             textDecoration: 'none',
-            padding: '6px 12px',
-            borderRadius: 5,
+            padding: '8px 14px',
+            borderRadius: 6,
             transition: 'all 0.2s',
             fontWeight: 500,
           }}
@@ -40,11 +40,11 @@ export default function BackButton({ label = 'Back', href = '/' }: BackButtonPro
             e.currentTarget.style.background = 'rgba(184,134,11,0.08)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'rgba(255,255,255,0.5)';
+            e.currentTarget.style.color = 'rgba(255,255,255,0.55)';
             e.currentTarget.style.background = 'transparent';
           }}
         >
-          <span style={{ fontSize: '1rem', lineHeight: 1 }}>←</span>
+          <span style={{ fontSize: '1.15rem', lineHeight: 1 }}>←</span>
           {label}
         </Link>
       </div>

@@ -226,7 +226,7 @@ export default function HomeClient(){
           <div style={{padding:'0 8px'}}>
             <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>NAVIGATE</div>
             {[{l:'Markets',h:'/markets'},{l:'Research',h:'/research'},{l:'Newsletter',h:'/newsletter'},{l:'About',h:'/about'}].map(n=>
-              <Link key={n.l} href={n.h} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'10px 12px',fontFamily:'var(--font-mono)',fontSize:'0.68rem',letterSpacing:'0.06em',color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
+              <Link key={n.l} href={n.h} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
                 onMouseEnter={e=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
                 onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.55)';e.currentTarget.style.background='transparent';}}>{n.l}</Link>
             )}
