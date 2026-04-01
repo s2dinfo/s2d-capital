@@ -8,6 +8,20 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://s2d.info"),
   title: 'S2D Capital Insights | Financial Intelligence',
   description: 'Institutional-grade research across crypto, macro, commodities, FX, geopolitics, and market structure. We connect the dots others miss.',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://s2d.info',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -30,6 +44,7 @@ export const metadata: Metadata = {
     description: 'Financial Intelligence across six verticals.',
     images: ['/og-image.png'],
   },
+  category: 'finance',
 };
 
 export default function RootLayout({

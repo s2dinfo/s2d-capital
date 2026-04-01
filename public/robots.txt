@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://s2d.info/sitemap.xml
+
+# S2D Capital Insights — Independent Financial Intelligence
+# https://s2d.info
