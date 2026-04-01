@@ -3,6 +3,7 @@ import BackButton from "@/components/BackButton";
 
 import ArticleProgress from "@/components/ArticleProgress";
 import Term from "@/components/Term";
+import ThesisTracker from "@/components/ThesisTracker";
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
@@ -130,6 +131,16 @@ export default function RussiaOilArticle() {
 
       {/* ═══ ARTICLE BODY ═══ */}
       <article style={S.article}>
+
+        <ThesisTracker
+          publishDate="March 31, 2026"
+          metrics={[
+            { label: "Brent Crude", publishValue: "$102", symbol: "BZ=F", format: "price" },
+            { label: "Gold", publishValue: "$4,702", symbol: "GC=F", format: "price" },
+            { label: "USD/RUB", publishValue: "84.5", symbol: "USDRUB=X", format: "number" },
+            { label: "Bitcoin", publishValue: "$68,121", symbol: "BTC-USD", format: "price" },
+          ]}
+        />
 
         {/* ── Section 1: Executive Summary ── */}
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s2d.info"),
@@ -36,9 +37,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('s2d-theme');if(t==='light')document.documentElement.dataset.theme='light';}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100%' }}>
         <Navbar />
+        <ThemeToggle />
         <main style={{ overflowX: 'hidden' }}>{children}</main>
       </body>
     </html>

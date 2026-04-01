@@ -12,6 +12,8 @@ import AnimatedCounter from '@/components/AnimatedCounter';
 import TVCandlestickChart, { generateMockCandles } from '@/components/TVCandlestickChart';
 import FearGreedGauge from '@/components/FearGreedGauge';
 import InteractiveVerticalCard from '@/components/InteractiveVerticalCard';
+import MarketFlowDiagram from '@/components/MarketFlowDiagram';
+import Watchlist from '@/components/Watchlist';
 
 /* ── Helpers ── */
 function Mini({data,color,h=44}:{data:number[];color:string;h?:number}) {
@@ -437,7 +439,26 @@ export default function HomeClient(){
         <StatCard name="NAT GAS" val={commod?.natgas} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={sp('NATGAS')} href="/markets/commodities"/>
       </div>}
 
-      <div className="hp-grid-2col" style={{marginBottom:12}}>
+      <Watchlist data={{
+        BTC: { label: 'Bitcoin', value: btc?.usd ? '$'+btc.usd.toLocaleString('en-US',{maximumFractionDigits:0}) : '—', color: '#B8860B' },
+        ETH: { label: 'Ethereum', value: prices?.ethereum?.usd ? '$'+prices.ethereum.usd.toLocaleString('en-US',{maximumFractionDigits:0}) : '—', color: '#3B6CB4' },
+        SOL: { label: 'Solana', value: prices?.solana?.usd ? '$'+prices.solana.usd.toFixed(2) : '—', color: '#9945FF' },
+        XRP: { label: 'XRP', value: prices?.ripple?.usd ? '$'+prices.ripple.usd.toFixed(2) : '—', color: '#2D8F5E' },
+        SPX: { label: 'S&P 500', value: indices?.sp500?.val ? indices.sp500.val.toLocaleString('en-US',{maximumFractionDigits:0}) : '—', color: '#B8860B' },
+        FEDR: { label: 'Fed Rate', value: macro?.fedRate ? macro.fedRate+'%' : '—', color: '#3B6CB4' },
+        T10Y: { label: '10Y Yield', value: macro?.t10y ? macro.t10y+'%' : '—', color: '#3B6CB4' },
+        VIX: { label: 'VIX', value: vixVal ? vixVal.toFixed(1) : '—', color: '#C0392B' },
+        GOLD: { label: 'Gold', value: commod?.gold ? '$'+commod.gold.toFixed(0) : '—', color: '#D4A843' },
+        OIL: { label: 'WTI Oil', value: commod?.oil ? '$'+commod.oil.toFixed(2) : '—', color: '#8B5E3C' },
+        NATGAS: { label: 'Nat Gas', value: commod?.natgas ? '$'+commod.natgas.toFixed(2) : '—', color: '#D4A843' },
+        SILVER: { label: 'Silver', value: '—', color: '#9CA3AF' },
+        EURUSD: { label: 'EUR/USD', value: fx?.EUR ? (1/fx.EUR).toFixed(4) : '—', color: '#2D8F5E' },
+        GBPUSD: { label: 'GBP/USD', value: fx?.GBP ? (1/fx.GBP).toFixed(4) : '—', color: '#2D8F5E' },
+        USDJPY: { label: 'USD/JPY', value: fx?.JPY ? fx.JPY.toFixed(2) : '—', color: '#2D8F5E' },
+        DXY: { label: 'DXY', value: macro?.dxy ?? '—', color: '#3B6CB4' },
+      }} />
+
+      <div className="hp-grid-2col" style={{marginBottom:12,marginTop:12}}>
         <TVCandlestickChart data={btcCandles} title="BTC / USD" height={300}/>
         <TVCandlestickChart data={ethCandles} title="ETH / USD" height={300}/>
       </div>
@@ -476,6 +497,20 @@ export default function HomeClient(){
         ].map((v,i)=><InteractiveVerticalCard key={v.shortLabel} index={i} {...v}/>)}
       </div>
       <p style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.4)',textAlign:'center',marginTop:20,maxWidth:600,margin:'20px auto 0'}}><strong style={{color:'#fff'}}>Fed rate decision</strong> → Dollar → Gold & Oil → EM Currencies → Crypto allocation. <strong style={{color:'#fff'}}>We connect these dots.</strong></p>
+    </div></Section>
+
+    <div className="gold-line"/>
+
+    {/* ══ CROSS-MARKET FLOW ══ */}
+    <Section delay={0.1}><div className="hp-section" style={{paddingTop:32,paddingBottom:32}}>
+      <MarketFlowDiagram data={{
+        fedRate: macro?.fedRate ?? undefined,
+        dxy: macro?.dxy ?? undefined,
+        gold: commod?.gold ?? undefined,
+        oil: commod?.oil ?? undefined,
+        btc: btc?.usd ?? undefined,
+        eurUsd: fx?.EUR ? (1/fx.EUR).toFixed(4) : undefined,
+      }} />
     </div></Section>
 
     <div className="gold-line"/>
