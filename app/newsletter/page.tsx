@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 import { VERTICALS } from '@/lib/verticals';
 
 export default function NewsletterPage() {
@@ -23,8 +23,9 @@ export default function NewsletterPage() {
   };
 
   return (
-    <section style={{ padding: '64px 24px', maxWidth: 520, margin: '0 auto', textAlign: 'center', minHeight: '80vh' }}>
-      <Link href="/" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.15em', color: 'var(--gold, #D4B85C)', marginBottom: 28, display: 'inline-block', textDecoration: 'none', transition: 'color 0.2s' }}>← BACK TO HOME</Link>
+    <div style={{ minHeight: '80vh' }}>
+      <BackButton label="Home" href="/" />
+      <section style={{ padding: '48px 24px 64px', maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
       <p className="eyebrow" style={{ marginBottom: 12 }}>Newsletter</p>
       <h1 className="section-title" style={{ marginBottom: 12 }}>
         Choose Your <em>Topics</em>
@@ -101,5 +102,6 @@ export default function NewsletterPage() {
         </div>
       )}
     </section>
+    </div>
   );
 }

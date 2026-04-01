@@ -1,13 +1,13 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 
 export const metadata: Metadata = { title: 'About – S2D Capital Insights', description: 'Independent financial intelligence across six interconnected market verticals.' };
 
 export default function AboutPage() {
   return (
-    <main style={{ minHeight: '100vh', padding: '48px 24px 80px', maxWidth: 680, margin: '0 auto' }}>
-      <Link href="/" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.15em', color: '#D4B85C', marginBottom: 28, display: 'inline-block', textDecoration: 'none', transition: 'color 0.2s' }}>← BACK TO HOME</Link>
-
+    <main style={{ minHeight: '100vh' }}>
+      <BackButton label="Home" href="/" />
+      <div style={{ padding: '48px 24px 80px', maxWidth: 680, margin: '0 auto' }}>
       <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.25em', color: '#D4B85C', marginBottom: 16 }}>ABOUT</p>
       <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 400, color: '#ffffff', marginBottom: 24, lineHeight: 1.2 }}>S2D Capital <em style={{ fontStyle: 'italic', color: '#D4B85C' }}>Insights</em></h1>
 
@@ -39,6 +39,7 @@ export default function AboutPage() {
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24 }}>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'rgba(255,255,255,0.35)' }}>Contact: <a href="mailto:sami@s2d.info" style={{ color: '#D4B85C', textDecoration: 'none' }}>sami@s2d.info</a></p>
         </div>
+      </div>
       </div>
     </main>
   );

@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import BackButton from "@/components/BackButton";
 
 interface MarketPageLayoutProps {
   title: string;
@@ -11,10 +11,9 @@ interface MarketPageLayoutProps {
 
 export default function MarketPageLayout({ title, titleAccent, accentColor, subtitle, children }: MarketPageLayoutProps) {
   return (
-    <div style={{ padding: "28px 48px 64px", minHeight: "80vh", overflowX: "hidden", maxWidth: 1280, margin: "0 auto" }}>
-      <Link href="/markets" style={{ fontFamily: "var(--font-mono)", fontSize: "0.58rem", letterSpacing: "0.15em", color: "var(--gold)", marginBottom: 20, display: "inline-block", textDecoration: "none", transition: "color 0.2s" }}>
-        ← ALL MARKETS
-      </Link>
+    <div style={{ minHeight: "80vh", overflowX: "hidden" }}>
+      <BackButton label="All Markets" href="/markets" />
+      <div style={{ padding: "28px 48px 64px", maxWidth: 1280, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
         <div style={{ width: 5, height: 32, background: accentColor, borderRadius: 2 }} />
         <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(1.5rem,3vw,2.2rem)", fontWeight: 400, color: "#fff" }}>
@@ -25,6 +24,7 @@ export default function MarketPageLayout({ title, titleAccent, accentColor, subt
         {subtitle}
       </p>
       {children}
+      </div>
     </div>
   );
 }

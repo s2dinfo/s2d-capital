@@ -148,28 +148,32 @@ export default function Navbar() {
       {mobileOpen && (
         <div
           style={{
-            position: "fixed", inset: 0, background: "rgba(15,15,35,0.98)",
-            backdropFilter: "blur(8px)", zIndex: 200,
-            display: "flex", flexDirection: "column",
+            position: "fixed", inset: 0, background: "rgba(10,10,28,0.99)",
+            zIndex: 200,
           }}
         >
-          {/* Close button — top left */}
-          <button
-            onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
-            style={{
-              position: "absolute", top: 16, left: 16,
-              background: "none", border: "none", cursor: "pointer",
-              color: "var(--gold-light, #D4B85C)", fontSize: "1.5rem",
-              width: 40, height: 40,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              zIndex: 201,
-            }}
-          >
-            ✕
-          </button>
+          {/* Top bar with close button on the left */}
+          <div style={{
+            display: "flex", alignItems: "center", height: 60,
+            padding: "0 24px",
+            borderBottom: "1px solid rgba(184,134,11,0.12)",
+          }}>
+            <button
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close menu"
+              style={{
+                background: "none", border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 6, cursor: "pointer",
+                color: "#fff", fontSize: "1.1rem",
+                width: 36, height: 36,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              ✕
+            </button>
+          </div>
 
-          <div style={{ paddingTop: 72, paddingBottom: 32 }}>
+          <div style={{ paddingTop: 16, paddingBottom: 32 }}>
             {links.map((l) => (
               <Link
                 key={l.label}
