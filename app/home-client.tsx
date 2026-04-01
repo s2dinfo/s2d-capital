@@ -59,8 +59,8 @@ function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
   );
 
   return (
-    <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36}}>
-      {/* Hidden measure element */}
+    <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36,position:'relative'}}>
+      {/* Hidden measure element — must be inside positioned+overflow:hidden parent */}
       <div ref={measureRef} style={{position:'absolute',left:0,top:0,visibility:'hidden',display:'flex',alignItems:'center',pointerEvents:'none'}}>
         {items.map((item,i)=>(
           <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
@@ -194,13 +194,15 @@ export default function HomeClient(){
       .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 16px}
       .nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;padding:4px 0}
       .nav-link:hover{color:var(--gold-light)}
-      .hp-section{padding-left:32px;padding-right:32px;max-width:1200px;margin-left:auto;margin-right:auto;box-sizing:border-box}
+      .hp-section{padding-left:32px;padding-right:32px;max-width:1200px;margin-left:auto;margin-right:auto;box-sizing:border-box;width:100%}
       .hp-grid-verticals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-      .hp-grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+      .hp-grid-verticals>*,.hp-grid-stats>*,.hp-grid-2col>*{min-width:0;overflow:hidden}
+      .hp-grid-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
       .hp-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
       @media(max-width:768px){
         .hp-section{padding-left:16px;padding-right:16px}
         .hp-grid-verticals{grid-template-columns:repeat(2,1fr)}
+        .hp-grid-stats{grid-template-columns:repeat(2,1fr)}
         .hp-grid-2col{grid-template-columns:1fr}
         .gold-line{margin:0 16px}
       }
