@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import BackButton from '@/components/BackButton';
 import { VERTICALS } from '@/lib/verticals';
+import { useLanguage } from '@/lib/LanguageContext';
 
 export default function NewsletterClient() {
   const [email, setEmail] = useState('');
   const [picks, setPicks] = useState<string[]>(['crypto']);
   const [done, setDone] = useState(false);
+  const { t } = useLanguage();
 
   const toggle = (k: string) => {
     setPicks((p) => p.includes(k) ? p.filter((x) => x !== k) : [...p, k]);
@@ -24,15 +26,14 @@ export default function NewsletterClient() {
 
   return (
     <div style={{ minHeight: '80vh' }}>
-      <BackButton label="Home" href="/" />
+      <BackButton label={t('back.home')} href="/" />
       <section style={{ padding: '48px 24px 64px', maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
-      <p className="eyebrow" style={{ marginBottom: 12 }}>Newsletter</p>
+      <p className="eyebrow" style={{ marginBottom: 12 }}>{t('nav.newsletter')}</p>
       <h1 className="section-title" style={{ marginBottom: 12 }}>
-        Choose Your <em>Topics</em>
+        {t('newsletter.title')} <em>{t('newsletter.titleAccent')}</em>
       </h1>
       <p style={{ fontSize: '0.95rem', color: 'var(--text-sec)', lineHeight: 1.8, fontWeight: 300, marginBottom: 28 }}>
-        Personalized market intelligence. Only the topics you care about.
-        No spam, only substance.
+        {t('newsletter.subtitle')}
       </p>
 
       {/* Topic picker */}
@@ -84,11 +85,11 @@ export default function NewsletterClient() {
           aria-label="Subscribe to newsletter"
           style={{ borderRadius: 0, boxShadow: 'none', padding: '15px 24px' }}
         >
-          {done ? 'Thanks!' : 'Subscribe'}
+          {done ? t('newsletter.thanks') : t('newsletter.subscribe')}
         </button>
       </div>
       <p style={{ marginTop: 12, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-        Free &middot; Cancel anytime &middot; Weekly analysis
+        {t('newsletter.free')} &middot; {t('newsletter.cancel')} &middot; {t('newsletter.weekly')}
       </p>
 
       {/* Selection summary */}
@@ -98,7 +99,7 @@ export default function NewsletterClient() {
           background: 'rgba(184,134,11,0.08)', border: '1px solid rgba(184,134,11,0.2)',
           textAlign: 'left', borderRadius: 2,
         }}>
-          <div className="eyebrow" style={{ fontSize: '0.52rem', marginBottom: 6 }}>Your Selection</div>
+          <div className="eyebrow" style={{ fontSize: '0.52rem', marginBottom: 6 }}>{t('newsletter.yourSelection')}</div>
           <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
             {picks.map((k) => VERTICALS[k as keyof typeof VERTICALS].labelShort).join(' / ')}
           </div>
@@ -107,7 +108,7 @@ export default function NewsletterClient() {
 
       {/* What You'll Get */}
       <div style={{ marginTop: 56 }}>
-        <p className="eyebrow" style={{ marginBottom: 20 }}>What You'll Get</p>
+        <p className="eyebrow" style={{ marginBottom: 20 }}>{t('newsletter.whatYouGet')}</p>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
@@ -126,12 +127,12 @@ export default function NewsletterClient() {
             <h3 style={{
               fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
               color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
-            }}>Weekly Market Brief</h3>
+            }}>{t('newsletter.weeklyBrief')}</h3>
             <p style={{
               fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
               color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
             }}>
-              Key moves across all six verticals. What happened, why it matters, and what to watch next.
+              {t('newsletter.weeklyBriefDesc')}
             </p>
           </div>
           {/* Card 2 */}
@@ -147,12 +148,12 @@ export default function NewsletterClient() {
             <h3 style={{
               fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
               color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
-            }}>Deep Research</h3>
+            }}>{t('newsletter.deepResearch')}</h3>
             <p style={{
               fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
               color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
             }}>
-              Long-form analysis on the topics you select. From Fed policy to shadow fleets to DeFi architecture.
+              {t('newsletter.deepResearchDesc')}
             </p>
           </div>
           {/* Card 3 */}
@@ -168,12 +169,12 @@ export default function NewsletterClient() {
             <h3 style={{
               fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
               color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
-            }}>Data Alerts</h3>
+            }}>{t('newsletter.dataAlerts')}</h3>
             <p style={{
               fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
               color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
             }}>
-              When key indicators cross critical thresholds — rate decisions, oil spikes, crypto breakouts — you'll know first.
+              {t('newsletter.dataAlertsDesc')}
             </p>
           </div>
         </div>
@@ -181,7 +182,7 @@ export default function NewsletterClient() {
 
       {/* Last Issue Preview */}
       <div style={{ marginTop: 44 }}>
-        <p className="eyebrow" style={{ marginBottom: 16 }}>Last Issue</p>
+        <p className="eyebrow" style={{ marginBottom: 16 }}>{t('newsletter.lastIssue')}</p>
         <div style={{
           background: 'rgba(255,255,255,0.05)',
           borderLeft: '3px solid var(--gold)',

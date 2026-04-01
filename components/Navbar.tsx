@@ -3,18 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   const isHome = pathname === "/";
 
   const links = [
-    { label: "Research", href: "/research" },
-    { label: "Markets", href: "/markets" },
-    { label: "Newsletter", href: "/newsletter" },
-    { label: "About", href: "/about" },
+    { label: t('nav.research'), href: "/research" },
+    { label: t('nav.markets'), href: "/markets" },
+    { label: t('nav.newsletter'), href: "/newsletter" },
+    { label: t('nav.about'), href: "/about" },
   ];
 
   // Don't render navbar on homepage (it has its own hamburger menu)
@@ -104,7 +106,7 @@ export default function Navbar() {
               e.currentTarget.style.boxShadow = "0 2px 12px rgba(184,134,11,0.2)";
             }}
           >
-            Subscribe
+            {t('nav.subscribe')}
           </Link>
         </div>
 

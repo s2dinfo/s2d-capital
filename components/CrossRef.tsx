@@ -1,15 +1,17 @@
 "use client";
 import Link from "next/link";
+import { useLanguage } from "@/lib/LanguageContext";
 
 interface CrossRefProps {
   items: { label: string; href: string; type: "research" | "market" }[];
 }
 
 export default function CrossRef({ items }: CrossRefProps) {
+  const { t } = useLanguage();
   return (
     <div style={{ marginTop: 32, padding: "20px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.48rem", letterSpacing: "0.2em", color: "rgba(255,255,255,0.25)", marginBottom: 12, textTransform: "uppercase", fontWeight: 600 }}>
-        Related
+        {t('common.related')}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {items.map((item) => (

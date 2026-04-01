@@ -1,17 +1,19 @@
 "use client";
 import Link from 'next/link';
 import BackButton from '@/components/BackButton';
+import { useLanguage } from '@/lib/LanguageContext';
 
-const verticals = [
-  { slug: 'crypto', label: 'Crypto & Digital Assets', desc: 'Regulation, ETFs, Tokenization, DeFi', color: '#B8860B', icon: '₿' },
-  { slug: 'macro', label: 'Macro & Central Banks', desc: 'Fed, ECB, BOJ, Rates, Liquidity', color: '#3B6CB4', icon: '🏛' },
-  { slug: 'commodities', label: 'Commodities & Energy', desc: 'Oil, Gold, Agriculture, Supply Chains', color: '#8B5E3C', icon: '🛢' },
-  { slug: 'fx', label: 'FX & Currencies', desc: 'Dollar, EUR/USD, EM Currencies, Stablecoins', color: '#2D8F5E', icon: '💱' },
-  { slug: 'geopolitics', label: 'Geopolitics & Policy', desc: 'Trade Wars, Sanctions, Elections', color: '#8B2252', icon: '🌍' },
-  { slug: 'structure', label: 'Market Structure', desc: 'Institutional Flows, ETF Architecture, TradFi', color: '#5B4FA0', icon: '⚙' },
+const verticalsMeta = [
+  { slug: 'crypto', labelKey: 'v.crypto', descKey: 'v.crypto.desc', color: '#B8860B', icon: '₿' },
+  { slug: 'macro', labelKey: 'v.macro', descKey: 'v.macro.desc', color: '#3B6CB4', icon: '🏛' },
+  { slug: 'commodities', labelKey: 'v.commodities', descKey: 'v.commodities.desc', color: '#8B5E3C', icon: '🛢' },
+  { slug: 'fx', labelKey: 'v.fx', descKey: 'v.fx.desc', color: '#2D8F5E', icon: '💱' },
+  { slug: 'geopolitics', labelKey: 'v.geopolitics', descKey: 'v.geopolitics.desc', color: '#8B2252', icon: '🌍' },
+  { slug: 'structure', labelKey: 'v.structure', descKey: 'v.structure.desc', color: '#5B4FA0', icon: '⚙' },
 ];
 
 export default function MarketsPage() {
+  const { t } = useLanguage();
   return (
     <div style={{ background: 'var(--navy, #1A1A2E)', minHeight: '100vh', color: '#fff' }}>
       <BackButton label="Home" href="/" />
@@ -31,16 +33,16 @@ export default function MarketsPage() {
             S2D Capital Insights
           </div>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 400, color: '#fff', marginBottom: 14 }}>
-            Markets & <em style={{ fontStyle: 'italic', color: 'var(--gold-light, #D4B85C)' }}>Data</em>
+            {t('markets.title')} <em style={{ fontStyle: 'italic', color: 'var(--gold-light, #D4B85C)' }}>{t('markets.titleAccent')}</em>
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
-            Live data and analysis across six verticals. Choose your market.
+            {t('markets.subtitle')}
           </p>
         </div>
       </div>
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '32px 24px 80px' }}>
         <div className="markets-grid" style={{ display: 'grid', gap: 16 }}>
-          {verticals.map(v => (
+          {verticalsMeta.map(v => (
             <Link key={v.slug} href={`/markets/${v.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}>
               <div style={{
                 background: 'rgba(255,255,255,0.03)',
@@ -69,9 +71,9 @@ export default function MarketsPage() {
                 }}
               >
                 <div style={{ fontSize: '1.5rem', marginBottom: 10 }}>{v.icon}</div>
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 500, color: '#fff', marginBottom: 6 }}>{v.label}</h2>
-                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, flex: 1 }}>{v.desc}</p>
-                <span style={{ display: 'inline-block', marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: v.color, fontWeight: 600 }}>View Data →</span>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 500, color: '#fff', marginBottom: 6 }}>{t(v.labelKey)}</h2>
+                <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, flex: 1 }}>{t(v.descKey)}</p>
+                <span style={{ display: 'inline-block', marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: v.color, fontWeight: 600 }}>{t('markets.viewData')}</span>
               </div>
             </Link>
           ))}

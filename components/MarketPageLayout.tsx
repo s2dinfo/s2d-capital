@@ -1,5 +1,6 @@
 "use client";
 import BackButton from "@/components/BackButton";
+import { useLanguage } from "@/lib/LanguageContext";
 
 interface MarketPageLayoutProps {
   title: string;
@@ -10,9 +11,10 @@ interface MarketPageLayoutProps {
 }
 
 export default function MarketPageLayout({ title, titleAccent, accentColor, subtitle, children }: MarketPageLayoutProps) {
+  const { t } = useLanguage();
   return (
     <div style={{ minHeight: "80vh", overflowX: "hidden" }}>
-      <BackButton label="All Markets" href="/markets" />
+      <BackButton label={t('back.allMarkets')} href="/markets" />
       <div className="mpl-content" style={{ maxWidth: 1280, margin: "0 auto" }}>
       <style>{`.mpl-content{padding:28px 48px 64px}@media(max-width:768px){.mpl-content{padding:20px 16px 48px}}`}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
