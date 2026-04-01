@@ -31,6 +31,59 @@ const domData=[{name:'BTC',value:56.2,color:'#B8860B'},{name:'ETH',value:10.1,co
 function pc(v:number|null|undefined){if(!v)return'var(--text-muted)';return v>0?'var(--green)':'var(--red)';}
 function fp(v:number|null|undefined){if(v===null||v===undefined)return'-';return(v>0?'+':'')+v.toFixed(1)+'%';}
 
+/* ── Home Ticker (pixel-measured infinite loop) ── */
+function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [setWidth, setSetWidth] = useState(0);
+
+  useEffect(() => {
+    if (measureRef.current) {
+      setSetWidth(measureRef.current.scrollWidth);
+    }
+  }, [items]);
+
+  // How many full copies we need to fill 2x the viewport
+  const copies = setWidth > 0 ? Math.max(2, Math.ceil((window.innerWidth * 2) / setWidth) + 1) : 3;
+  const speed = 60; // px per second
+  const duration = setWidth > 0 ? setWidth / speed : 30;
+
+  const renderSet = (key: string) => (
+    <div key={key} style={{display:'flex',alignItems:'center',flexShrink:0}}>
+      {items.map((item,i)=>(
+        <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
+          <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
+          <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
+        </span>
+      ))}
+    </div>
+  );
+
+  return (
+    <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36}}>
+      {/* Hidden measure element */}
+      <div ref={measureRef} style={{position:'absolute',visibility:'hidden',display:'flex',alignItems:'center'}}>
+        {items.map((item,i)=>(
+          <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
+            <span>{item.l}</span><span>{item.v}</span>
+          </span>
+        ))}
+      </div>
+      {setWidth > 0 && (
+        <div
+          style={{
+            display:'flex',alignItems:'center',height:36,
+            animation:`hpTicker ${duration}s linear infinite`,
+            willChange:'transform',
+          }}
+        >
+          {Array.from({length:copies},(_,i)=>renderSet(`set-${i}`))}
+        </div>
+      )}
+      <style>{`@keyframes hpTicker{from{transform:translateX(0)}to{transform:translateX(-${setWidth}px)}}`}</style>
+    </div>
+  );
+}
+
 /* ── Stat Card ── */
 function StatCard({name,val,chg,color,prefix,dec,spark}:any){
   const[h,setH]=useState(false);
@@ -144,23 +197,7 @@ export default function HomeClient(){
     `}</style>
 
     {/* ══ TICKER BAR ══ */}
-    <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36}}>
-      <div className="hp-ticker-track" style={{display:'flex',alignItems:'center',height:36}}>
-        <div className="hp-ticker-set" style={{display:'flex',alignItems:'center',flexShrink:0}}>
-          {marqueeItems.map((item,i)=><span key={`a-${i}`} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
-            <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
-            <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
-          </span>)}
-        </div>
-        <div className="hp-ticker-set" style={{display:'flex',alignItems:'center',flexShrink:0}}>
-          {marqueeItems.map((item,i)=><span key={`b-${i}`} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
-            <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
-            <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
-          </span>)}
-        </div>
-      </div>
-      <style>{`.hp-ticker-track{animation:hpTicker 35s linear infinite;will-change:transform}.hp-ticker-set{flex-shrink:0}@keyframes hpTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
-    </div>
+    <HomeTicker items={marqueeItems} />
 
     {/* ══ MENU BUTTON (top-left) ══ */}
     <button onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:44,left:20,zIndex:55,background:'rgba(15,15,35,0.8)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(184,134,11,0.2)',borderRadius:6,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s',boxShadow:'0 4px 16px rgba(0,0,0,0.3)'}}
