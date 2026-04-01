@@ -104,7 +104,141 @@ export default function NewsletterClient() {
           </div>
         </div>
       )}
-    </section>
+
+      {/* What You'll Get */}
+      <div style={{ marginTop: 56 }}>
+        <p className="eyebrow" style={{ marginBottom: 20 }}>What You'll Get</p>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: 14,
+        }}>
+          {/* Card 1 */}
+          <div style={{
+            padding: '22px 16px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid var(--border)',
+            borderRadius: 3,
+            textAlign: 'left',
+            backdropFilter: 'blur(12px)',
+          }}>
+            <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>&#x1F4C8;</div>
+            <h3 style={{
+              fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
+              color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
+            }}>Weekly Market Brief</h3>
+            <p style={{
+              fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
+              color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
+            }}>
+              Key moves across all six verticals. What happened, why it matters, and what to watch next.
+            </p>
+          </div>
+          {/* Card 2 */}
+          <div style={{
+            padding: '22px 16px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid var(--border)',
+            borderRadius: 3,
+            textAlign: 'left',
+            backdropFilter: 'blur(12px)',
+          }}>
+            <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>&#x1F50D;</div>
+            <h3 style={{
+              fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
+              color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
+            }}>Deep Research</h3>
+            <p style={{
+              fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
+              color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
+            }}>
+              Long-form analysis on the topics you select. From Fed policy to shadow fleets to DeFi architecture.
+            </p>
+          </div>
+          {/* Card 3 */}
+          <div style={{
+            padding: '22px 16px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid var(--border)',
+            borderRadius: 3,
+            textAlign: 'left',
+            backdropFilter: 'blur(12px)',
+          }}>
+            <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>&#x1F514;</div>
+            <h3 style={{
+              fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
+              color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
+            }}>Data Alerts</h3>
+            <p style={{
+              fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
+              color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
+            }}>
+              When key indicators cross critical thresholds — rate decisions, oil spikes, crypto breakouts — you'll know first.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Last Issue Preview */}
+      <div style={{ marginTop: 44 }}>
+        <p className="eyebrow" style={{ marginBottom: 16 }}>Last Issue</p>
+        <div style={{
+          background: 'rgba(255,255,255,0.05)',
+          borderLeft: '3px solid var(--gold)',
+          borderRadius: 2,
+          padding: '24px 22px',
+          textAlign: 'left',
+        }}>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+            color: 'var(--text-muted)', letterSpacing: '0.06em',
+            textTransform: 'uppercase', marginBottom: 8,
+          }}>
+            March 28, 2026
+          </div>
+          <h3 style={{
+            fontFamily: 'var(--font-serif)', fontSize: '1.05rem',
+            color: 'var(--gold)', marginBottom: 16, fontWeight: 500, lineHeight: 1.5,
+          }}>
+            S2D Weekly: Gold Breaks $4,700 as Hormuz Crisis Deepens
+          </h3>
+          <ul style={{
+            listStyle: 'none', padding: 0, margin: 0,
+            display: 'flex', flexDirection: 'column', gap: 10,
+          }}>
+            {[
+              'Gold surged past $4,700/oz — safe-haven flows accelerate as Strait of Hormuz tensions escalate. We map the second-order effects across energy and FX.',
+              'Fed holds at 4.25% but language shifts dovish. Markets now price two cuts by September. Our rate model disagrees — here\'s why.',
+              'Brent crude spikes 8% intraweek on tanker route disruptions. Shadow fleet activity in the Gulf hits a 14-month high.',
+              'BTC reclaims $94k as macro hedging narrative strengthens. On-chain data shows whale accumulation at levels not seen since Q4 2024.',
+            ].map((item, i) => (
+              <li key={i} style={{
+                fontFamily: 'var(--font-sans)', fontSize: '0.78rem',
+                color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
+                paddingLeft: 14,
+                position: 'relative',
+              }}>
+                <span style={{
+                  position: 'absolute', left: 0, top: '0.35em',
+                  width: 4, height: 4, borderRadius: '50%',
+                  background: 'var(--gold)', display: 'inline-block',
+                }} />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <div style={{
+            marginTop: 18, paddingTop: 14,
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+            fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
+            color: 'var(--text-muted)', letterSpacing: '0.04em',
+          }}>
+            S2D Capital &middot; Research &amp; Intelligence
+          </div>
+        </div>
+      </div>
+
+      </section>
     </div>
   );
 }

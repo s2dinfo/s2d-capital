@@ -31,6 +31,59 @@ const domData=[{name:'BTC',value:56.2,color:'#B8860B'},{name:'ETH',value:10.1,co
 function pc(v:number|null|undefined){if(!v)return'var(--text-muted)';return v>0?'var(--green)':'var(--red)';}
 function fp(v:number|null|undefined){if(v===null||v===undefined)return'-';return(v>0?'+':'')+v.toFixed(1)+'%';}
 
+/* ── Market Status Badge (NYSE hours) ── */
+function MarketStatusBadge() {
+  const [status, setStatus] = useState<{open:boolean;text:string}>({open:false,text:''});
+  useEffect(() => {
+    function calc() {
+      const now = new Date();
+      const et = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      const day = et.getDay();
+      const h = et.getHours();
+      const m = et.getMinutes();
+      const mins = h * 60 + m;
+      const isWeekday = day >= 1 && day <= 5;
+      const isOpen = isWeekday && mins >= 570 && mins < 960; // 9:30=570, 16:00=960
+
+      if (isOpen) {
+        const left = 960 - mins;
+        const lh = Math.floor(left / 60);
+        const lm = left % 60;
+        setStatus({ open: true, text: `Closes in ${lh}h ${lm}m` });
+      } else {
+        // Calculate minutes until next open
+        let daysUntil = 0;
+        let nextDay = day;
+        if (isWeekday && mins < 570) {
+          daysUntil = 0; // today, before open
+        } else {
+          // After close or weekend — find next weekday
+          nextDay = day;
+          do {
+            nextDay = (nextDay + 1) % 7;
+            daysUntil++;
+          } while (nextDay === 0 || nextDay === 6);
+        }
+        const minsUntil = daysUntil * 24 * 60 + (570 - mins);
+        const totalMins = minsUntil > 0 ? minsUntil : minsUntil + 7 * 24 * 60;
+        const uh = Math.floor(totalMins / 60);
+        const um = totalMins % 60;
+        setStatus({ open: false, text: uh > 24 ? `Opens in ${Math.floor(uh/24)}d ${uh%24}h` : `Opens in ${uh}h ${um}m` });
+      }
+    }
+    calc();
+    const iv = setInterval(calc, 60000);
+    return () => clearInterval(iv);
+  }, []);
+  return (
+    <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:10}}>
+      <div style={{width:6,height:6,borderRadius:'50%',background:status.open?'var(--green)':'#C0392B',boxShadow:status.open?'0 0 6px rgba(45,143,94,0.5)':'0 0 6px rgba(192,57,43,0.5)'}}/>
+      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.1em',color:status.open?'var(--green)':'#C0392B',fontWeight:600}}>{status.open?'Markets Open':'Markets Closed'}</span>
+      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',color:'rgba(255,255,255,0.3)',marginLeft:4}}>{status.text}</span>
+    </div>
+  );
+}
+
 /* ── Home Ticker (pixel-measured infinite loop) ── */
 function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
   const measureRef = useRef<HTMLDivElement>(null);
@@ -86,9 +139,9 @@ function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
 }
 
 /* ── Stat Card ── */
-function StatCard({name,val,chg,color,prefix,dec,spark}:any){
+function StatCard({name,val,chg,color,prefix,dec,spark,href}:any){
   const[h,setH]=useState(false);
-  return <div onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)} style={{background:h?'rgba(184,134,11,0.06)':'rgba(255,255,255,0.03)',border:`1px solid ${h?'rgba(184,134,11,0.2)':'rgba(255,255,255,0.06)'}`,padding:'16px 14px',transition:'all 0.3s ease',transform:h?'translateY(-2px)':'translateY(0)',boxShadow:h?'0 8px 24px rgba(0,0,0,0.15)':'none',position:'relative',overflow:'hidden',borderRadius:6}}>
+  const inner = <div onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)} style={{background:h?'rgba(184,134,11,0.06)':'rgba(255,255,255,0.03)',border:`1px solid ${h?'rgba(184,134,11,0.2)':'rgba(255,255,255,0.06)'}`,padding:'16px 14px',transition:'all 0.3s ease',transform:h?'translateY(-2px)':'translateY(0)',boxShadow:h?'0 8px 24px rgba(0,0,0,0.15)':'none',position:'relative',overflow:'hidden',borderRadius:6}}>
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
       <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.1em',color,fontWeight:500}}>{name}</span>
       {chg!==null&&chg!==undefined&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,color:pc(chg)}}>{fp(chg)}</span>}
@@ -97,8 +150,11 @@ function StatCard({name,val,chg,color,prefix,dec,spark}:any){
       <AnimatedCounter value={val||0} prefix={prefix||''} decimals={dec||0} className=""/>
     </div>
     <Mini data={spark} color={color}/>
+    <span style={{position:'absolute',bottom:8,right:10,fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.3)',opacity:h?1:0,transition:'opacity 0.3s ease'}}>View →</span>
     <div style={{position:'absolute',bottom:0,left:0,height:2,background:`linear-gradient(90deg,transparent,${color},transparent)`,width:h?'100%':'0%',transition:'width 0.5s ease'}}/>
   </div>;
+  if(href) return <Link href={href} style={{textDecoration:'none',color:'inherit',display:'block'}}>{inner}</Link>;
+  return inner;
 }
 
 /* ── Data Card (dark) ── */
@@ -365,6 +421,7 @@ export default function HomeClient(){
 
     {/* ══ MARKET PULSE ══ */}
     <Section><div className="hp-section" style={{paddingTop:28,paddingBottom:28}}>
+      <MarketStatusBadge/>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,flexWrap:'wrap'}}>
         <div className="s2d-pulse" style={{width:7,height:7,borderRadius:'50%',background:'var(--green)',boxShadow:'0 0 6px rgba(45,143,94,0.4)'}}/>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.18em',color:'var(--green)',fontWeight:500}}>MARKET PULSE</span>
@@ -372,12 +429,12 @@ export default function HomeClient(){
       </div>
 
       {_loading ? <PulseSkeleton/> : <div className="hp-grid-stats" style={{marginBottom:12}}>
-        <StatCard name="S&P 500" val={indices?.sp500?.val} chg={indices?.sp500?.chg} color="#B8860B" spark={sp('SPX')}/>
-        <StatCard name="BITCOIN" val={btc?.usd} chg={btc?.usd_24h_change} color="#B8860B" prefix="$" spark={sp('BTC')}/>
-        <StatCard name="GOLD" val={commod?.gold} chg={commod?.goldChg} color="#D4A843" prefix="$" spark={sp('GOLD')}/>
-        <StatCard name="WTI OIL" val={commod?.oil} chg={commod?.oilChg} color="#D4A843" prefix="$" dec={2} spark={sp('OIL')}/>
-        <StatCard name="VIX" val={vixVal} chg={indices?.vix?.chg} color="#C0392B" dec={1} spark={sp('VIX')}/>
-        <StatCard name="NAT GAS" val={commod?.natgas} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={sp('NATGAS')}/>
+        <StatCard name="S&P 500" val={indices?.sp500?.val} chg={indices?.sp500?.chg} color="#B8860B" spark={sp('SPX')} href="/markets/macro"/>
+        <StatCard name="BITCOIN" val={btc?.usd} chg={btc?.usd_24h_change} color="#B8860B" prefix="$" spark={sp('BTC')} href="/markets/crypto"/>
+        <StatCard name="GOLD" val={commod?.gold} chg={commod?.goldChg} color="#D4A843" prefix="$" spark={sp('GOLD')} href="/markets/commodities"/>
+        <StatCard name="WTI OIL" val={commod?.oil} chg={commod?.oilChg} color="#D4A843" prefix="$" dec={2} spark={sp('OIL')} href="/markets/commodities"/>
+        <StatCard name="VIX" val={vixVal} chg={indices?.vix?.chg} color="#C0392B" dec={1} spark={sp('VIX')} href="/markets/macro"/>
+        <StatCard name="NAT GAS" val={commod?.natgas} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={sp('NATGAS')} href="/markets/commodities"/>
       </div>}
 
       <div className="hp-grid-2col" style={{marginBottom:12}}>
