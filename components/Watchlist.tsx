@@ -35,7 +35,8 @@ const INDICATOR_GROUPS: { vertical: string; color: string; items: { key: string;
     color: "#b8860b",
     items: [
       { key: "GOLD", label: "Gold" },
-      { key: "WTI", label: "Oil (WTI)" },
+      { key: "OIL", label: "Oil (WTI)" },
+      { key: "BRENT", label: "Brent Crude" },
       { key: "NATGAS", label: "Natural Gas" },
       { key: "SILVER", label: "Silver" },
     ],

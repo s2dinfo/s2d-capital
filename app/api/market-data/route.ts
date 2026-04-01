@@ -10,6 +10,7 @@ const SYMBOLS: Record<string, { symbol: string; label: string; sector: string }>
   GOLD:   { symbol: "GC=F",     label: "Gold",       sector: "commodities" },
   OIL:    { symbol: "CL=F",     label: "WTI Crude",  sector: "commodities" },
   SILVER: { symbol: "SI=F",     label: "Silver",     sector: "commodities" },
+  BRENT:  { symbol: "BZ=F",     label: "Brent Crude", sector: "commodities" },
   NATGAS: { symbol: "NG=F",     label: "Nat Gas",    sector: "commodities" },
   COPPER: { symbol: "HG=F",     label: "Copper",     sector: "commodities" },
   EURUSD: { symbol: "EURUSD=X", label: "EUR/USD",    sector: "fx" },

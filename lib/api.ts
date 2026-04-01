@@ -29,8 +29,8 @@ export async function getIndices() {
 }
 
 export async function getCommodities() {
-  const [oil,gold,natgas,silver] = await Promise.all([yf('CL=F'),yf('GC=F'),yf('NG=F'),yf('SI=F')]);
-  return { oil:oil.val, oilChg:oil.chg, gold:gold.val, goldChg:gold.chg, natgas:natgas.val, natgasChg:natgas.chg, silver:silver.val, silverChg:silver.chg };
+  const [oil,gold,natgas,silver,brent] = await Promise.all([yf('CL=F'),yf('GC=F'),yf('NG=F'),yf('SI=F'),yf('BZ=F')]);
+  return { oil:oil.val, oilChg:oil.chg, gold:gold.val, goldChg:gold.chg, natgas:natgas.val, natgasChg:natgas.chg, silver:silver.val, silverChg:silver.chg, brent:brent.val, brentChg:brent.chg };
 }
 
 export async function getCryptoMarkets() {

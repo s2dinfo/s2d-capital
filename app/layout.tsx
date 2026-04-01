@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
-import ThemeToggle from '@/components/ThemeToggle';
+import LanguageToggle from '@/components/LanguageToggle';
+import { LanguageProvider } from '@/lib/LanguageContext';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s2d.info"),
@@ -41,14 +42,16 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('s2d-theme');if(t==='light')document.documentElement.dataset.theme='light';}catch(e){}})();`,
+            __html: `(function(){try{var l=localStorage.getItem('s2d-lang');}catch(e){}})();`,
           }}
         />
       </head>
       <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100%' }}>
-        <Navbar />
-        <ThemeToggle />
-        <main style={{ overflowX: 'hidden' }}>{children}</main>
+        <LanguageProvider>
+          <Navbar />
+          <LanguageToggle />
+          <main style={{ overflowX: 'hidden' }}>{children}</main>
+        </LanguageProvider>
       </body>
     </html>
   );

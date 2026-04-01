@@ -1,6 +1,9 @@
 "use client";
 import BackButton from "@/components/BackButton";
 
+import ArticleProgress from "@/components/ArticleProgress";
+import Term from "@/components/Term";
+import ThesisTracker from "@/components/ThesisTracker";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -197,6 +200,16 @@ const priceTargets = [
 
 export default function ClarityActArticle() {
   return (<><BackButton label="Back to Research" href="/research" />
+    <ArticleProgress sections={[
+      { id: "sec-1", title: "Executive Summary", number: "1" },
+      { id: "sec-2", title: "The CLARITY Act: What It Is and Why It Matters", number: "2" },
+      { id: "sec-3", title: "The Consequences of Missing Regulation", number: "3" },
+      { id: "sec-4", title: "The Institutional Wave Is Already Building", number: "4" },
+      { id: "sec-5", title: "Market Outlook and Price Forecasts", number: "5" },
+      { id: "sec-6", title: "Why This Cycle Is Structurally Different", number: "6" },
+      { id: "sec-7", title: "Risk Factors", number: "7" },
+      { id: "sec-8", title: "Conclusion: A Generational Turning Point", number: "8" },
+    ]} />
     <article>
       {/* ═══ HERO ═══ */}
       <motion.div style={S.hero} {...fadeUp}>
@@ -218,6 +231,15 @@ export default function ClarityActArticle() {
 
       {/* ═══ BODY ═══ */}
       <div style={S.article}>
+        <ThesisTracker
+          publishDate="March 10, 2026"
+          metrics={[
+            { label: "Bitcoin", publishValue: "$68,000", symbol: "BTC-USD", format: "price" },
+            { label: "Ethereum", publishValue: "$2,020", symbol: "ETH-USD", format: "price" },
+            { label: "S&P 500", publishValue: "$5,200", symbol: "^GSPC", format: "price" },
+          ]}
+        />
+
         {/* Key figures bar */}
         <motion.div
           style={S.keyFigure}
@@ -240,7 +262,7 @@ export default function ClarityActArticle() {
         </motion.div>
 
         {/* ── Executive Summary ── */}
-        <h2 style={S.h2}>Executive Summary</h2>
+        <h2 id="sec-1" style={S.h2}>Executive Summary</h2>
 
         <p>
           The crypto market is at a turning point. After years in a regulatory gray zone — an environment
@@ -274,7 +296,7 @@ export default function ClarityActArticle() {
         </p>
 
         {/* ── Section 1: CLARITY Act ── */}
-        <h2 style={S.h2}>1. The CLARITY Act: What It Is and Why It Matters</h2>
+        <h2 id="sec-2" style={S.h2}>1. The CLARITY Act: What It Is and Why It Matters</h2>
 
         <h3 style={S.h3}>What is the CLARITY Act?</h3>
         <p>
@@ -292,7 +314,7 @@ export default function ClarityActArticle() {
         <h3 style={S.h3}>1.1 The Core Problem: Jurisdictional Chaos</h3>
         <p>
           For years, two US agencies have fought over jurisdiction for crypto: the Securities and Exchange
-          Commission (SEC) and the Commodity Futures Trading Commission (CFTC). There were no clear rules
+          Commission (<Term definition="Securities and Exchange Commission — the US federal agency responsible for regulating securities markets, protecting investors, and enforcing securities laws." href="https://www.investopedia.com/terms/s/sec.asp">SEC</Term>) and the Commodity Futures Trading Commission (CFTC). There were no clear rules
           governing which cryptocurrency falls under which regulator. The result: companies often only
           learned the rules when they were already being sued — so-called &ldquo;regulation by enforcement.&rdquo;
         </p>
@@ -308,7 +330,7 @@ export default function ClarityActArticle() {
         <div style={{ margin: "20px 0 20px 20px" }}>
           <p><strong>1. Clear CFTC/SEC Jurisdiction:</strong> Major tokens like Bitcoin and Ethereum would
           fall under CFTC oversight, significantly reducing the regulatory burden. A &ldquo;grandfather
-          clause&rdquo; allows tokens that were tied to spot ETFs before January 1, 2026 — including XRP,
+          clause&rdquo; allows tokens that were tied to spot <Term definition="Exchange-Traded Fund — a security that tracks an index, commodity, or basket of assets, traded on stock exchanges like a regular stock. Crypto ETFs allow investors to gain exposure to digital assets through traditional brokerage accounts." href="https://www.investopedia.com/terms/e/etf.asp">ETFs</Term> before January 1, 2026 — including XRP,
           Solana, Litecoin, Hedera, Dogecoin, and Chainlink — to be treated as commodities.</p>
 
           <p><strong>2. Capital Raising Without Full SEC Registration:</strong> New crypto projects could
@@ -357,7 +379,7 @@ export default function ClarityActArticle() {
         </p>
 
         {/* ── Section 2: 2022 Crashes ── */}
-        <h2 style={S.h2}>2. The Consequences of Missing Regulation: What Happened in 2022</h2>
+        <h2 id="sec-3" style={S.h2}>2. The Consequences of Missing Regulation: What Happened in 2022</h2>
 
         <p>
           The crypto crashes of 2022 destroyed over $1.8 trillion in market value. These were not normal market
@@ -373,7 +395,7 @@ export default function ClarityActArticle() {
 
         <h3 style={S.h3}>2.1 Terra/Luna: The $48 Billion Collapse (May 2022)</h3>
         <p>
-          Terra was a so-called &ldquo;algorithmic stablecoin&rdquo; — a cryptocurrency designed to always be
+          Terra was a so-called &ldquo;algorithmic <Term definition="A cryptocurrency designed to maintain a stable value, typically pegged 1:1 to the US dollar. Major stablecoins include USDT (Tether), USDC (Circle), and DAI (MakerDAO)." href="https://www.investopedia.com/terms/s/stablecoin.asp">stablecoin</Term>&rdquo; — a cryptocurrency designed to always be
           worth exactly $1. But unlike traditional stablecoins, Terra&apos;s dollar peg was maintained purely
           through a computer mechanism involving a sister coin called LUNA. There were no real reserves.
         </p>
@@ -402,7 +424,7 @@ export default function ClarityActArticle() {
         </p>
 
         {/* ── Section 3: Institutional Wave ── */}
-        <h2 style={S.h2}>3. The Institutional Wave Is Already Building</h2>
+        <h2 id="sec-4" style={S.h2}>3. The Institutional Wave Is Already Building</h2>
 
         <p>
           While the market waits for legislative clarity, Wall Street is not standing still. The infrastructure
@@ -437,7 +459,7 @@ export default function ClarityActArticle() {
         </div>
 
         {/* ── Section 4: Market Outlook ── */}
-        <h2 style={S.h2}>4. Market Outlook and Price Forecasts</h2>
+        <h2 id="sec-5" style={S.h2}>4. Market Outlook and Price Forecasts</h2>
 
         <p>
           Bitcoin is trading at around $65,000 in early March 2026, roughly 50% below its all-time high of
@@ -505,7 +527,7 @@ export default function ClarityActArticle() {
         <LiveChart symbol="BTC-USD" label="Bitcoin (BTC/USD) — 1 Year" range="1y" height={280} />
 
         {/* ── Section 5 ── */}
-        <h2 style={S.h2}>5. Why This Cycle Is Structurally Different</h2>
+        <h2 id="sec-6" style={S.h2}>5. Why This Cycle Is Structurally Different</h2>
 
         <p>
           Investors who lived through the pain of 2022 rightly ask: &ldquo;Why should this time be
@@ -534,7 +556,7 @@ export default function ClarityActArticle() {
         </div>
 
         {/* ── Section 6: Risks ── */}
-        <h2 style={S.h2}>6. Risk Factors</h2>
+        <h2 id="sec-7" style={S.h2}>6. Risk Factors</h2>
         <p>Despite the constructive outlook, investors should be aware of the following risks:</p>
 
         <div style={{ margin: "16px 0 16px 20px" }}>
@@ -552,13 +574,13 @@ export default function ClarityActArticle() {
           <p><strong>Regulatory Overreach:</strong> Excessively restrictive provisions could stifle
           innovation or push activity offshore.</p>
 
-          <p><strong>Technology Risks:</strong> Blockchain technology, smart contracts, and DeFi protocols
+          <p><strong>Technology Risks:</strong> Blockchain technology, smart contracts, and <Term definition="Decentralized Finance — financial services built on blockchain networks that operate without traditional intermediaries like banks. Includes lending, borrowing, trading, and insurance protocols." href="https://www.investopedia.com/decentralized-finance-defi-5113835">DeFi</Term> protocols
           can contain bugs or security vulnerabilities. Crypto investments can result in the total loss of
           invested capital.</p>
         </div>
 
         {/* ── Section 7: Conclusion ── */}
-        <h2 style={S.h2}>7. Conclusion: A Generational Turning Point</h2>
+        <h2 id="sec-8" style={S.h2}>7. Conclusion: A Generational Turning Point</h2>
 
         <p>
           The crypto market stands at a crossroads. Behind us lies a period defined by the absence of

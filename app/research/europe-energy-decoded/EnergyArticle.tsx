@@ -1,6 +1,9 @@
 "use client";
 import BackButton from "@/components/BackButton";
 
+import ArticleProgress from "@/components/ArticleProgress";
+import Term from "@/components/Term";
+import ThesisTracker from "@/components/ThesisTracker";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -69,6 +72,18 @@ const venues = [
 
 export default function EnergyArticle() {
   return (<><BackButton label="Back to Research" href="/research" />
+    <ArticleProgress sections={[
+      { id: "sec-1", title: "Executive Summary", number: "1" },
+      { id: "sec-2", title: "How Europe's Energy System Actually Works", number: "2" },
+      { id: "sec-3", title: "The Renewable Energy Landscape", number: "3" },
+      { id: "sec-4", title: "Traceability: Proving Energy Is Green", number: "4" },
+      { id: "sec-5", title: "How Energy Commodities Are Traded", number: "5" },
+      { id: "sec-6", title: "The Regulations That Force the Transition", number: "6" },
+      { id: "sec-7", title: "The Iran Shock", number: "7" },
+      { id: "sec-8", title: "What This Means for Commodity Markets", number: "8" },
+      { id: "sec-9", title: "How All of This Affects Daily Business", number: "9" },
+      { id: "sec-10", title: "Investment Implications & Outlook", number: "10" },
+    ]} />
     <article>
       {/* ═══ HERO ═══ */}
       <motion.div style={S.hero} {...fadeUp}>
@@ -90,6 +105,15 @@ export default function EnergyArticle() {
 
       {/* ═══ BODY ═══ */}
       <div style={S.article}>
+        <ThesisTracker
+          publishDate="March 18, 2026"
+          metrics={[
+            { label: "Brent Crude", publishValue: "$95", symbol: "BZ=F", format: "price" },
+            { label: "Natural Gas (TTF)", publishValue: "$12.50", symbol: "NG=F", format: "price" },
+            { label: "EU Carbon (ETS)", publishValue: "$68", symbol: "GC=F", format: "price" },
+            { label: "Gold", publishValue: "$4,500", symbol: "GC=F", format: "price" },
+          ]}
+        />
 
         {/* Key figures */}
         <motion.div style={S.keyFigure} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
@@ -100,10 +124,10 @@ export default function EnergyArticle() {
         </motion.div>
 
         {/* ── 1. EXECUTIVE SUMMARY ── */}
-        <h2 style={S.h2}>1. Executive Summary</h2>
+        <h2 id="sec-1" style={S.h2}>1. Executive Summary</h2>
 
         <p>
-          On February 28, 2026, the United States and Israel launched military strikes against Iran. Within days, the Strait of Hormuz — through which 20% of the world&apos;s oil supply flows — was effectively shut down. QatarEnergy, responsible for roughly a fifth of global liquefied natural gas (LNG) production, halted all output after Iranian drone attacks on its facilities. Brent crude surged from $70 to $120 per barrel. European gas prices jumped 57%.
+          On February 28, 2026, the United States and Israel launched military strikes against Iran. Within days, the Strait of Hormuz — through which 20% of the world&apos;s oil supply flows — was effectively shut down. QatarEnergy, responsible for roughly a fifth of global liquefied natural gas (<Term definition="Liquefied Natural Gas — natural gas cooled to -162°C (-260°F) until it becomes liquid, reducing its volume 600x for shipping by tanker. Critical for countries that can't access pipeline gas." href="https://www.investopedia.com/terms/l/liquefied-natural-gas.asp">LNG</Term>) production, halted all output after Iranian drone attacks on its facilities. Brent crude surged from $70 to $120 per barrel. European gas prices jumped 57%.
         </p>
         <p>
           For Europe, the timing could hardly have been worse. Gas storage levels started 2026 at just 46 billion cubic metres — compared to 60 bcm in 2025 and 77 bcm in 2024. The EU&apos;s regulation phasing out Russian gas imports formally took effect on February 3, 2026, with the stepwise ban beginning on March 18, 2026.
@@ -113,7 +137,7 @@ export default function EnergyArticle() {
         </p>
 
         {/* ── 2. HOW THE SYSTEM WORKS ── */}
-        <h2 style={S.h2}>2. How Europe&apos;s Energy System Actually Works</h2>
+        <h2 id="sec-2" style={S.h2}>2. How Europe&apos;s Energy System Actually Works</h2>
 
         <p>
           Before we can understand why European energy is so expensive, or why the Iran war matters, we need to understand the basics: how does electricity get from a power plant to your light switch?
@@ -148,7 +172,7 @@ export default function EnergyArticle() {
           In Europe&apos;s electricity market, power plants are dispatched in order of their marginal cost — the cost of producing one additional megawatt-hour. The cheapest plants run first. Wind and solar have near-zero marginal costs (the fuel — wind and sunlight — is free). Nuclear is also cheap to run once built. Then comes coal, then gas — and gas is the most expensive.
         </p>
         <p>
-          Here is the critical part: <strong>the price paid to ALL generators is set by the LAST (most expensive) plant needed to meet demand.</strong> This is called the merit order system. Even if 70% of the electricity comes from cheap renewables, if the remaining 30% requires a gas plant to be switched on, the gas plant&apos;s cost sets the market price for everyone.
+          Here is the critical part: <strong>the price paid to ALL generators is set by the LAST (most expensive) plant needed to meet demand.</strong> This is called the <Term definition="The ranking of power plants by marginal cost of production. Cheapest sources (renewables, nuclear) dispatch first; most expensive (gas peakers) set the market price. This means gas prices determine electricity costs even when most power comes from renewables." href="https://en.wikipedia.org/wiki/Merit_order">merit order</Term> system. Even if 70% of the electricity comes from cheap renewables, if the remaining 30% requires a gas plant to be switched on, the gas plant&apos;s cost sets the market price for everyone.
         </p>
 
         <Analogy>
@@ -178,7 +202,7 @@ export default function EnergyArticle() {
         </Def>
 
         {/* ── 3. THE RENEWABLE LANDSCAPE ── */}
-        <h2 style={S.h2}>3. The Renewable Energy Landscape</h2>
+        <h2 id="sec-3" style={S.h2}>3. The Renewable Energy Landscape</h2>
 
         <p>
           Europe&apos;s energy system is in the middle of its most radical transformation since electrification began. Renewables now generate approximately 45% of EU electricity — a figure that was below 20% just 15 years ago. But &ldquo;renewables&rdquo; is a broad category that covers very different technologies, each with different economics, grid impacts, and policy frameworks.
@@ -236,7 +260,7 @@ export default function EnergyArticle() {
         </Skill>
 
         {/* ── 4. TRACEABILITY ── */}
-        <h2 style={S.h2}>4. Traceability: How Do You Prove Energy Is &ldquo;Green&rdquo;?</h2>
+        <h2 id="sec-4" style={S.h2}>4. Traceability: How Do You Prove Energy Is &ldquo;Green&rdquo;?</h2>
 
         <p>
           Here is a question that sounds simple but is profoundly difficult: if you are a company claiming to run on 100% renewable energy, how do you actually prove it?
@@ -285,7 +309,7 @@ export default function EnergyArticle() {
         </Skill>
 
         {/* ── 5. TRADING ── */}
-        <h2 style={S.h2}>5. How Energy Commodities Are Traded</h2>
+        <h2 id="sec-5" style={S.h2}>5. How Energy Commodities Are Traded</h2>
 
         <p>
           Energy is not just a physical commodity — it is one of the deepest, most liquid, and most complex financial markets in the world. European energy trading spans multiple exchanges, over-the-counter markets, and a dizzying array of instruments. Let&apos;s break it down.
@@ -339,7 +363,7 @@ export default function EnergyArticle() {
 
         <h3 style={S.h3}>5.3 Over-the-Counter (OTC): The Hidden Market</h3>
         <p>
-          While exchanges handle standardized products, the OTC market handles everything that doesn&apos;t fit neatly into a standard contract. This includes:
+          While exchanges handle standardized products, the <Term definition="Over-The-Counter — trading done directly between two parties without a central exchange. In energy markets, most physical commodity contracts are negotiated OTC rather than on exchanges." href="https://www.investopedia.com/terms/o/otc.asp">OTC</Term> market handles everything that doesn&apos;t fit neatly into a standard contract. This includes:
         </p>
         <div style={{ margin: "16px 0 16px 20px" }}>
           <p><strong>Bespoke energy contracts</strong> — a utility buying 50 MW of Spanish solar for Q3 2027 at a specific price profile that matches their industrial customer&apos;s consumption pattern.</p>
@@ -370,7 +394,7 @@ export default function EnergyArticle() {
         </Skill>
 
         {/* ── 6. REGULATION ── */}
-        <h2 style={S.h2}>6. The Regulations That Force the Transition</h2>
+        <h2 id="sec-6" style={S.h2}>6. The Regulations That Force the Transition</h2>
 
         <p>
           Europe does not leave the energy transition to the market alone. A dense web of EU directives and national laws compels companies, utilities, fuel distributors, and even homeowners to shift away from fossil fuels — whether they want to or not. Understanding these regulations is essential because they create markets, destroy margins, and redirect billions in capital flows.
@@ -406,7 +430,7 @@ export default function EnergyArticle() {
 
         <div style={S.callout}>
           <div style={S.calloutLabel}>Why This Matters</div>
-          Each of these regulations creates a market. The EU ETS creates the carbon market. The THG-Quote creates the renewable fuels certificate market. CSRD creates demand for GOs. The Russian gas ban creates demand for LNG, biomethane, and pipeline alternatives. Understanding regulation is understanding where the money flows.
+          Each of these regulations creates a market. The <Term definition="European Union Emissions Trading System — the world's largest carbon market. Companies must hold allowances for each ton of CO2 emitted. Allowance prices create a financial incentive to reduce emissions." href="https://www.investopedia.com/terms/e/european-union-emissions-trading-system.asp">EU ETS</Term> creates the carbon market. The THG-Quote creates the renewable fuels certificate market. CSRD creates demand for GOs. The Russian gas ban creates demand for LNG, biomethane, and pipeline alternatives. Understanding regulation is understanding where the money flows.
         </div>
 
         <div style={S.callout}>
@@ -420,7 +444,7 @@ export default function EnergyArticle() {
         </div>
 
         {/* ── 7. THE IRAN SHOCK ── */}
-        <h2 style={S.h2}>7. The Iran Shock: Europe&apos;s Second Energy Crisis</h2>
+        <h2 id="sec-7" style={S.h2}>7. The Iran Shock: Europe&apos;s Second Energy Crisis</h2>
 
         <p>
           The US-Israeli strikes on Iran beginning February 28, 2026, triggered the largest supply disruption in the history of the global oil market. Here is the timeline:
@@ -429,7 +453,7 @@ export default function EnergyArticle() {
         <div style={{ margin: "16px 0 16px 20px" }}>
           <p><strong>Feb 28:</strong> Strikes begin. Iran closes the Strait of Hormuz. Brent crude surges from ~$70 to $82 per barrel within hours.</p>
           <p><strong>Mar 1:</strong> OPEC+ announces emergency output increase to calm markets.</p>
-          <p><strong>Mar 2:</strong> Iranian drones attack QatarEnergy LNG facilities. QatarEnergy halts all gas production — removing ~20% of global LNG supply overnight. Dutch TTF gas prices double.</p>
+          <p><strong>Mar 2:</strong> Iranian drones attack QatarEnergy LNG facilities. QatarEnergy halts all gas production — removing ~20% of global LNG supply overnight. Dutch <Term definition="Title Transfer Facility — the European natural gas benchmark, traded on ICE Endex in the Netherlands. The European equivalent of Henry Hub (the US gas benchmark)." href="https://en.wikipedia.org/wiki/Title_Transfer_Facility">TTF</Term> gas prices double.</p>
           <p><strong>Mar 3–9:</strong> Brent crude climbs to $120/bbl. Diesel exceeds €2/litre in Germany, France, Italy, and the Netherlands. Spain sees the largest fuel price increase in Europe (+27%).</p>
           <p><strong>Mar 12:</strong> IEA agrees to release a record 400 million barrels from strategic reserves. Brent retreats to ~$100/bbl. TTF gas pulls back from a 3-year high of €63.77/MWh to under €50.</p>
           <p><strong>Mar 16–18:</strong> EU energy, environment, and general affairs ministers convene. The Russian gas ban&apos;s stepwise prohibition begins. EU leaders debate emergency measures including gas price caps, electricity tax cuts, and ETS suspension.</p>
@@ -464,7 +488,7 @@ export default function EnergyArticle() {
         </div>
 
         {/* ── 8. COMMODITY MARKETS ── */}
-        <h2 style={S.h2}>8. What This Means for Commodity Markets</h2>
+        <h2 id="sec-8" style={S.h2}>8. What This Means for Commodity Markets</h2>
 
         <p>
           The Iran shock ripples across every commodity class. Here is how the major energy commodities are reacting:
@@ -493,7 +517,7 @@ export default function EnergyArticle() {
         </p>
 
         {/* ── 9. DAILY BUSINESS ── */}
-        <h2 style={S.h2}>9. How All of This Affects Daily Business</h2>
+        <h2 id="sec-9" style={S.h2}>9. How All of This Affects Daily Business</h2>
 
         <p>
           The energy system described in this article is not an abstraction. It shapes the costs, risks, and strategic decisions of every European business:
@@ -511,7 +535,7 @@ export default function EnergyArticle() {
         </p>
 
         {/* ── 10. INVESTMENT IMPLICATIONS ── */}
-        <h2 style={S.h2}>10. Investment Implications &amp; Outlook</h2>
+        <h2 id="sec-10" style={S.h2}>10. Investment Implications &amp; Outlook</h2>
 
         <p>
           For investors, the European energy transition is simultaneously a risk and an opportunity of generational scale. Here is what to watch:
