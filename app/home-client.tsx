@@ -145,12 +145,21 @@ export default function HomeClient(){
 
     {/* ══ TICKER BAR ══ */}
     <div style={{background:'rgba(0,0,0,0.4)',borderBottom:'1px solid rgba(184,134,11,0.2)',overflow:'hidden',whiteSpace:'nowrap',height:36}}>
-      <motion.div animate={{x:['0%','-50%']}} transition={{duration:35,repeat:Infinity,repeatType:"loop",ease:'linear'}} style={{display:'inline-flex',alignItems:'center',height:36}}>
-        {[...marqueeItems,...marqueeItems].map((item,i)=><span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,marginRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
-          <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
-          <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
-        </span>)}
-      </motion.div>
+      <div className="hp-ticker-track" style={{display:'flex',alignItems:'center',height:36}}>
+        <div className="hp-ticker-set" style={{display:'flex',alignItems:'center',flexShrink:0}}>
+          {marqueeItems.map((item,i)=><span key={`a-${i}`} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
+            <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
+            <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
+          </span>)}
+        </div>
+        <div className="hp-ticker-set" style={{display:'flex',alignItems:'center',flexShrink:0}}>
+          {marqueeItems.map((item,i)=><span key={`b-${i}`} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
+            <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
+            <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
+          </span>)}
+        </div>
+      </div>
+      <style>{`.hp-ticker-track{animation:hpTicker 35s linear infinite;will-change:transform}.hp-ticker-set{flex-shrink:0}@keyframes hpTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
     </div>
 
     {/* ══ MENU BUTTON (top-left) ══ */}
@@ -169,8 +178,8 @@ export default function HomeClient(){
           style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',zIndex:45,backdropFilter:'blur(4px)'}}/>
         <motion.div initial={{x:-300,opacity:0}} animate={{x:0,opacity:1}} exit={{x:-300,opacity:0}} transition={{duration:0.3,ease:'easeOut'}}
           style={{position:'fixed',top:0,left:0,bottom:0,width:280,background:'rgba(15,15,35,0.95)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRight:'1px solid rgba(184,134,11,0.15)',zIndex:46,overflowY:'auto',padding:'24px 0'}}>
-          {/* Panel logo */}
-          <div style={{padding:'48px 20px 20px',borderBottom:'1px solid rgba(255,255,255,0.06)',marginBottom:16}}>
+          {/* Panel logo — pushed below the menu button */}
+          <div style={{padding:'80px 20px 20px',borderBottom:'1px solid rgba(255,255,255,0.06)',marginBottom:16}}>
             <Link href="/" onClick={()=>setSidebarOpen(false)} style={{textDecoration:'none',display:'flex',alignItems:'center',gap:8}}>
               <span style={{fontFamily:'var(--font-serif)',fontSize:'1.2rem',fontWeight:600,color:'var(--gold-light)'}}>S2D</span>
               <span style={{fontFamily:'var(--font-serif)',fontSize:'0.85rem',fontWeight:400,color:'rgba(255,255,255,0.6)'}}>Capital Insights</span>
