@@ -39,7 +39,7 @@ export default function MarketsPage() {
         </div>
       </div>
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 24px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
+        <div className="markets-grid" style={{ display: 'grid', gap: 14 }}>
           {verticals.map(v => (
             <Link key={v.slug} href={`/markets/${v.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div style={{
@@ -74,6 +74,10 @@ export default function MarketsPage() {
           ))}
         </div>
       </div>
+      <style>{`
+        .markets-grid { grid-template-columns: repeat(3, 1fr); }
+        @media (max-width: 768px) { .markets-grid { grid-template-columns: 1fr; } }
+      `}</style>
     </div>
   );
 }

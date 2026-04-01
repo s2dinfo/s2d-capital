@@ -44,7 +44,7 @@ function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
 
   // How many full copies we need to fill 2x the viewport
   const copies = setWidth > 0 ? Math.max(2, Math.ceil((window.innerWidth * 2) / setWidth) + 1) : 3;
-  const speed = 60; // px per second
+  const speed = 35; // px per second
   const duration = setWidth > 0 ? setWidth / speed : 30;
 
   const renderSet = (key: string) => (
@@ -236,10 +236,10 @@ export default function HomeClient(){
           <div style={{padding:'0 8px'}}>
             <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>VERTICALS</div>
             {[{l:'Crypto & Digital Assets',h:'/markets/crypto',c:'#B8860B'},{l:'Macro & Central Banks',h:'/markets/macro',c:'#3B6CB4'},{l:'Commodities & Energy',h:'/markets/commodities',c:'#8B5E3C'},{l:'FX & Currencies',h:'/markets/fx',c:'#2D8F5E'},{l:'Geopolitics & Policy',h:'/markets/geopolitics',c:'#8B2252'},{l:'Market Structure',h:'/markets/structure',c:'#5B4FA0'}].map(v=>
-              <Link key={v.l} href={v.h} onClick={()=>setSidebarOpen(false)} style={{display:'flex',alignItems:'center',gap:8,padding:'9px 12px',fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.45)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:1}}
+              <Link key={v.l} href={v.h} onClick={()=>setSidebarOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2,fontWeight:500}}
                 onMouseEnter={e=>{e.currentTarget.style.color=v.c;e.currentTarget.style.background='rgba(255,255,255,0.03)';}}
-                onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.45)';e.currentTarget.style.background='transparent';}}>
-                <div style={{width:4,height:4,borderRadius:'50%',background:v.c,flexShrink:0}}/>{v.l}
+                onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.55)';e.currentTarget.style.background='transparent';}}>
+                <div style={{width:6,height:6,borderRadius:'50%',background:v.c,flexShrink:0}}/>{v.l}
               </Link>
             )}
           </div>
