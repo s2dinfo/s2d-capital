@@ -2,29 +2,22 @@
 
 import { useState } from 'react';
 import BackButton from '@/components/BackButton';
-import { VERTICALS } from '@/lib/verticals';
 
 export default function NewsletterClient() {
   const [email, setEmail] = useState('');
-  const [picks, setPicks] = useState<string[]>(['crypto']);
   const [done, setDone] = useState(false);
-
-  const toggle = (k: string) => {
-    setPicks((p) => p.includes(k) ? p.filter((x) => x !== k) : [...p, k]);
-  };
-
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   const submit = async () => {
-    if (!email.includes('@') || picks.length === 0) return;
+    if (!email.includes('@')) return;
     setSubmitting(true);
     setError('');
     try {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, topics: picks }),
+        body: JSON.stringify({ email }),
       });
       if (res.ok) {
         setDone(true);
@@ -43,37 +36,14 @@ export default function NewsletterClient() {
     <div style={{ minHeight: '80vh' }}>
       <BackButton label="Home" href="/" />
       <section style={{ padding: '48px 24px 64px', maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
+
       <p className="eyebrow" style={{ marginBottom: 12 }}>Newsletter</p>
       <h1 className="section-title" style={{ marginBottom: 12 }}>
-        Choose Your <em>Topics</em>
+        Weekly Market <em>Intelligence</em>
       </h1>
       <p style={{ fontSize: '0.95rem', color: 'var(--text-sec)', lineHeight: 1.8, fontWeight: 300, marginBottom: 28 }}>
-        Personalized market intelligence. Only the topics you care about. No spam, only substance.
+        One email per week. The most important moves across Crypto, Macro, Commodities, FX, Geopolitics, and Market Structure — and how they connect. No spam, only substance.
       </p>
-
-      {/* Topic picker */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 24 }}>
-        {Object.entries(VERTICALS).map(([key, v]) => {
-          const on = picks.includes(key);
-          return (
-            <button
-              key={key}
-              onClick={() => toggle(key)}
-              aria-pressed={on}
-              style={{
-                fontFamily: 'var(--font-sans)', fontSize: '0.72rem', fontWeight: 500,
-                padding: '8px 18px', borderRadius: 20,
-                border: `1px solid ${on ? v.hex : 'var(--border)'}`,
-                background: on ? `${v.hex}12` : 'transparent',
-                color: on ? v.hex : 'var(--text-sec)',
-                cursor: 'pointer', transition: 'all 0.3s',
-              }}
-            >
-              {on ? '* ' : ''}{v.labelShort}
-            </button>
-          );
-        })}
-      </div>
 
       {/* Email input */}
       <div style={{
@@ -85,6 +55,7 @@ export default function NewsletterClient() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && submit()}
           placeholder="your@email.com"
           aria-label="Email address"
           style={{
@@ -101,111 +72,45 @@ export default function NewsletterClient() {
           disabled={submitting}
           style={{ borderRadius: 0, boxShadow: 'none', padding: '15px 24px', opacity: submitting ? 0.6 : 1 }}
         >
-          {done ? 'Thanks!' : submitting ? 'Subscribing...' : 'Subscribe'}
+          {done ? 'You\'re in!' : submitting ? '...' : 'Subscribe'}
         </button>
       </div>
       <p style={{ marginTop: 12, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-        Free &middot; Cancel anytime &middot; Weekly analysis
+        Free &middot; Cancel anytime &middot; Every Monday
       </p>
       {error && <p style={{ marginTop: 8, fontSize: '0.75rem', color: 'var(--red, #f87171)' }}>{error}</p>}
 
-      {/* Selection summary */}
-      {picks.length > 0 && (
-        <div style={{
-          marginTop: 28, padding: 18,
-          background: 'rgba(184,134,11,0.08)', border: '1px solid rgba(184,134,11,0.2)',
-          textAlign: 'left', borderRadius: 2,
-        }}>
-          <div className="eyebrow" style={{ fontSize: '0.52rem', marginBottom: 6 }}>Your Selection</div>
-          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
-            {picks.map((k) => VERTICALS[k as keyof typeof VERTICALS].labelShort).join(' / ')}
-          </div>
-        </div>
-      )}
-
-      {/* What You'll Get */}
-      <div style={{ marginTop: 56 }}>
-        <p className="eyebrow" style={{ marginBottom: 20 }}>What You&apos;ll Get</p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: 14,
-        }}>
-          {/* Card 1 */}
-          <div style={{
-            padding: '22px 16px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid var(--border)',
-            borderRadius: 3,
-            textAlign: 'left',
-            backdropFilter: 'blur(12px)',
-          }}>
-            <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>&#x1F4C8;</div>
-            <h3 style={{
-              fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
-              color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
-            }}>Weekly Market Brief</h3>
-            <p style={{
-              fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
-              color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
+      {/* What you get */}
+      <div style={{ marginTop: 48, textAlign: 'left' }}>
+        <p className="eyebrow" style={{ marginBottom: 16 }}>What you get</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {[
+            { title: 'The Week in Markets', desc: 'Key moves across all six verticals. What happened, why it matters, and what to watch next.' },
+            { title: 'Cross-Market Analysis', desc: 'How a Fed decision moved the dollar, which repriced gold, which shifted crypto flows. We connect the dots.' },
+            { title: 'Research Highlights', desc: 'Early access to our long-form research — from sanctions architecture to energy policy to crypto regulation.' },
+          ].map((item) => (
+            <div key={item.title} style={{
+              padding: '18px 20px',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid var(--border)',
+              borderLeft: '3px solid var(--gold)',
+              borderRadius: '0 4px 4px 0',
             }}>
-              Key moves across all six verticals. What happened, why it matters, and what to watch next.
-            </p>
-          </div>
-          {/* Card 2 */}
-          <div style={{
-            padding: '22px 16px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid var(--border)',
-            borderRadius: 3,
-            textAlign: 'left',
-            backdropFilter: 'blur(12px)',
-          }}>
-            <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>&#x1F50D;</div>
-            <h3 style={{
-              fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
-              color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
-            }}>Deep Research</h3>
-            <p style={{
-              fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
-              color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
-            }}>
-              Long-form analysis on the topics you select. From Fed policy to shadow fleets to DeFi architecture.
-            </p>
-          </div>
-          {/* Card 3 */}
-          <div style={{
-            padding: '22px 16px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid var(--border)',
-            borderRadius: 3,
-            textAlign: 'left',
-            backdropFilter: 'blur(12px)',
-          }}>
-            <div style={{ fontSize: '1.4rem', marginBottom: 10 }}>&#x1F514;</div>
-            <h3 style={{
-              fontFamily: 'var(--font-serif)', fontSize: '0.95rem',
-              color: 'var(--text-pri)', marginBottom: 6, fontWeight: 500,
-            }}>Data Alerts</h3>
-            <p style={{
-              fontFamily: 'var(--font-sans)', fontSize: '0.75rem',
-              color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
-            }}>
-              {'When key indicators cross critical thresholds \u2014 rate decisions, oil spikes, crypto breakouts \u2014 you\'ll know first.'}
-            </p>
-          </div>
+              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', color: '#fff', marginBottom: 4, fontWeight: 500 }}>{item.title}</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-sec)', lineHeight: 1.7 }}>{item.desc}</div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Last Issue Preview */}
-      <div style={{ marginTop: 44 }}>
-        <p className="eyebrow" style={{ marginBottom: 16 }}>Last Issue</p>
+      {/* Sample issue */}
+      <div style={{ marginTop: 40, textAlign: 'left' }}>
+        <p className="eyebrow" style={{ marginBottom: 16 }}>Sample issue</p>
         <div style={{
           background: 'rgba(255,255,255,0.05)',
           borderLeft: '3px solid var(--gold)',
           borderRadius: 2,
           padding: '24px 22px',
-          textAlign: 'left',
         }}>
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: '0.6rem',
@@ -220,21 +125,17 @@ export default function NewsletterClient() {
           }}>
             S2D Weekly: Gold Breaks $4,700 as Hormuz Crisis Deepens
           </h3>
-          <ul style={{
-            listStyle: 'none', padding: 0, margin: 0,
-            display: 'flex', flexDirection: 'column', gap: 10,
-          }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              'Gold surged past $4,700/oz — safe-haven flows accelerate as Strait of Hormuz tensions escalate. We map the second-order effects across energy and FX.',
-              'Fed holds at 4.25% but language shifts dovish. Markets now price two cuts by September. Our rate model disagrees — here\'s why.',
-              'Brent crude spikes 8% intraweek on tanker route disruptions. Shadow fleet activity in the Gulf hits a 14-month high.',
-              'BTC reclaims $94k as macro hedging narrative strengthens. On-chain data shows whale accumulation at levels not seen since Q4 2024.',
+              'Gold surged past $4,700/oz — safe-haven flows accelerate as Strait of Hormuz tensions escalate.',
+              'Fed holds at 4.25% but language shifts dovish. Markets now price two cuts by September.',
+              'Brent crude spikes 8% intraweek on tanker route disruptions. Shadow fleet activity hits 14-month high.',
+              'BTC reclaims $94k as macro hedging narrative strengthens. Whale accumulation at Q4 2024 levels.',
             ].map((item, i) => (
               <li key={i} style={{
                 fontFamily: 'var(--font-sans)', fontSize: '0.78rem',
                 color: 'var(--text-sec)', lineHeight: 1.7, fontWeight: 300,
-                paddingLeft: 14,
-                position: 'relative',
+                paddingLeft: 14, position: 'relative',
               }}>
                 <span style={{
                   position: 'absolute', left: 0, top: '0.35em',

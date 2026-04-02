@@ -5,7 +5,7 @@ const PUBLICATION_ID = 'pub_1fdd5c96-ac21-44e1-846a-501e43e82285';
 
 export async function POST(req: Request) {
   try {
-    const { email, topics } = await req.json();
+    const { email } = await req.json();
 
     if (!email || !email.includes('@')) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
