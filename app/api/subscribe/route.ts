@@ -23,9 +23,9 @@ export async function POST(req: Request) {
           email,
           reactivate_existing: true,
           send_welcome_email: true,
-          custom_fields: topics?.length
-            ? [{ name: 'topics', value: topics.join(', ') }]
-            : [],
+          utm_source: 's2d-website',
+          utm_medium: 'newsletter-page',
+          referring_site: 'https://s2d.info/newsletter',
         }),
       }
     );
