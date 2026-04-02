@@ -13,13 +13,30 @@ export default function NewsletterClient() {
     setPicks((p) => p.includes(k) ? p.filter((x) => x !== k) : [...p, k]);
   };
 
-  const submit = () => {
-    if (email.includes('@') && picks.length > 0) {
-      // TODO: Connect to Beehiiv API
-      setDone(true);
-      setEmail('');
-      setTimeout(() => setDone(false), 4000);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async () => {
+    if (!email.includes('@') || picks.length === 0) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, topics: picks }),
+      });
+      if (res.ok) {
+        setDone(true);
+        setEmail('');
+        setTimeout(() => setDone(false), 5000);
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+    } catch {
+      setError('Network error. Please try again.');
     }
+    setSubmitting(false);
   };
 
   return (
@@ -81,14 +98,16 @@ export default function NewsletterClient() {
           onClick={submit}
           className="btn-gold"
           aria-label="Subscribe to newsletter"
-          style={{ borderRadius: 0, boxShadow: 'none', padding: '15px 24px' }}
+          disabled={submitting}
+          style={{ borderRadius: 0, boxShadow: 'none', padding: '15px 24px', opacity: submitting ? 0.6 : 1 }}
         >
-          {done ? 'Thanks!' : 'Subscribe'}
+          {done ? 'Thanks!' : submitting ? 'Subscribing...' : 'Subscribe'}
         </button>
       </div>
       <p style={{ marginTop: 12, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
         Free &middot; Cancel anytime &middot; Weekly analysis
       </p>
+      {error && <p style={{ marginTop: 8, fontSize: '0.75rem', color: 'var(--red, #f87171)' }}>{error}</p>}
 
       {/* Selection summary */}
       {picks.length > 0 && (
