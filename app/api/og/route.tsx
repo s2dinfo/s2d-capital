@@ -3,144 +3,79 @@ import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-// Keyword → Unsplash photo ID mapping for consistent, high-quality images
-const PHOTO_MAP: Record<string, string> = {
-  // Oil & Energy
-  'oil': '1516937941',       // oil rig at sunset
-  'crude': '1516937941',
-  'brent': '1516937941',
-  'pipeline': '1516937941',
-  'tanker': '1545437842',    // cargo ship
-  'hormuz': '1545437842',
-  'opec': '1516937941',
-  'energy': '1473341497',    // power lines
-  'gas': '1473341497',
-  'lng': '1473341497',
-
-  // Gold & Commodities
-  'gold': '1610375461246',   // gold bars
-  'silver': '1610375461246',
-  'commodity': '1610375461246',
-  'copper': '1610375461246',
-
-  // Crypto & Finance
-  'bitcoin': '1639762681057', // crypto/digital
-  'btc': '1639762681057',
-  'crypto': '1639762681057',
-  'ethereum': '1639762681057',
-  'defi': '1639762681057',
-  'etf': '1611974789855',    // stock exchange
-  'stablecoin': '1639762681057',
-
-  // Geopolitics
-  'russia': '1547981542',    // kremlin/russia
-  'china': '1508804185872',  // china skyline
-  'iran': '1466442929',      // middle east
-  'trump': '1580128660010',  // white house
-  'sanctions': '1526304640581', // world map
-  'war': '1469571486292',    // military
-  'ukraine': '1469571486292',
-  'nato': '1469571486292',
-
-  // Macro & Central Banks
-  'fed': '1526304640581',    // federal reserve / DC
-  'interest rate': '1611974789855',
-  'inflation': '1611974789855',
-  'recession': '1611974789855',
-  'treasury': '1611974789855',
-  'dollar': '1526304640581',
-  'yuan': '1508804185872',
-  'forex': '1526304640581',
-
-  // Markets
-  'market': '1611974789855', // trading floor
-  'stock': '1611974789855',
-  'wall street': '1611974789855',
-  'sp500': '1611974789855',
-
-  // Europe
-  'europe': '1467269204594', // EU parliament
-  'eu': '1467269204594',
-  'carbon': '1473341497',
-  'renewable': '1509391366', // solar panels
-  'merit order': '1473341497',
+// Themed gradient backgrounds based on keywords
+const THEMES: Record<string, { bg: string; accent: string }> = {
+  oil: { bg: 'linear-gradient(135deg, #1a1208 0%, #2d1f0e 50%, #1a1a2e 100%)', accent: '#8B5E3C' },
+  crude: { bg: 'linear-gradient(135deg, #1a1208 0%, #2d1f0e 50%, #1a1a2e 100%)', accent: '#8B5E3C' },
+  brent: { bg: 'linear-gradient(135deg, #1a1208 0%, #2d1f0e 50%, #1a1a2e 100%)', accent: '#8B5E3C' },
+  hormuz: { bg: 'linear-gradient(135deg, #1a0808 0%, #2d0e0e 50%, #1a1a2e 100%)', accent: '#C0392B' },
+  iran: { bg: 'linear-gradient(135deg, #1a0808 0%, #2d0e0e 50%, #1a1a2e 100%)', accent: '#C0392B' },
+  gold: { bg: 'linear-gradient(135deg, #1a1508 0%, #2d250e 50%, #1a1a2e 100%)', accent: '#B8860B' },
+  bitcoin: { bg: 'linear-gradient(135deg, #1a1508 0%, #2d250e 50%, #1a1a2e 100%)', accent: '#B8860B' },
+  btc: { bg: 'linear-gradient(135deg, #1a1508 0%, #2d250e 50%, #1a1a2e 100%)', accent: '#B8860B' },
+  crypto: { bg: 'linear-gradient(135deg, #1a1508 0%, #2d250e 50%, #1a1a2e 100%)', accent: '#B8860B' },
+  etf: { bg: 'linear-gradient(135deg, #1a1508 0%, #2d250e 50%, #1a1a2e 100%)', accent: '#B8860B' },
+  fed: { bg: 'linear-gradient(135deg, #081a1a 0%, #0e2d2d 50%, #1a1a2e 100%)', accent: '#3B6CB4' },
+  rate: { bg: 'linear-gradient(135deg, #081a1a 0%, #0e2d2d 50%, #1a1a2e 100%)', accent: '#3B6CB4' },
+  macro: { bg: 'linear-gradient(135deg, #081a1a 0%, #0e2d2d 50%, #1a1a2e 100%)', accent: '#3B6CB4' },
+  dollar: { bg: 'linear-gradient(135deg, #081a10 0%, #0e2d1a 50%, #1a1a2e 100%)', accent: '#2D8F5E' },
+  forex: { bg: 'linear-gradient(135deg, #081a10 0%, #0e2d1a 50%, #1a1a2e 100%)', accent: '#2D8F5E' },
+  yuan: { bg: 'linear-gradient(135deg, #081a10 0%, #0e2d1a 50%, #1a1a2e 100%)', accent: '#2D8F5E' },
+  russia: { bg: 'linear-gradient(135deg, #1a0808 0%, #2d1010 50%, #1a1a2e 100%)', accent: '#C0392B' },
+  sanctions: { bg: 'linear-gradient(135deg, #1a0814 0%, #2d0e20 50%, #1a1a2e 100%)', accent: '#8B2252' },
+  geopolitics: { bg: 'linear-gradient(135deg, #1a0814 0%, #2d0e20 50%, #1a1a2e 100%)', accent: '#8B2252' },
+  trump: { bg: 'linear-gradient(135deg, #1a0814 0%, #2d0e20 50%, #1a1a2e 100%)', accent: '#8B2252' },
+  europe: { bg: 'linear-gradient(135deg, #0e0e2d 0%, #1a1a4a 50%, #1a1a2e 100%)', accent: '#5B4FA0' },
+  energy: { bg: 'linear-gradient(135deg, #1a1208 0%, #2d1f0e 50%, #1a1a2e 100%)', accent: '#D4A843' },
+  carbon: { bg: 'linear-gradient(135deg, #081a10 0%, #0e2d1a 50%, #1a1a2e 100%)', accent: '#2D8F5E' },
 };
 
-function findPhotoId(title: string, keywords?: string): string {
-  const text = `${title} ${keywords || ''}`.toLowerCase();
-  for (const [keyword, photoId] of Object.entries(PHOTO_MAP)) {
-    if (text.includes(keyword)) return photoId;
+function getTheme(text: string): { bg: string; accent: string } {
+  const lower = text.toLowerCase();
+  for (const [kw, theme] of Object.entries(THEMES)) {
+    if (lower.includes(kw)) return theme;
   }
-  return '1611974789855'; // default: trading floor
+  return { bg: 'linear-gradient(135deg, #1a1a2e 0%, #0f0f23 100%)', accent: '#B8860B' };
 }
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const type = searchParams.get('type') || 'stat';
 
-  if (type === 'snapshot') {
-    return generateSnapshot(searchParams);
-  } else if (type === 'article') {
-    return generateArticleCard(searchParams);
-  } else if (type === 'news') {
-    return generateNewsCard(searchParams);
-  } else {
+  try {
+    if (type === 'snapshot') return generateSnapshot(searchParams);
+    if (type === 'article') return generateArticleCard(searchParams);
+    if (type === 'news') return generateNewsCard(searchParams);
     return generateStatCard(searchParams);
+  } catch (e) {
+    return new Response('Image generation failed', { status: 500 });
   }
 }
 
 function generateNewsCard(params: URLSearchParams) {
   const title = params.get('title') || 'Breaking News';
   const subtitle = params.get('subtitle') || '';
-  const keywords = params.get('keywords') || '';
-
-  const photoId = findPhotoId(title, keywords);
-  const bgUrl = `https://images.unsplash.com/photo-${photoId}?w=1200&h=675&fit=crop&auto=format&q=80`;
+  const keywords = params.get('keywords') || title;
+  const theme = getTheme(`${title} ${keywords}`);
 
   return new ImageResponse(
     (
-      <div style={{
-        width: '1200px', height: '675px',
-        display: 'flex', flexDirection: 'column',
-        justifyContent: 'flex-end',
-        position: 'relative',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-      }}>
-        {/* Background photo */}
-        <img src={bgUrl} style={{ position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px', objectFit: 'cover' }} />
+      <div style={{ width: '1200px', height: '675px', background: theme.bg, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '56px 64px', fontFamily: 'system-ui' }}>
+        {/* Decorative accent */}
+        <div style={{ position: 'absolute', top: 0, right: 0, width: '400px', height: '400px', borderRadius: '50%', background: `radial-gradient(circle, ${theme.accent}15 0%, transparent 70%)`, display: 'flex' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, ${theme.accent}10 0%, transparent 70%)`, display: 'flex' }} />
 
-        {/* Dark gradient overlay */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px',
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 40%, rgba(15,15,35,0.92) 75%, rgba(15,15,35,0.98) 100%)',
-        }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+          <div style={{ width: '6px', height: '28px', background: theme.accent, borderRadius: '3px', display: 'flex' }} />
+          <span style={{ color: '#D4B85C', fontSize: '18px', fontWeight: 700, letterSpacing: '0.15em' }}>S2D CAPITAL INSIGHTS</span>
+          <span style={{ color: theme.accent, fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em', marginLeft: '12px', padding: '4px 12px', background: `${theme.accent}22`, borderRadius: '4px', display: 'flex' }}>BREAKING</span>
+        </div>
 
-        {/* Content */}
-        <div style={{
-          position: 'relative', padding: '0 56px 48px',
-          display: 'flex', flexDirection: 'column',
-        }}>
-          {/* S2D branding */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-            <div style={{ width: '6px', height: '24px', background: '#B8860B', borderRadius: '3px' }} />
-            <span style={{ color: '#D4B85C', fontSize: '16px', fontWeight: 700, letterSpacing: '0.15em' }}>S2D CAPITAL INSIGHTS</span>
-          </div>
+        <span style={{ color: '#ffffff', fontSize: '46px', fontWeight: 700, lineHeight: 1.15, maxWidth: '1000px' }}>{title}</span>
+        {subtitle && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '22px', marginTop: '16px', maxWidth: '800px', lineHeight: 1.4 }}>{subtitle}</span>}
 
-          {/* Title */}
-          <span style={{ color: '#ffffff', fontSize: '44px', fontWeight: 700, lineHeight: 1.15, maxWidth: '900px', textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
-            {title}
-          </span>
-
-          {subtitle && (
-            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '20px', marginTop: '12px', maxWidth: '800px', lineHeight: 1.4 }}>
-              {subtitle}
-            </span>
-          )}
-
-          {/* Footer */}
-          <div style={{ display: 'flex', marginTop: '20px', gap: '16px', alignItems: 'center' }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>s2d.info</span>
-          </div>
+        <div style={{ display: 'flex', marginTop: '32px', borderTop: `1px solid ${theme.accent}33`, paddingTop: '16px' }}>
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '16px' }}>s2d.info</span>
         </div>
       </div>
     ),
@@ -156,61 +91,41 @@ function generateSnapshot(params: URLSearchParams) {
   const vix = params.get('vix') || '—';
   const dxy = params.get('dxy') || '—';
 
-  // Use a trading floor photo as background
-  const bgUrl = `https://images.unsplash.com/photo-1611974789855?w=1200&h=675&fit=crop&auto=format&q=80`;
-
   return new ImageResponse(
     (
-      <div style={{
-        width: '1200px', height: '675px',
-        display: 'flex', flexDirection: 'column',
-        position: 'relative',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-      }}>
-        <img src={bgUrl} style={{ position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px', background: 'rgba(15,15,35,0.88)' }} />
+      <div style={{ width: '1200px', height: '675px', background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #0f0f23 100%)', display: 'flex', flexDirection: 'column', padding: '40px 48px', fontFamily: 'system-ui' }}>
+        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(184,134,11,0.08) 0%, transparent 70%)', display: 'flex' }} />
 
-        <div style={{ position: 'relative', padding: '40px 48px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '6px', height: '28px', background: '#B8860B', borderRadius: '4px' }} />
-              <span style={{ color: '#D4B85C', fontSize: '24px', fontWeight: 700, letterSpacing: '0.08em' }}>S2D CAPITAL INSIGHTS</span>
-            </div>
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '18px' }}>Markets Today</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '6px', height: '28px', background: '#B8860B', borderRadius: '4px', display: 'flex' }} />
+            <span style={{ color: '#D4B85C', fontSize: '24px', fontWeight: 700, letterSpacing: '0.08em' }}>S2D CAPITAL INSIGHTS</span>
           </div>
+          <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '18px' }}>Markets Today</span>
+        </div>
 
-          {/* Grid */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', flex: 1 }}>
-            {[
-              { emoji: '🛢️', label: 'BRENT', value: `$${brent}`, color: '#8B5E3C' },
-              { emoji: '🥇', label: 'GOLD', value: `$${gold}`, color: '#B8860B' },
-              { emoji: '₿', label: 'BITCOIN', value: `$${btc}`, color: '#B8860B' },
-              { emoji: '📈', label: 'S&P 500', value: sp, color: '#3B6CB4' },
-              { emoji: '😱', label: 'VIX', value: vix, color: '#C0392B' },
-              { emoji: '💵', label: 'DXY', value: dxy, color: '#2D8F5E' },
-            ].map((item) => (
-              <div key={item.label} style={{
-                width: '355px', padding: '20px 24px',
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderLeft: `4px solid ${item.color}`,
-                borderRadius: '8px',
-                display: 'flex', alignItems: 'center', gap: '16px',
-              }}>
-                <span style={{ fontSize: '32px' }}>{item.emoji}</span>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.12em', fontWeight: 600 }}>{item.label}</span>
-                  <span style={{ fontSize: '28px', fontWeight: 700, color: '#ffffff' }}>{item.value}</span>
-                </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', flex: 1 }}>
+          {[
+            { emoji: '🛢️', label: 'BRENT', value: `$${brent}`, color: '#8B5E3C' },
+            { emoji: '🥇', label: 'GOLD', value: `$${gold}`, color: '#B8860B' },
+            { emoji: '₿', label: 'BITCOIN', value: `$${btc}`, color: '#B8860B' },
+            { emoji: '📈', label: 'S&P 500', value: sp, color: '#3B6CB4' },
+            { emoji: '😱', label: 'VIX', value: vix, color: '#C0392B' },
+            { emoji: '💵', label: 'DXY', value: dxy, color: '#2D8F5E' },
+          ].map((item) => (
+            <div key={item.label} style={{ width: '355px', padding: '20px 24px', background: 'rgba(255,255,255,0.04)', border: `1px solid rgba(255,255,255,0.08)`, borderLeft: `4px solid ${item.color}`, borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span style={{ fontSize: '28px' }}>{item.emoji}</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.12em', fontWeight: 600 }}>{item.label}</span>
+                <span style={{ fontSize: '26px', fontWeight: 700, color: '#ffffff' }}>{item.value}</span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '12px' }}>
-            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>s2d.info/markets</span>
-            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-          </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>s2d.info/markets</span>
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
         </div>
       </div>
     ),
@@ -223,32 +138,21 @@ function generateStatCard(params: URLSearchParams) {
   const value = params.get('value') || '—';
   const subtitle = params.get('subtitle') || '';
   const keywords = params.get('keywords') || label;
-
-  const photoId = findPhotoId(keywords);
-  const bgUrl = `https://images.unsplash.com/photo-${photoId}?w=1200&h=675&fit=crop&auto=format&q=80`;
+  const theme = getTheme(keywords);
 
   return new ImageResponse(
     (
-      <div style={{
-        width: '1200px', height: '675px',
-        display: 'flex', flexDirection: 'column',
-        justifyContent: 'center', alignItems: 'center',
-        position: 'relative',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-      }}>
-        <img src={bgUrl} style={{ position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px', background: 'rgba(15,15,35,0.85)' }} />
+      <div style={{ width: '1200px', height: '675px', background: theme.bg, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'system-ui' }}>
+        <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '500px', height: '500px', borderRadius: '50%', background: `radial-gradient(circle, ${theme.accent}12 0%, transparent 60%)`, display: 'flex' }} />
 
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '28px' }}>
-            <div style={{ width: '6px', height: '20px', background: '#B8860B', borderRadius: '3px' }} />
-            <span style={{ color: '#D4B85C', fontSize: '16px', fontWeight: 600, letterSpacing: '0.15em' }}>S2D CAPITAL INSIGHTS</span>
-          </div>
-          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '22px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>{label}</span>
-          <span style={{ color: '#D4B85C', fontSize: '88px', fontWeight: 700, lineHeight: 1, textShadow: '0 4px 30px rgba(184,134,11,0.3)' }}>{value}</span>
-          {subtitle && <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '20px', marginTop: '12px' }}>{subtitle}</span>}
-          <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '14px', marginTop: '40px' }}>s2d.info</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '28px' }}>
+          <div style={{ width: '6px', height: '20px', background: theme.accent, borderRadius: '3px', display: 'flex' }} />
+          <span style={{ color: '#D4B85C', fontSize: '16px', fontWeight: 600, letterSpacing: '0.15em' }}>S2D CAPITAL INSIGHTS</span>
         </div>
+        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '22px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>{label}</span>
+        <span style={{ color: theme.accent, fontSize: '88px', fontWeight: 700, lineHeight: 1 }}>{value}</span>
+        {subtitle && <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '20px', marginTop: '12px' }}>{subtitle}</span>}
+        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '14px', marginTop: '40px' }}>s2d.info</span>
       </div>
     ),
     { width: 1200, height: 675 }
@@ -260,40 +164,31 @@ function generateArticleCard(params: URLSearchParams) {
   const subtitle = params.get('subtitle') || '';
   const vertical = params.get('vertical') || 'research';
   const keywords = params.get('keywords') || title;
+  const theme = getTheme(`${title} ${keywords}`);
 
   const colors: Record<string, string> = {
     crypto: '#B8860B', macro: '#3B6CB4', commodities: '#8B5E3C',
     fx: '#2D8F5E', geopolitics: '#8B2252', structure: '#5B4FA0', research: '#B8860B',
   };
-  const color = colors[vertical] || '#B8860B';
-
-  const photoId = findPhotoId(title, keywords);
-  const bgUrl = `https://images.unsplash.com/photo-${photoId}?w=1200&h=675&fit=crop&auto=format&q=80`;
+  const color = colors[vertical] || theme.accent;
 
   return new ImageResponse(
     (
-      <div style={{
-        width: '1200px', height: '675px',
-        display: 'flex', flexDirection: 'column',
-        justifyContent: 'flex-end',
-        position: 'relative',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-      }}>
-        <img src={bgUrl} style={{ position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px', objectFit: 'cover' }} />
-        <div style={{
-          position: 'absolute', top: 0, left: 0, width: '1200px', height: '675px',
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 40%, rgba(15,15,35,0.9) 70%, rgba(15,15,35,0.98) 100%)',
-        }} />
+      <div style={{ width: '1200px', height: '675px', background: theme.bg, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '56px 64px', fontFamily: 'system-ui' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, width: '500px', height: '500px', borderRadius: '50%', background: `radial-gradient(circle, ${color}12 0%, transparent 60%)`, display: 'flex' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: '20%', width: '400px', height: '400px', borderRadius: '50%', background: `radial-gradient(circle, ${color}08 0%, transparent 60%)`, display: 'flex' }} />
 
-        <div style={{ position: 'relative', padding: '0 56px 44px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <div style={{ width: '6px', height: '24px', background: '#B8860B', borderRadius: '3px' }} />
-            <span style={{ color: '#D4B85C', fontSize: '16px', fontWeight: 700, letterSpacing: '0.15em' }}>S2D CAPITAL INSIGHTS</span>
-            <span style={{ color, fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginLeft: '12px', padding: '4px 10px', background: color + '33', borderRadius: '4px' }}>{vertical}</span>
-          </div>
-          <span style={{ color: '#ffffff', fontSize: '46px', fontWeight: 600, lineHeight: 1.15, maxWidth: '900px', textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>{title}</span>
-          {subtitle && <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '20px', marginTop: '14px', maxWidth: '800px', lineHeight: 1.4 }}>{subtitle}</span>}
-          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '14px', marginTop: '20px' }}>s2d.info</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+          <div style={{ width: '6px', height: '28px', background: '#B8860B', borderRadius: '3px', display: 'flex' }} />
+          <span style={{ color: '#D4B85C', fontSize: '18px', fontWeight: 700, letterSpacing: '0.15em' }}>S2D CAPITAL INSIGHTS</span>
+          <span style={{ color, fontSize: '13px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', marginLeft: '12px', padding: '4px 12px', background: `${color}22`, borderRadius: '4px', display: 'flex' }}>{vertical}</span>
+        </div>
+
+        <span style={{ color: '#ffffff', fontSize: '48px', fontWeight: 600, lineHeight: 1.15, maxWidth: '950px' }}>{title}</span>
+        {subtitle && <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: '22px', marginTop: '16px', maxWidth: '800px', lineHeight: 1.4 }}>{subtitle}</span>}
+
+        <div style={{ display: 'flex', marginTop: '32px', borderTop: `1px solid ${color}33`, paddingTop: '16px' }}>
+          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '16px' }}>s2d.info</span>
         </div>
       </div>
     ),
