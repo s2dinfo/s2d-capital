@@ -150,7 +150,7 @@ function StatCard({name,val,chg,color,prefix,dec,spark,href}:any){
       {chg!==null&&chg!==undefined&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,color:pc(chg)}}>{fp(chg)}</span>}
     </div>
     <div style={{fontFamily:'var(--font-mono)',fontSize:'1.2rem',fontWeight:600,color:'#fff',marginBottom:4}}>
-      <AnimatedCounter value={val||0} prefix={prefix||''} decimals={dec||0} className=""/>
+      {val != null && val !== 0 ? `${prefix||''}${Number(val).toLocaleString('en-US',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0})}` : '—'}
     </div>
     <Mini data={spark} color={color}/>
     <span style={{position:'absolute',bottom:8,right:10,fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.3)',opacity:h?1:0,transition:'opacity 0.3s ease'}}>View →</span>
@@ -265,9 +265,6 @@ export default function HomeClient(){
         .hp-grid-stats{grid-template-columns:repeat(2,1fr)}
         .hp-grid-2col{grid-template-columns:1fr}
         .gold-line{margin:0 16px}
-      }
-      @media(max-width:480px){
-        *{max-width:100vw}
       }
       @media(max-width:420px){
         .hp-section{padding-left:12px;padding-right:12px}
