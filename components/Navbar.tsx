@@ -119,8 +119,10 @@ export default function Navbar() {
             flexDirection: "column",
             justifyContent: "center",
             gap: 5,
-            width: 28,
-            height: 28,
+            width: 44,
+            height: 44,
+            minWidth: 44,
+            minHeight: 44,
             background: "none",
             border: "none",
             cursor: "pointer",
@@ -165,7 +167,9 @@ export default function Navbar() {
                 href={l.href}
                 onClick={() => setMobileOpen(false)}
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  minHeight: 48,
                   padding: "18px 32px",
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.82rem",

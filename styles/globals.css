@@ -284,3 +284,23 @@ html, body, main {
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
 }
+
+/* ══ Mobile Fixes ══ */
+@media (max-width: 480px) {
+  /* Single column grids on small phones */
+  .hp-grid-verticals { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .hp-grid-stats { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Bigger tap targets */
+  a, button { min-height: 44px; }
+
+  /* Article tables scroll horizontally */
+  article table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Callout boxes don't overflow */
+  article div[style*="borderLeft"] { word-break: break-word; }
+}
+
+@media (max-width: 375px) {
+  .hp-grid-stats { grid-template-columns: 1fr !important; }
+}

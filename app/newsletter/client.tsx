@@ -46,7 +46,7 @@ export default function NewsletterClient() {
       </p>
 
       {/* Email input */}
-      <div style={{
+      <div className="newsletter-form" style={{
         display: 'flex',
         border: `1.5px solid ${done ? 'var(--green)' : 'var(--border)'}`,
         borderRadius: 3, overflow: 'hidden', transition: 'border-color 0.3s',
@@ -70,7 +70,7 @@ export default function NewsletterClient() {
           className="btn-gold"
           aria-label="Subscribe to newsletter"
           disabled={submitting}
-          style={{ borderRadius: 0, boxShadow: 'none', padding: '15px 24px', opacity: submitting ? 0.6 : 1 }}
+          style={{ borderRadius: 0, boxShadow: 'none', padding: '15px 24px', minHeight: 48, opacity: submitting ? 0.6 : 1 }}
         >
           {done ? 'You\'re in!' : submitting ? '...' : 'Subscribe'}
         </button>
@@ -158,6 +158,12 @@ export default function NewsletterClient() {
       </div>
 
       </section>
+      <style>{`
+        @media (max-width: 400px) {
+          .newsletter-form { flex-direction: column !important; }
+          .newsletter-form .btn-gold { width: 100%; }
+        }
+      `}</style>
     </div>
   );
 }

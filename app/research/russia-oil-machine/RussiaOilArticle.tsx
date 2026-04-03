@@ -516,6 +516,7 @@ export default function RussiaOilArticle() {
           <h2 id="sec-10" style={S.h2}>10. The Asymmetry: Russia Needs China; China Needs Russia... Conveniently</h2>
           <p>The trade relationship between Russia and China is not a partnership of equals. The numbers make this unambiguous:</p>
 
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <table style={S.table}>
             <thead>
               <tr>
@@ -552,6 +553,7 @@ export default function RussiaOilArticle() {
               </tr>
             </tbody>
           </table>
+          </div>
 
           <p>
             Before the war, approximately half of Russia&apos;s exports went to the EU. By mid-2025, that share collapsed to 8%. On the import side, the EU&apos;s share fell from roughly one-third to 12%. China filled the vacuum, but on terms that reflect a monopoly buyer, not a partner.
@@ -693,6 +695,7 @@ export default function RussiaOilArticle() {
           </p>
 
           <h3 style={S.h3}>14.2 The Numbers</h3>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <table style={S.table}>
             <thead>
               <tr>
@@ -729,6 +732,7 @@ export default function RussiaOilArticle() {
               </tr>
             </tbody>
           </table>
+          </div>
 
           <p>
             Xi Jinping has explicitly called for the yuan to achieve reserve currency status, publishing his ambition in the Communist Party&apos;s flagship journal <em>Qiushi</em>. But achieving it would require full capital account liberalization, which would mean accepting a level of financial openness incompatible with CCP political control. This is the <strong style={{ color: "#fff" }}><Term definition="A trilemma in international economics: a country can maintain at most two of (1) free capital flows, (2) independent monetary policy, and (3) a managed exchange rate. Also called the Mundell-Fleming trilemma." href="https://www.investopedia.com/terms/i/impossible-trinity.asp">Impossible Trinity</Term></strong>: a country can maintain at most two of free capital flows, independent monetary policy, and a managed exchange rate. China has chosen the latter two, making capital controls structurally necessary.

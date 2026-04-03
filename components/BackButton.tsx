@@ -31,6 +31,7 @@ export default function BackButton({ label = 'Back', href = '/' }: BackButtonPro
             color: 'rgba(255,255,255,0.55)',
             textDecoration: 'none',
             padding: '8px 14px',
+            minHeight: 44,
             borderRadius: 6,
             transition: 'all 0.2s',
             fontWeight: 500,
