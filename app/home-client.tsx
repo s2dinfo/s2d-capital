@@ -106,9 +106,10 @@ function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
   const renderSet = (key: string) => (
     <div key={key} style={{display:'flex',alignItems:'center',flexShrink:0}}>
       {items.map((item,i)=>(
-        <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
-          <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400}}>{item.l}</span>
-          <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600}}>{item.v}</span>
+        <span key={i} style={{display:'inline-flex',alignItems:'center',gap:8,marginRight:36,fontFamily:'var(--font-mono)',fontSize:'0.64rem',whiteSpace:'nowrap',flexShrink:0}}>
+          <span style={{color:'rgba(255,255,255,0.45)',fontWeight:400,flexShrink:0}}>{item.l}</span>
+          <span style={{color:item.c||'rgba(255,255,255,0.9)',fontWeight:600,flexShrink:0}}>{item.v}</span>
+          <span style={{color:'rgba(255,255,255,0.1)',marginLeft:4,fontSize:'0.5rem',flexShrink:0}}>│</span>
         </span>
       ))}
     </div>
@@ -119,8 +120,8 @@ function HomeTicker({items}:{items:{l:string;v:string;c?:string}[]}) {
       {/* Hidden measure element — must be inside positioned+overflow:hidden parent */}
       <div ref={measureRef} style={{position:'absolute',left:0,top:0,visibility:'hidden',display:'flex',alignItems:'center',pointerEvents:'none'}}>
         {items.map((item,i)=>(
-          <span key={i} style={{display:'inline-flex',alignItems:'center',gap:6,paddingRight:32,fontFamily:'var(--font-mono)',fontSize:'0.64rem'}}>
-            <span>{item.l}</span><span>{item.v}</span>
+          <span key={i} style={{display:'inline-flex',alignItems:'center',gap:8,marginRight:36,fontFamily:'var(--font-mono)',fontSize:'0.64rem',whiteSpace:'nowrap',flexShrink:0}}>
+            <span>{item.l}</span><span>{item.v}</span><span style={{marginLeft:4}}>│</span>
           </span>
         ))}
       </div>
@@ -233,9 +234,9 @@ export default function HomeClient(){
   const selectedTopicData = TOPICS.find(t=>t.key===selectedTopic);
 
   const marqueeItems=[
-    {l:'S&P 500',v:indices?.sp500?.val?.toLocaleString('en-US',{maximumFractionDigits:0})||'-',c:pc(indices?.sp500?.chg)},
-    {l:'DOW',v:indices?.djia?.val?.toLocaleString('en-US',{maximumFractionDigits:0})||'-'},
-    {l:'NASDAQ',v:indices?.nasdaq?.val?.toLocaleString('en-US',{maximumFractionDigits:0})||'-'},
+    {l:'S&P 500',v:indices?.sp500?.val ? indices.sp500.val.toLocaleString('en-US',{maximumFractionDigits:0}) : '-',c:pc(indices?.sp500?.chg)},
+    {l:'DOW',v:indices?.djia?.val ? indices.djia.val.toLocaleString('en-US',{maximumFractionDigits:0}) : '-'},
+    {l:'NASDAQ',v:indices?.nasdaq?.val ? indices.nasdaq.val.toLocaleString('en-US',{maximumFractionDigits:0}) : '-'},
     {l:'BTC',v:'$'+(btc?.usd?.toLocaleString('en-US',{maximumFractionDigits:0})||'-'),c:pc(btc?.usd_24h_change)},
     {l:'GOLD',v:'$'+(commod?.gold?.toFixed(0)||'-'),c:pc(commod?.goldChg)},
     {l:'OIL',v:'$'+(commod?.oil?.toFixed(2)||'-'),c:pc(commod?.oilChg)},
