@@ -280,6 +280,57 @@ html, body, main {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ══ Accessibility Fixes ══ */
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  background: var(--gold);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 0 0 6px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  z-index: 10000;
+  transition: top 0.2s ease;
+}
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Focus styles — visible focus rings for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--gold, #B8860B) !important;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Remove default focus for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .aurora-blob, .ambient-orb, .ticker-track, .hp-ticker-track {
+    animation: none !important;
+  }
+}
+
+/* Minimum font sizes — nothing below 11px */
+.eyebrow { font-size: max(0.65rem, 11px); }
+
 /* Responsive */
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }

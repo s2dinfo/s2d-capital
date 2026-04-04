@@ -81,7 +81,7 @@ function MarketStatusBadge() {
     <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:10}}>
       <div style={{width:6,height:6,borderRadius:'50%',background:status.open?'var(--green)':'#C0392B',boxShadow:status.open?'0 0 6px rgba(45,143,94,0.5)':'0 0 6px rgba(192,57,43,0.5)'}}/>
       <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.1em',color:status.open?'var(--green)':'#C0392B',fontWeight:600}}>{status.open?'Markets Open':'Markets Closed'}</span>
-      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',color:'rgba(255,255,255,0.3)',marginLeft:4}}>{status.text}</span>
+      <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.3)',marginLeft:4}}>{status.text}</span>
     </div>
   );
 }
@@ -302,11 +302,11 @@ export default function HomeClient(){
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
       @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-      @keyframes auroraMove1{0%{transform:translate(0,0) rotate(0deg) scale(1)}33%{transform:translate(80px,-60px) rotate(120deg) scale(1.3)}66%{transform:translate(-40px,40px) rotate(240deg) scale(0.8)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
-      @keyframes auroraMove2{0%{transform:translate(0,0) rotate(0deg) scale(1.1)}33%{transform:translate(-70px,50px) rotate(-120deg) scale(0.7)}66%{transform:translate(60px,-30px) rotate(-240deg) scale(1.2)}100%{transform:translate(0,0) rotate(-360deg) scale(1.1)}}
-      @keyframes auroraMove3{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,30px) scale(1.4)}100%{transform:translate(0,0) scale(1)}}
-      @keyframes auroraPulse{0%,100%{opacity:0.4}50%{opacity:0.8}}
-      .aurora-blob{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;will-change:transform;font-size:0;line-height:0;color:transparent}
+      @keyframes auroraMove1{0%{transform:translate(0%,0%) scale(1)}20%{transform:translate(5%,-8%) scale(1.1)}40%{transform:translate(-3%,6%) scale(0.95)}60%{transform:translate(8%,3%) scale(1.15)}80%{transform:translate(-5%,-4%) scale(1.05)}100%{transform:translate(0%,0%) scale(1)}}
+      @keyframes auroraMove2{0%{transform:translate(0%,0%) scale(1.05)}25%{transform:translate(-6%,5%) scale(0.9)}50%{transform:translate(4%,-6%) scale(1.2)}75%{transform:translate(-3%,3%) scale(0.95)}100%{transform:translate(0%,0%) scale(1.05)}}
+      @keyframes auroraMove3{0%{transform:translate(0%,0%) scale(1)}33%{transform:translate(4%,5%) scale(1.15)}66%{transform:translate(-5%,-3%) scale(0.9)}100%{transform:translate(0%,0%) scale(1)}}
+      @keyframes auroraPulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+      .aurora-blob{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;will-change:transform;font-size:0;line-height:0;color:transparent;contain:paint}
       .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:auroraMove3 25s ease-in-out infinite;max-width:100vw}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 16px}
       .nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;padding:4px 0}
@@ -358,7 +358,7 @@ export default function HomeClient(){
           </div>
           {/* Navigation */}
           <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>NAVIGATE</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>NAVIGATE</div>
             {[{l:'Markets',h:'/markets'},{l:'Research',h:'/research'},{l:'Newsletter',h:'/newsletter'},{l:'About',h:'/about'}].map(n=>
               <Link key={n.l} href={n.h} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
                 onMouseEnter={e=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
@@ -368,7 +368,7 @@ export default function HomeClient(){
           <div style={{height:1,background:'rgba(255,255,255,0.06)',margin:'16px 20px'}}/>
           {/* Verticals */}
           <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>VERTICALS</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>VERTICALS</div>
             {[{l:'Crypto & Digital Assets',h:'/markets/crypto',c:'#B8860B'},{l:'Macro & Central Banks',h:'/markets/macro',c:'#3B6CB4'},{l:'Commodities & Energy',h:'/markets/commodities',c:'#8B5E3C'},{l:'FX & Currencies',h:'/markets/fx',c:'#2D8F5E'},{l:'Geopolitics & Policy',h:'/markets/geopolitics',c:'#8B2252'},{l:'Market Structure',h:'/markets/structure',c:'#5B4FA0'}].map(v=>
               <Link key={v.l} href={v.h} onClick={()=>setSidebarOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',color:'rgba(255,255,255,0.55)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2,fontWeight:500}}
                 onMouseEnter={e=>{e.currentTarget.style.color=v.c;e.currentTarget.style.background='rgba(255,255,255,0.03)';}}
@@ -380,13 +380,13 @@ export default function HomeClient(){
           <div style={{height:1,background:'rgba(255,255,255,0.06)',margin:'16px 20px'}}/>
           {/* Research */}
           <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>LATEST RESEARCH</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.25)',padding:'0 12px 8px'}}>LATEST RESEARCH</div>
             {articles.slice(0,4).map((a:any)=>
               <Link key={a.slug} href={`/research/${a.slug}`} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'10px 12px',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
                 onMouseEnter={e=>{e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
                 onMouseLeave={e=>{e.currentTarget.style.background='transparent';}}>
                 <div style={{fontFamily:'var(--font-serif)',fontSize:'0.88rem',color:'rgba(255,255,255,0.75)',lineHeight:1.3,marginBottom:3}}>{a.title}</div>
-                <div style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',color:'rgba(255,255,255,0.25)'}}>{a.date} · {a.readTime}</div>
+                <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.25)'}}>{a.date} · {a.readTime}</div>
               </Link>
             )}
           </div>
@@ -403,11 +403,13 @@ export default function HomeClient(){
     {/* ══ HERO — DARK NAVY + GOLD ══ */}
     <div style={{position:'relative',overflow:'hidden',padding:'56px 16px 40px',textAlign:'center',minHeight:420,background:'linear-gradient(180deg, #080810 0%, #0a0a1a 30%, #1A1A2E 100%)'}}>
       {/* Aurora flowing blobs */}
-      <div className="aurora-blob" style={{width:'800px',height:'800px',top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.35) 0%,rgba(184,134,11,0.1) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite'}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'600px',height:'600px',bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.3) 0%,rgba(59,108,180,0.08) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite'}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'500px',height:'500px',top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.2) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse'}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'400px',height:'400px',top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.15) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse'}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'700px',height:'700px',top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.2) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite'}}>&nbsp;</div>
+      <div style={{position:'absolute',inset:0,animation:'auroraPulse 8s ease-in-out infinite'}}>
+        <div className="aurora-blob" style={{width:'800px',height:'800px',top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.35) 0%,rgba(184,134,11,0.1) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'600px',height:'600px',bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.3) 0%,rgba(59,108,180,0.08) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'500px',height:'500px',top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.2) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'400px',height:'400px',top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.15) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'700px',height:'700px',top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.2) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite'}}>&nbsp;</div>
+      </div>
       {/* Subtle grid */}
       <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
       {/* Noise texture */}
@@ -468,10 +470,10 @@ export default function HomeClient(){
             onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.2)';e.currentTarget.style.background='rgba(184,134,11,0.04)';}}
             onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.06)';e.currentTarget.style.background='rgba(255,255,255,0.02)';}}>
             <div style={{display:'flex',gap:4,marginBottom:6}}>
-              {a.tags?.slice(0,2).map((t:any)=>{const v=VERTICALS[t as keyof typeof VERTICALS];return v?<span key={t} style={{fontFamily:'var(--font-mono)',fontSize:'0.45rem',letterSpacing:'0.06em',padding:'2px 6px',background:`${v.hex}15`,color:v.hex,borderRadius:2}}>{v.labelShort}</span>:null;})}
+              {a.tags?.slice(0,2).map((t:any)=>{const v=VERTICALS[t as keyof typeof VERTICALS];return v?<span key={t} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.06em',padding:'2px 6px',background:`${v.hex}15`,color:v.hex,borderRadius:2}}>{v.labelShort}</span>:null;})}
             </div>
             <h4 style={{fontFamily:'var(--font-serif)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.85)',lineHeight:1.35,marginBottom:6}}>{a.title}</h4>
-            <span style={{fontFamily:'var(--font-mono)',fontSize:'0.48rem',color:'rgba(255,255,255,0.3)'}}>{a.date} · {a.readTime}</span>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.3)'}}>{a.date} · {a.readTime}</span>
           </div>
         </Link>)}
       </div>

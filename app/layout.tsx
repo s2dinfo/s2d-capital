@@ -94,8 +94,9 @@ export default function RootLayout({
         />
       </head>
       <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100%' }}>
+        <a href="#main-content" className="skip-to-content">Skip to content</a>
         <Navbar />
-        <main style={{ overflowX: 'hidden' }}>{children}</main>
+        <main id="main-content" style={{ overflowX: 'hidden' }}>{children}</main>
       </body>
     </html>
   );
