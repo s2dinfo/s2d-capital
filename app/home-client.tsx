@@ -298,7 +298,11 @@ export default function HomeClient(){
     {l:'VIX',v:vixVal?.toFixed(1)||'-',c:vixVal?(vixVal>30?'var(--red)':vixVal>20?'#E88A3C':'var(--green)'):undefined},
   ];
 
-  return <div style={{background:'#1A1A2E',color:'#fff',minHeight:'100vh',width:'100%',overflowX:'hidden'}}>
+  return <div style={{background:'#1A1A2E',color:'#fff',minHeight:'100vh',width:'100%',overflowX:'hidden',position:'relative'}}>
+    {/* Page-wide floating gold glows */}
+    <div className="glow glow-gold" style={{width:600,height:600,top:'15%',right:'-8%',animation:'spinSlow 40s linear infinite',opacity:0.25,position:'fixed',zIndex:0}}/>
+    <div className="glow glow-gold" style={{width:500,height:500,top:'50%',left:'-10%',animation:'spinReverse 35s linear infinite',opacity:0.2,position:'fixed',zIndex:0}}/>
+    <div className="glow glow-gold" style={{width:400,height:400,bottom:'10%',right:'10%',animation:'floatUp 25s ease-in-out infinite',opacity:0.15,position:'fixed',zIndex:0}}/>
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
       @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
@@ -307,7 +311,7 @@ export default function HomeClient(){
       @keyframes floatUp{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}100%{transform:translateY(0) scale(1)}}
       @keyframes floatDown{0%{transform:translateY(0) scale(1.05)}50%{transform:translateY(20px) scale(0.95)}100%{transform:translateY(0) scale(1.05)}}
       @keyframes gridFade{0%,100%{opacity:0.03}50%{opacity:0.07}}
-      .hero-bg{position:relative;overflow:hidden;background:#0e0e1c}
+      .hero-bg{position:relative;overflow:hidden;background:#1A1A2E}
       .glow{position:absolute;border-radius:50%;pointer-events:none;will-change:transform}
       .glow-gold{background:radial-gradient(circle,rgba(184,134,11,0.5) 0%,rgba(184,134,11,0.2) 40%,transparent 70%);filter:blur(80px)}
       .glow-blue{background:radial-gradient(circle,rgba(59,108,180,0.4) 0%,rgba(59,108,180,0.15) 40%,transparent 70%);filter:blur(100px)}

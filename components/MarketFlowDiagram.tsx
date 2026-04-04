@@ -31,8 +31,8 @@ const EDGES: { from: NodeId; to: NodeId; label?: string }[] = [
   { from: "dxy",  to: "gold" },
   { from: "dxy",  to: "oil" },
   { from: "dxy",  to: "eurusd" },
-  { from: "gold", to: "btc", label: "safe haven rotation" },
-  { from: "oil",  to: "btc", label: "risk correlation" },
+  { from: "gold", to: "btc" },
+  { from: "oil",  to: "btc" },
 ];
 
 /* ── grid positions (desktop col/row, mobile just vertical) ── */
