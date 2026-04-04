@@ -183,6 +183,29 @@ function PulseSkeleton() {
   </div>;
 }
 
+/* ── Topic Button (hover fills with color) ── */
+function TopicButton({href,label,color,filled}:{href:string;label:string;color:string;filled?:boolean}) {
+  const [h, setH] = useState(false);
+  const isActive = filled ? !h : h; // filled inverts on hover, outline fills on hover
+  return (
+    <Link href={href} onClick={(e:any)=>e.stopPropagation()}
+      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+      style={{
+        display:'flex',alignItems:'center',gap:4,
+        fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,
+        padding:'8px 16px',borderRadius:4,textDecoration:'none',
+        letterSpacing:'0.05em',
+        background: (filled && !h) || (!filled && h) ? color : 'transparent',
+        color: (filled && !h) || (!filled && h) ? '#fff' : 'rgba(255,255,255,0.7)',
+        border: `1.5px solid ${color}`,
+        transform: h ? 'translateY(-2px)' : 'translateY(0)',
+        boxShadow: h ? `0 4px 16px ${color}44` : 'none',
+        transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+      }}
+    >{label}</Link>
+  );
+}
+
 /* ── Topic Selector Card ── */
 const TOPICS = [
   {key:'crypto',icon:'₿',label:'Crypto & Digital Assets',sub:'CLARITY Act, ETFs, DeFi',color:'#B8860B',dataHref:'/markets/crypto',articleHref:'/research'},
@@ -217,16 +240,8 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
           transition={{duration:0.3,ease:[0.4,0,0.2,1]}}
           style={{display:'flex',gap:8,justifyContent:'center',overflow:'hidden'}}
         >
-          <Link href={t.dataHref} onClick={(e:any)=>e.stopPropagation()} className="topic-btn" style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:`${t.color}`,color:'#fff',borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em',border:`1px solid ${t.color}`}}
-            onMouseEnter={(e:any)=>{e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow=`0 4px 12px ${t.color}44`;}}
-            onMouseLeave={(e:any)=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none';}}>
-            📊 Data
-          </Link>
-          <Link href={t.articleHref} onClick={(e:any)=>e.stopPropagation()} className="topic-btn" style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:'transparent',color:'rgba(255,255,255,0.7)',border:`1px solid ${t.color}55`,borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em'}}
-            onMouseEnter={(e:any)=>{e.currentTarget.style.background=`${t.color}22`;e.currentTarget.style.color='#fff';e.currentTarget.style.borderColor=`${t.color}88`;e.currentTarget.style.transform='translateY(-1px)';}}
-            onMouseLeave={(e:any)=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='rgba(255,255,255,0.7)';e.currentTarget.style.borderColor=`${t.color}55`;e.currentTarget.style.transform='translateY(0)';}}>
-            📝 Articles
-          </Link>
+          <TopicButton href={t.dataHref} label="📊 Data" color={t.color} filled />
+          <TopicButton href={t.articleHref} label="📝 Articles" color={t.color} />
         </motion.div>
       )}
     </AnimatePresence>
@@ -373,11 +388,11 @@ export default function HomeClient(){
     {/* ══ HERO — DARK NAVY + GOLD ══ */}
     <div style={{position:'relative',overflow:'hidden',padding:'56px 16px 40px',textAlign:'center',minHeight:420,background:'linear-gradient(180deg, #080810 0%, #0a0a1a 30%, #1A1A2E 100%)'}}>
       {/* Aurora flowing blobs */}
-      <div className="aurora-blob" style={{width:800,height:800,top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.18) 0%,rgba(184,134,11,0.05) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite',opacity:0.6}}/>
-      <div className="aurora-blob" style={{width:600,height:600,bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.15) 0%,rgba(59,108,180,0.04) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite',opacity:0.5}}/>
-      <div className="aurora-blob" style={{width:500,height:500,top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.1) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse',opacity:0.4}}/>
-      <div className="aurora-blob" style={{width:400,height:400,top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.08) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse',opacity:0.5}}/>
-      <div className="aurora-blob" style={{width:700,height:700,top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.1) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite',opacity:0.4}}/>
+      <div className="aurora-blob" style={{width:'800px',height:'800px',top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.2) 0%,rgba(184,134,11,0.06) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite',opacity:0.7}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'600px',height:'600px',bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.18) 0%,rgba(59,108,180,0.05) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite',opacity:0.6}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'500px',height:'500px',top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.12) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse',opacity:0.5}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'400px',height:'400px',top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.1) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse',opacity:0.5}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'700px',height:'700px',top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.12) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite',opacity:0.5}}>&nbsp;</div>
       {/* Subtle grid */}
       <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
       {/* Noise texture */}
