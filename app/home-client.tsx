@@ -183,26 +183,42 @@ function PulseSkeleton() {
   </div>;
 }
 
-/* ── Topic Button (hover fills with color) ── */
-function TopicButton({href,label,color,filled}:{href:string;label:string;color:string;filled?:boolean}) {
-  const [h, setH] = useState(false);
-  const isActive = filled ? !h : h; // filled inverts on hover, outline fills on hover
+/* ── Topic Button Pair (shared hover state — only one is filled at a time) ── */
+function TopicButtons({dataHref,articleHref,color}:{dataHref:string;articleHref:string;color:string}) {
+  const [active, setActive] = useState<'data'|'articles'>('data');
   return (
-    <Link href={href} onClick={(e:any)=>e.stopPropagation()}
-      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-      style={{
-        display:'flex',alignItems:'center',gap:4,
-        fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,
-        padding:'8px 16px',borderRadius:4,textDecoration:'none',
-        letterSpacing:'0.05em',
-        background: (filled && !h) || (!filled && h) ? color : 'transparent',
-        color: (filled && !h) || (!filled && h) ? '#fff' : 'rgba(255,255,255,0.7)',
-        border: `1.5px solid ${color}`,
-        transform: h ? 'translateY(-2px)' : 'translateY(0)',
-        boxShadow: h ? `0 4px 16px ${color}44` : 'none',
-        transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
-      }}
-    >{label}</Link>
+    <div style={{display:'flex',gap:8,justifyContent:'center'}}>
+      <Link href={dataHref} onClick={(e:any)=>e.stopPropagation()}
+        onMouseEnter={()=>setActive('data')}
+        style={{
+          display:'flex',alignItems:'center',gap:4,
+          fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,
+          padding:'8px 16px',borderRadius:4,textDecoration:'none',
+          letterSpacing:'0.05em',
+          background: active==='data' ? color : 'transparent',
+          color: active==='data' ? '#fff' : 'rgba(255,255,255,0.5)',
+          border: `1.5px solid ${active==='data' ? color : color+'55'}`,
+          transform: active==='data' ? 'translateY(-1px)' : 'translateY(0)',
+          boxShadow: active==='data' ? `0 4px 14px ${color}33` : 'none',
+          transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      >📊 Data</Link>
+      <Link href={articleHref} onClick={(e:any)=>e.stopPropagation()}
+        onMouseEnter={()=>setActive('articles')}
+        style={{
+          display:'flex',alignItems:'center',gap:4,
+          fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,
+          padding:'8px 16px',borderRadius:4,textDecoration:'none',
+          letterSpacing:'0.05em',
+          background: active==='articles' ? color : 'transparent',
+          color: active==='articles' ? '#fff' : 'rgba(255,255,255,0.5)',
+          border: `1.5px solid ${active==='articles' ? color : color+'55'}`,
+          transform: active==='articles' ? 'translateY(-1px)' : 'translateY(0)',
+          boxShadow: active==='articles' ? `0 4px 14px ${color}33` : 'none',
+          transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      >📝 Articles</Link>
+    </div>
   );
 }
 
@@ -240,8 +256,7 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
           transition={{duration:0.3,ease:[0.4,0,0.2,1]}}
           style={{display:'flex',gap:8,justifyContent:'center',overflow:'hidden'}}
         >
-          <TopicButton href={t.dataHref} label="📊 Data" color={t.color} filled />
-          <TopicButton href={t.articleHref} label="📝 Articles" color={t.color} />
+          <TopicButtons dataHref={t.dataHref} articleHref={t.articleHref} color={t.color} />
         </motion.div>
       )}
     </AnimatePresence>
@@ -291,7 +306,7 @@ export default function HomeClient(){
       @keyframes auroraMove2{0%{transform:translate(0,0) rotate(0deg) scale(1.1)}33%{transform:translate(-70px,50px) rotate(-120deg) scale(0.7)}66%{transform:translate(60px,-30px) rotate(-240deg) scale(1.2)}100%{transform:translate(0,0) rotate(-360deg) scale(1.1)}}
       @keyframes auroraMove3{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,30px) scale(1.4)}100%{transform:translate(0,0) scale(1)}}
       @keyframes auroraPulse{0%,100%{opacity:0.4}50%{opacity:0.8}}
-      .aurora-blob{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;mix-blend-mode:screen}
+      .aurora-blob{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;will-change:transform;font-size:0;line-height:0;color:transparent}
       .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:auroraMove3 25s ease-in-out infinite;max-width:100vw}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 16px}
       .nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;padding:4px 0}
@@ -388,11 +403,11 @@ export default function HomeClient(){
     {/* ══ HERO — DARK NAVY + GOLD ══ */}
     <div style={{position:'relative',overflow:'hidden',padding:'56px 16px 40px',textAlign:'center',minHeight:420,background:'linear-gradient(180deg, #080810 0%, #0a0a1a 30%, #1A1A2E 100%)'}}>
       {/* Aurora flowing blobs */}
-      <div className="aurora-blob" style={{width:'800px',height:'800px',top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.2) 0%,rgba(184,134,11,0.06) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite',opacity:0.7}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'600px',height:'600px',bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.18) 0%,rgba(59,108,180,0.05) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite',opacity:0.6}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'500px',height:'500px',top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.12) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse',opacity:0.5}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'400px',height:'400px',top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.1) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse',opacity:0.5}}>&nbsp;</div>
-      <div className="aurora-blob" style={{width:'700px',height:'700px',top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.12) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite',opacity:0.5}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'800px',height:'800px',top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.35) 0%,rgba(184,134,11,0.1) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite'}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'600px',height:'600px',bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.3) 0%,rgba(59,108,180,0.08) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite'}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'500px',height:'500px',top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.2) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse'}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'400px',height:'400px',top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.15) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse'}}>&nbsp;</div>
+      <div className="aurora-blob" style={{width:'700px',height:'700px',top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.2) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite'}}>&nbsp;</div>
       {/* Subtle grid */}
       <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
       {/* Noise texture */}
