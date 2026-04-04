@@ -302,12 +302,19 @@ export default function HomeClient(){
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
       @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-      @keyframes auroraMove1{0%{transform:translate(0%,0%) scale(1)}20%{transform:translate(5%,-8%) scale(1.1)}40%{transform:translate(-3%,6%) scale(0.95)}60%{transform:translate(8%,3%) scale(1.15)}80%{transform:translate(-5%,-4%) scale(1.05)}100%{transform:translate(0%,0%) scale(1)}}
-      @keyframes auroraMove2{0%{transform:translate(0%,0%) scale(1.05)}25%{transform:translate(-6%,5%) scale(0.9)}50%{transform:translate(4%,-6%) scale(1.2)}75%{transform:translate(-3%,3%) scale(0.95)}100%{transform:translate(0%,0%) scale(1.05)}}
-      @keyframes auroraMove3{0%{transform:translate(0%,0%) scale(1)}33%{transform:translate(4%,5%) scale(1.15)}66%{transform:translate(-5%,-3%) scale(0.9)}100%{transform:translate(0%,0%) scale(1)}}
-      @keyframes auroraPulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
-      .aurora-blob{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;will-change:transform;font-size:0;line-height:0;color:transparent;contain:paint}
-      .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:auroraMove3 25s ease-in-out infinite;max-width:100vw}
+      @keyframes meshFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+      @keyframes blobDrift1{0%{transform:translate(0,0) scale(1)}25%{transform:translate(60px,-40px) scale(1.2)}50%{transform:translate(-30px,50px) scale(0.9)}75%{transform:translate(40px,20px) scale(1.1)}100%{transform:translate(0,0) scale(1)}}
+      @keyframes blobDrift2{0%{transform:translate(0,0) scale(1.1)}30%{transform:translate(-50px,30px) scale(0.85)}60%{transform:translate(40px,-50px) scale(1.15)}100%{transform:translate(0,0) scale(1.1)}}
+      @keyframes blobDrift3{0%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(30px,40px) rotate(180deg)}100%{transform:translate(0,0) rotate(360deg)}}
+      @keyframes breathe{0%,100%{opacity:0.4}50%{opacity:0.75}}
+      @keyframes lightStreak{0%{transform:translateX(-100%) rotate(-35deg);opacity:0}10%{opacity:0.15}90%{opacity:0.15}100%{transform:translateX(200%) rotate(-35deg);opacity:0}}
+      @keyframes gridFade{0%,100%{opacity:0.03}50%{opacity:0.06}}
+      .hero-bg{position:relative;overflow:hidden;background:linear-gradient(180deg,#040408 0%,#0a0a18 40%,#12122a 100%)}
+      .mesh-gradient{position:absolute;inset:0;background:linear-gradient(135deg,rgba(184,134,11,0.08) 0%,transparent 30%,rgba(59,108,180,0.06) 50%,transparent 70%,rgba(139,34,82,0.05) 100%);background-size:200% 200%;animation:meshFlow 20s ease infinite}
+      .aurora-blob{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;will-change:transform;font-size:0;line-height:0;color:transparent;contain:paint}
+      .aurora-layer{position:absolute;inset:0;animation:breathe 10s ease-in-out infinite}
+      .light-streak{position:absolute;width:200%;height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.15),rgba(184,134,11,0.3),rgba(184,134,11,0.15),transparent);pointer-events:none}
+      .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:blobDrift3 25s ease-in-out infinite;max-width:100vw}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 16px}
       .nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;padding:4px 0}
       .nav-link:hover{color:var(--gold-light)}
@@ -400,21 +407,36 @@ export default function HomeClient(){
       </>}
     </AnimatePresence>
 
-    {/* ══ HERO — DARK NAVY + GOLD ══ */}
-    <div style={{position:'relative',overflow:'hidden',padding:'56px 16px 40px',textAlign:'center',minHeight:420,background:'linear-gradient(180deg, #080810 0%, #0a0a1a 30%, #1A1A2E 100%)'}}>
-      {/* Aurora flowing blobs */}
-      <div style={{position:'absolute',inset:0,animation:'auroraPulse 8s ease-in-out infinite'}}>
-        <div className="aurora-blob" style={{width:'800px',height:'800px',top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.35) 0%,rgba(184,134,11,0.1) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite'}}>&nbsp;</div>
-        <div className="aurora-blob" style={{width:'600px',height:'600px',bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.3) 0%,rgba(59,108,180,0.08) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite'}}>&nbsp;</div>
-        <div className="aurora-blob" style={{width:'500px',height:'500px',top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.2) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse'}}>&nbsp;</div>
-        <div className="aurora-blob" style={{width:'400px',height:'400px',top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.15) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse'}}>&nbsp;</div>
-        <div className="aurora-blob" style={{width:'700px',height:'700px',top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.2) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite'}}>&nbsp;</div>
+    {/* ══ HERO — CINEMATIC DARK + FLOWING AURORA ══ */}
+    <div className="hero-bg" style={{padding:'56px 16px 40px',textAlign:'center',minHeight:420}}>
+
+      {/* Layer 1: Flowing mesh gradient */}
+      <div className="mesh-gradient">&nbsp;</div>
+
+      {/* Layer 2: Aurora blobs — large colored glows drifting independently */}
+      <div className="aurora-layer">
+        <div className="aurora-blob" style={{width:'900px',height:'900px',top:'-35%',left:'-15%',background:'radial-gradient(ellipse,rgba(184,134,11,0.25) 0%,rgba(184,134,11,0.08) 35%,transparent 65%)',animation:'blobDrift1 40s ease-in-out infinite'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'700px',height:'700px',bottom:'-25%',right:'-10%',background:'radial-gradient(ellipse,rgba(59,108,180,0.2) 0%,rgba(59,108,180,0.06) 35%,transparent 65%)',animation:'blobDrift2 35s ease-in-out infinite'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'600px',height:'600px',top:'15%',left:'45%',background:'radial-gradient(ellipse,rgba(139,34,82,0.15) 0%,rgba(139,34,82,0.04) 35%,transparent 65%)',animation:'blobDrift1 45s ease-in-out infinite reverse'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'500px',height:'500px',top:'55%',left:'15%',background:'radial-gradient(ellipse,rgba(45,143,94,0.12) 0%,transparent 55%)',animation:'blobDrift2 32s ease-in-out infinite reverse'}}>&nbsp;</div>
+        <div className="aurora-blob" style={{width:'800px',height:'800px',top:'-5%',right:'15%',background:'radial-gradient(ellipse,rgba(184,134,11,0.15) 0%,transparent 55%)',animation:'blobDrift3 50s linear infinite'}}>&nbsp;</div>
       </div>
-      {/* Subtle grid */}
-      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
-      {/* Noise texture */}
-      <div style={{position:'absolute',inset:0,opacity:0.03,backgroundImage:'url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")',pointerEvents:'none'}}/>
-      {/* Particles */}
+
+      {/* Layer 3: Animated light streaks */}
+      <div className="light-streak" style={{top:'30%',animation:'lightStreak 12s ease-in-out infinite',animationDelay:'0s'}}>&nbsp;</div>
+      <div className="light-streak" style={{top:'60%',animation:'lightStreak 15s ease-in-out infinite',animationDelay:'4s',opacity:0.5}}>&nbsp;</div>
+      <div className="light-streak" style={{top:'45%',animation:'lightStreak 18s ease-in-out infinite',animationDelay:'8s',opacity:0.3}}>&nbsp;</div>
+
+      {/* Layer 4: Animated grid that pulses */}
+      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.04) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none',animation:'gridFade 8s ease-in-out infinite'}}>&nbsp;</div>
+
+      {/* Layer 5: Noise texture for film grain depth */}
+      <div style={{position:'absolute',inset:0,opacity:0.04,backgroundImage:'url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.8%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")',pointerEvents:'none',mixBlendMode:'overlay'}}>&nbsp;</div>
+
+      {/* Layer 6: Vignette — darkens edges for cinematic focus */}
+      <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at center, transparent 40%, rgba(4,4,8,0.6) 100%)',pointerEvents:'none'}}>&nbsp;</div>
+
+      {/* Layer 7: Interactive particles */}
       <div style={{position:'absolute',inset:0,overflow:'hidden',opacity:0.2}}><ParticleField/></div>
 
       <div style={{position:'relative',zIndex:2}}>
