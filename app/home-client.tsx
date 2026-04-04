@@ -197,16 +197,35 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
   const isSelected = selected===t.key;
   return <motion.div
     onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-    onClick={()=>onSelect(t.key)}
-    whileHover={{y:-4}} whileTap={{scale:0.97}}
+    onClick={()=>onSelect(isSelected?'':t.key)}
+    layout
+    whileHover={{y:-3}} whileTap={{scale:0.98}}
     style={{cursor:'pointer',padding:'20px 16px',borderRadius:8,
       background:isSelected?`linear-gradient(135deg,${t.color}22,${t.color}08)`:'rgba(255,255,255,0.03)',
       border:`1.5px solid ${isSelected?t.color+'66':h?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.06)'}`,
-      transition:'all 0.3s',textAlign:'center',position:'relative',overflow:'hidden'}}>
-    {isSelected&&<div style={{position:'absolute',top:0,left:0,right:0,height:2,background:t.color}}/>}
-    <div style={{fontSize:'1.5rem',marginBottom:8}}>{t.icon}</div>
-    <div style={{fontFamily:'var(--font-serif)',fontSize:'0.88rem',fontWeight:500,color:'#fff',marginBottom:4}}>{t.label}</div>
-    <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.4)',letterSpacing:'0.05em'}}>{t.sub}</div>
+      transition:'all 0.4s cubic-bezier(0.4,0,0.2,1)',textAlign:'center',position:'relative',overflow:'hidden'}}>
+    {isSelected&&<motion.div layoutId="topicAccent" style={{position:'absolute',top:0,left:0,right:0,height:2,background:t.color}} transition={{duration:0.3}}/>}
+    <div style={{fontSize:'1.5rem',marginBottom:8,transition:'transform 0.3s',transform:isSelected?'scale(1.15)':'scale(1)'}}>{t.icon}</div>
+    <div style={{fontFamily:'var(--font-serif)',fontSize:'0.88rem',fontWeight:500,color:isSelected?'#fff':'rgba(255,255,255,0.8)',marginBottom:4,transition:'color 0.3s'}}>{t.label}</div>
+    <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:isSelected?t.color:'rgba(255,255,255,0.4)',letterSpacing:'0.05em',transition:'color 0.3s'}}>{t.sub}</div>
+    <AnimatePresence>
+      {isSelected && (
+        <motion.div
+          initial={{opacity:0,height:0,marginTop:0}}
+          animate={{opacity:1,height:'auto',marginTop:12}}
+          exit={{opacity:0,height:0,marginTop:0}}
+          transition={{duration:0.3,ease:[0.4,0,0.2,1]}}
+          style={{display:'flex',gap:8,justifyContent:'center',overflow:'hidden'}}
+        >
+          <Link href={t.dataHref} onClick={(e:any)=>e.stopPropagation()} style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:`${t.color}`,color:'#fff',borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em'}}>
+            📊 Data
+          </Link>
+          <Link href={t.articleHref} onClick={(e:any)=>e.stopPropagation()} style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:'transparent',color:'rgba(255,255,255,0.7)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em'}}>
+            📝 Articles
+          </Link>
+        </motion.div>
+      )}
+    </AnimatePresence>
   </motion.div>;
 }
 
@@ -249,8 +268,8 @@ export default function HomeClient(){
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
       @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-      @keyframes ambientFloat{0%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.1)}66%{transform:translate(-20px,15px) scale(0.95)}100%{transform:translate(0,0) scale(1)}}
-      .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:ambientFloat 20s ease-in-out infinite;max-width:100vw}
+      @keyframes ambientFloat{0%{transform:translate(0,0) scale(1);opacity:0.8}25%{transform:translate(40px,-30px) scale(1.15);opacity:1}50%{transform:translate(-20px,25px) scale(0.9);opacity:0.7}75%{transform:translate(30px,10px) scale(1.1);opacity:0.9}100%{transform:translate(0,0) scale(1);opacity:0.8}}
+      .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:ambientFloat 30s ease-in-out infinite;max-width:100vw}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 16px}
       .nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;padding:4px 0}
       .nav-link:hover{color:var(--gold-light)}
@@ -333,6 +352,12 @@ export default function HomeClient(){
               </Link>
             )}
           </div>
+          <div style={{padding:'12px 20px 0'}}>
+            <a href="https://x.com/s2dinfo" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.35)',textDecoration:'none',transition:'color 0.2s'}} onMouseEnter={(e:any)=>{e.currentTarget.style.color='var(--gold-light)';}} onMouseLeave={(e:any)=>{e.currentTarget.style.color='rgba(255,255,255,0.35)';}}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              @s2dinfo
+            </a>
+          </div>
         </motion.div>
       </>}
     </AnimatePresence>
@@ -345,6 +370,7 @@ export default function HomeClient(){
       <div className="ambient-orb" style={{width:300,height:300,top:'30%',left:'55%',background:'radial-gradient(circle,rgba(59,108,180,0.06) 0%,transparent 55%)',animationDelay:'-14s'}}/>
       {/* Gold grid — more visible */}
       <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.07) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 30% 50%, rgba(184,134,11,0.06) 0%, transparent 50%)',animation:'ambientFloat 25s ease-in-out infinite reverse',pointerEvents:'none'}}/>
       {/* Particles */}
       <div style={{position:'absolute',inset:0,overflow:'hidden',opacity:0.3}}><ParticleField/></div>
 
@@ -367,16 +393,6 @@ export default function HomeClient(){
         <div className="hp-grid-verticals" style={{marginBottom:16}}>
           {TOPICS.map(t=><TopicCard key={t.key} t={t} onSelect={setSelectedTopic} selected={selectedTopic}/>)}
         </div>
-        <AnimatePresence>
-          {selectedTopic&&selectedTopicData&&<motion.div initial={{opacity:0,y:10,height:0}} animate={{opacity:1,y:0,height:'auto'}} exit={{opacity:0,y:-10,height:0}} transition={{duration:0.3}} style={{display:'flex',gap:12,justifyContent:'center',marginTop:8,flexWrap:'wrap'}}>
-            <Link href={selectedTopicData.dataHref} style={{display:'inline-flex',alignItems:'center',gap:6,fontFamily:'var(--font-sans)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',padding:'12px 28px',background:`linear-gradient(135deg,${selectedTopicData.color},${selectedTopicData.color}cc)`,color:'#fff',borderRadius:4,textDecoration:'none',boxShadow:`0 4px 20px ${selectedTopicData.color}33`,transition:'all 0.3s'}}>
-              📊 Live Data
-            </Link>
-            <Link href={selectedTopicData.articleHref} style={{display:'inline-flex',alignItems:'center',gap:6,fontFamily:'var(--font-sans)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',padding:'12px 28px',background:'transparent',color:'#fff',border:'1.5px solid rgba(255,255,255,0.15)',borderRadius:4,textDecoration:'none',transition:'all 0.3s'}}>
-              📝 Research & Articles
-            </Link>
-          </motion.div>}
-        </AnimatePresence>
       </motion.div>
     </div>
 
@@ -538,7 +554,13 @@ export default function HomeClient(){
           <span style={{fontFamily:'var(--font-serif)',fontSize:'0.95rem',fontWeight:600,color:'var(--gold-light)'}}>S2D</span>
           <span style={{fontFamily:'var(--font-serif)',fontSize:'0.8rem',fontWeight:400,color:'rgba(255,255,255,0.5)'}}>Capital Insights</span>
         </div>
-        <div style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.2)'}}>© {new Date().getFullYear()} S2D Capital Insights · sami@s2d.info</div>
+        <div style={{display:'flex',alignItems:'center',gap:16}}>
+          <a href="https://x.com/s2dinfo" target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:6,fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.4)',textDecoration:'none',padding:'6px 12px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:4,transition:'all 0.3s'}} onMouseEnter={(e:any)=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.borderColor='rgba(184,134,11,0.3)';}} onMouseLeave={(e:any)=>{e.currentTarget.style.color='rgba(255,255,255,0.4)';e.currentTarget.style.borderColor='rgba(255,255,255,0.1)';}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            @s2dinfo
+          </a>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.2)'}}>© {new Date().getFullYear()} S2D Capital Insights</span>
+        </div>
       </div>
     </footer>
   </div>;
