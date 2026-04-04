@@ -217,10 +217,14 @@ function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)
           transition={{duration:0.3,ease:[0.4,0,0.2,1]}}
           style={{display:'flex',gap:8,justifyContent:'center',overflow:'hidden'}}
         >
-          <Link href={t.dataHref} onClick={(e:any)=>e.stopPropagation()} style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:`${t.color}`,color:'#fff',borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em'}}>
+          <Link href={t.dataHref} onClick={(e:any)=>e.stopPropagation()} className="topic-btn" style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:`${t.color}`,color:'#fff',borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em',border:`1px solid ${t.color}`}}
+            onMouseEnter={(e:any)=>{e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow=`0 4px 12px ${t.color}44`;}}
+            onMouseLeave={(e:any)=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none';}}>
             📊 Data
           </Link>
-          <Link href={t.articleHref} onClick={(e:any)=>e.stopPropagation()} style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:'transparent',color:'rgba(255,255,255,0.7)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em'}}>
+          <Link href={t.articleHref} onClick={(e:any)=>e.stopPropagation()} className="topic-btn" style={{display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,padding:'8px 14px',background:'transparent',color:'rgba(255,255,255,0.7)',border:`1px solid ${t.color}55`,borderRadius:4,textDecoration:'none',transition:'all 0.2s',letterSpacing:'0.05em'}}
+            onMouseEnter={(e:any)=>{e.currentTarget.style.background=`${t.color}22`;e.currentTarget.style.color='#fff';e.currentTarget.style.borderColor=`${t.color}88`;e.currentTarget.style.transform='translateY(-1px)';}}
+            onMouseLeave={(e:any)=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='rgba(255,255,255,0.7)';e.currentTarget.style.borderColor=`${t.color}55`;e.currentTarget.style.transform='translateY(0)';}}>
             📝 Articles
           </Link>
         </motion.div>
@@ -268,8 +272,12 @@ export default function HomeClient(){
     <style>{`
       @keyframes s2d-pulse{0%,100%{opacity:1}50%{opacity:0.4}}.s2d-pulse{animation:s2d-pulse 2s infinite}
       @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-      @keyframes ambientFloat{0%{transform:translate(0,0) scale(1);opacity:0.8}25%{transform:translate(40px,-30px) scale(1.15);opacity:1}50%{transform:translate(-20px,25px) scale(0.9);opacity:0.7}75%{transform:translate(30px,10px) scale(1.1);opacity:0.9}100%{transform:translate(0,0) scale(1);opacity:0.8}}
-      .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:ambientFloat 30s ease-in-out infinite;max-width:100vw}
+      @keyframes auroraMove1{0%{transform:translate(0,0) rotate(0deg) scale(1)}33%{transform:translate(80px,-60px) rotate(120deg) scale(1.3)}66%{transform:translate(-40px,40px) rotate(240deg) scale(0.8)}100%{transform:translate(0,0) rotate(360deg) scale(1)}}
+      @keyframes auroraMove2{0%{transform:translate(0,0) rotate(0deg) scale(1.1)}33%{transform:translate(-70px,50px) rotate(-120deg) scale(0.7)}66%{transform:translate(60px,-30px) rotate(-240deg) scale(1.2)}100%{transform:translate(0,0) rotate(-360deg) scale(1.1)}}
+      @keyframes auroraMove3{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,30px) scale(1.4)}100%{transform:translate(0,0) scale(1)}}
+      @keyframes auroraPulse{0%,100%{opacity:0.4}50%{opacity:0.8}}
+      .aurora-blob{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;mix-blend-mode:screen}
+      .ambient-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:auroraMove3 25s ease-in-out infinite;max-width:100vw}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,0.3),rgba(184,134,11,0.1),transparent);margin:0 16px}
       .nav-link{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;padding:4px 0}
       .nav-link:hover{color:var(--gold-light)}
@@ -363,16 +371,19 @@ export default function HomeClient(){
     </AnimatePresence>
 
     {/* ══ HERO — DARK NAVY + GOLD ══ */}
-    <div style={{position:'relative',overflow:'hidden',padding:'56px 16px 40px',textAlign:'center',minHeight:420}}>
-      {/* Ambient gold orbs */}
-      <div className="ambient-orb" style={{width:600,height:600,top:'-25%',left:'10%',background:'radial-gradient(circle,rgba(184,134,11,0.14) 0%,transparent 55%)'}}/>
-      <div className="ambient-orb" style={{width:500,height:500,bottom:'-20%',right:'5%',background:'radial-gradient(circle,rgba(184,134,11,0.1) 0%,transparent 55%)',animationDelay:'-8s'}}/>
-      <div className="ambient-orb" style={{width:300,height:300,top:'30%',left:'55%',background:'radial-gradient(circle,rgba(59,108,180,0.06) 0%,transparent 55%)',animationDelay:'-14s'}}/>
-      {/* Gold grid — more visible */}
-      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.07) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
-      <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 30% 50%, rgba(184,134,11,0.06) 0%, transparent 50%)',animation:'ambientFloat 25s ease-in-out infinite reverse',pointerEvents:'none'}}/>
+    <div style={{position:'relative',overflow:'hidden',padding:'56px 16px 40px',textAlign:'center',minHeight:420,background:'linear-gradient(180deg, #080810 0%, #0a0a1a 30%, #1A1A2E 100%)'}}>
+      {/* Aurora flowing blobs */}
+      <div className="aurora-blob" style={{width:800,height:800,top:'-30%',left:'-10%',background:'radial-gradient(circle,rgba(184,134,11,0.18) 0%,rgba(184,134,11,0.05) 40%,transparent 70%)',animation:'auroraMove1 35s ease-in-out infinite',opacity:0.6}}/>
+      <div className="aurora-blob" style={{width:600,height:600,bottom:'-20%',right:'-5%',background:'radial-gradient(circle,rgba(59,108,180,0.15) 0%,rgba(59,108,180,0.04) 40%,transparent 70%)',animation:'auroraMove2 30s ease-in-out infinite',opacity:0.5}}/>
+      <div className="aurora-blob" style={{width:500,height:500,top:'20%',left:'50%',background:'radial-gradient(circle,rgba(139,34,82,0.1) 0%,transparent 60%)',animation:'auroraMove1 40s ease-in-out infinite reverse',opacity:0.4}}/>
+      <div className="aurora-blob" style={{width:400,height:400,top:'60%',left:'20%',background:'radial-gradient(circle,rgba(45,143,94,0.08) 0%,transparent 60%)',animation:'auroraMove2 28s ease-in-out infinite reverse',opacity:0.5}}/>
+      <div className="aurora-blob" style={{width:700,height:700,top:'-10%',right:'20%',background:'radial-gradient(circle,rgba(184,134,11,0.1) 0%,transparent 60%)',animation:'auroraMove3 22s ease-in-out infinite',opacity:0.4}}/>
+      {/* Subtle grid */}
+      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'60px 60px',pointerEvents:'none'}}/>
+      {/* Noise texture */}
+      <div style={{position:'absolute',inset:0,opacity:0.03,backgroundImage:'url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27/%3E%3C/svg%3E")',pointerEvents:'none'}}/>
       {/* Particles */}
-      <div style={{position:'absolute',inset:0,overflow:'hidden',opacity:0.3}}><ParticleField/></div>
+      <div style={{position:'absolute',inset:0,overflow:'hidden',opacity:0.2}}><ParticleField/></div>
 
       <div style={{position:'relative',zIndex:2}}>
         <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{duration:0.8}}>
