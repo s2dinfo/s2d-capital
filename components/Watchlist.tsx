@@ -25,8 +25,8 @@ const INDICATOR_GROUPS: { vertical: string; color: string; items: { key: string;
     color: "#6366f1",
     items: [
       { key: "SPX", label: "S&P 500" },
-      { key: "FED_RATE", label: "Fed Rate" },
-      { key: "US10Y", label: "10Y Yield" },
+      { key: "FEDR", label: "Fed Rate" },
+      { key: "T10Y", label: "10Y Yield" },
       { key: "VIX", label: "VIX" },
     ],
   },

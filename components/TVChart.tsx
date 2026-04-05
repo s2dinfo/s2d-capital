@@ -29,6 +29,8 @@ export default function TVChart({
   const [change, setChange] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [activeRange, setActiveRange] = useState(range);
+  const ranges: ("1mo" | "3mo" | "6mo" | "1y" | "2y")[] = ["1mo", "3mo", "6mo", "1y", "2y"];
 
   useEffect(() => {
     let mounted = true;
@@ -40,8 +42,8 @@ export default function TVChart({
         const mod = await import("lightweight-charts");
         const { createChart, CandlestickSeries, AreaSeries, LineSeries, HistogramSeries, CrosshairMode } = mod;
 
-        const interval = range === "1mo" ? "1d" : range === "3mo" ? "1d" : range === "6mo" ? "1d" : range === "1y" ? "1wk" : "1wk";
-        const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${range}&interval=${interval}`);
+        const interval = activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : activeRange === "1y" ? "1wk" : "1wk";
+        const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${activeRange}&interval=${interval}`);
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
         const result = json?.chart?.result?.[0];
@@ -152,18 +154,29 @@ export default function TVChart({
 
     init();
     return () => { mounted = false; ro?.disconnect(); if (chartRef.current) { chartRef.current.remove(); chartRef.current = null; } };
-  }, [symbol, type, range, height, color, showPrice]);
+  }, [symbol, type, activeRange, height, color, showPrice]);
 
   const isPos = (change ?? 0) >= 0;
-  const rangeLabel = range.toUpperCase();
+
 
   return (
     <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden" }}>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px 8px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px 8px", flexWrap: "wrap", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.68rem", fontWeight: 600, color: "#fff", letterSpacing: "0.04em" }}>{title}</span>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.5rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.08em" }}>{rangeLabel}</span>
+        </div>
+        <div style={{ display: "flex", gap: 2 }}>
+          {ranges.map(r => (
+            <button key={r} onClick={() => setActiveRange(r)} style={{
+              fontFamily: "var(--font-mono)", fontSize: "0.5rem", fontWeight: 600,
+              padding: "3px 8px", borderRadius: 3, border: "none", cursor: "pointer",
+              background: activeRange === r ? color + "33" : "transparent",
+              color: activeRange === r ? color : "rgba(255,255,255,0.3)",
+              transition: "all 0.15s",
+              letterSpacing: "0.05em",
+            }}>{r.toUpperCase()}</button>
+          ))}
         </div>
         {showPrice && price != null && (
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
