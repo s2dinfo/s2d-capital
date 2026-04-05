@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import BackButton from "@/components/BackButton";
 import { articles } from "@/lib/articles";
 import { VERTICALS, VerticalKey } from "@/lib/verticals";
@@ -11,6 +12,7 @@ const ALL_TAGS: VerticalKey[] = ["crypto", "macro", "commodities", "fx", "geopol
 type SortOrder = "newest" | "oldest";
 
 export default function ResearchList() {
+  const [animateRef] = useAutoAnimate();
   const [search, setSearch] = useState("");
   const [activeTags, setActiveTags] = useState<VerticalKey[]>([]);
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
@@ -242,7 +244,7 @@ export default function ResearchList() {
       </div>
 
       {/* Article cards */}
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px 80px" }}>
+      <div ref={animateRef} style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px 80px" }}>
         {published.length > 0 && (
           <>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gold-light, #D4B85C)", marginBottom: 16, fontWeight: 600 }}>

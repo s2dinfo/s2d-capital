@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
 import Analytics from '@/components/Analytics';
 import SiteSearch from '@/components/SiteSearch';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s2d.info"),
@@ -101,6 +102,7 @@ export default function RootLayout({
         <Analytics />
         <SiteSearch />
         <main id="main-content" style={{ overflowX: 'hidden' }}>{children}</main>
+        <VercelAnalytics />
       </body>
     </html>
   );
