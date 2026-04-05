@@ -1,37 +1,108 @@
 "use client";
 import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
 import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
+/* ── Central bank rate data ── */
+const centralBanks = [
+  { bank: "Federal Reserve", abbr: "Fed", rate: "4.25%", color: "#3B6CB4" },
+  { bank: "European Central Bank", abbr: "ECB", rate: "2.65%", color: "#B8860B" },
+  { bank: "Bank of England", abbr: "BOE", rate: "4.50%", color: "#2D8F5E" },
+  { bank: "Bank of Japan", abbr: "BOJ", rate: "0.50%", color: "#C0392B" },
+  { bank: "People's Bank of China", abbr: "PBOC", rate: "3.10%", color: "#D4611E" },
+  { bank: "Swiss National Bank", abbr: "SNB", rate: "0.25%", color: "#8B5E3C" },
+  { bank: "Reserve Bank of Australia", abbr: "RBA", rate: "4.10%", color: "#7B3FA0" },
+  { bank: "Bank of Canada", abbr: "BOC", rate: "2.75%", color: "#2980B9" },
+];
+
+/* ── Interest Rate Ticker / Marquee ── */
+function RatesTicker() {
+  const setRef = useRef<HTMLDivElement>(null);
+  const [duration, setDuration] = useState(40);
+
+  useEffect(() => {
+    if (setRef.current) {
+      const w = setRef.current.offsetWidth;
+      setDuration(Math.max(20, w / 50));
+    }
+  }, []);
+
+  const renderItems = (copy: number) =>
+    centralBanks.map((cb, i) => (
+      <span
+        key={`${cb.abbr}-${copy}`}
+        style={{ display: "inline-flex", gap: 6, alignItems: "center", whiteSpace: "nowrap" }}
+      >
+        {i > 0 && (
+          <span style={{ color: "rgba(255,255,255,0.12)", marginRight: 4, fontSize: "0.75rem" }}>│</span>
+        )}
+        <span style={{ color: cb.color, fontWeight: 700, letterSpacing: "0.03em" }}>{cb.abbr}</span>
+        <span style={{ color: "rgba(255,255,255,0.75)", fontWeight: 500 }}>{cb.rate}</span>
+      </span>
+    ));
+
+  return (
+    <div
+      style={{
+        background: "rgba(255,255,255,0.02)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: 6,
+        padding: "10px 0",
+        overflow: "hidden",
+        position: "relative",
+        marginBottom: 24,
+      }}
+    >
+      <div style={{ position: "absolute", top: 0, left: 0, width: 48, height: "100%", background: "linear-gradient(90deg, rgba(15,15,35,1), transparent)", zIndex: 2, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 0, right: 0, width: 48, height: "100%", background: "linear-gradient(-90deg, rgba(15,15,35,1), transparent)", zIndex: 2, pointerEvents: "none" }} />
+
+      <div className="fx-rate-track" style={{ animationDuration: `${duration}s` }}>
+        <div className="fx-rate-set" ref={setRef}>{renderItems(0)}</div>
+        <div className="fx-rate-set">{renderItems(1)}</div>
+      </div>
+
+      <style>{`
+        .fx-rate-track {
+          display: flex;
+          font-family: var(--font-mono, 'JetBrains Mono', monospace);
+          font-size: 0.72rem;
+          animation: fxRateScroll 40s linear infinite;
+          will-change: transform;
+        }
+        .fx-rate-set {
+          display: flex;
+          gap: 24px;
+          padding-right: 24px;
+          flex-shrink: 0;
+        }
+        @keyframes fxRateScroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ── Currency pair chart definitions ── */
+const fxCharts = [
+  { symbol: "EURUSD=X", title: "EUR / USD" },
+  { symbol: "GBPUSD=X", title: "GBP / USD" },
+  { symbol: "USDJPY=X", title: "USD / JPY" },
+  { symbol: "USDCHF=X", title: "USD / CHF" },
+  { symbol: "AUDUSD=X", title: "AUD / USD" },
+  { symbol: "USDCAD=X", title: "USD / CAD" },
+  { symbol: "NZDUSD=X", title: "NZD / USD" },
+  { symbol: "DX-Y.NYB", title: "Dollar Index (DXY)" },
+];
+
 export default function FxClient({ fx, macro }: { fx: any; macro: any }) {
   const inv = (v: number | undefined) => v ? (1 / v).toFixed(4) : "—";
   const fix = (v: number | undefined, d = 4) => v != null ? v.toFixed(d) : "—";
-
-  const pairs = fx ? [
-    { p: "EUR/USD", v: inv(fx.EUR), major: true },
-    { p: "GBP/USD", v: inv(fx.GBP), major: true },
-    { p: "USD/JPY", v: fix(fx.JPY, 2), major: true },
-    { p: "USD/CHF", v: fix(fx.CHF), major: true },
-    { p: "AUD/USD", v: inv(fx.AUD) },
-    { p: "USD/CAD", v: fix(fx.CAD) },
-    { p: "NZD/USD", v: inv(fx.NZD) },
-    { p: "EUR/GBP", v: fx.GBP && fx.EUR ? (fx.GBP / fx.EUR).toFixed(4) : "—" },
-    { p: "USD/CNY", v: fix(fx.CNY) },
-    { p: "USD/TRY", v: fix(fx.TRY, 2) },
-    { p: "USD/BRL", v: fix(fx.BRL) },
-    { p: "USD/INR", v: fix(fx.INR, 2) },
-  ] : [];
-
-  const centralBanks = [
-    { bank: "Federal Reserve", abbr: "Fed", rate: macro?.fedRate ? macro.fedRate + "%" : "—", color: "#3B6CB4" },
-    { bank: "European Central Bank", abbr: "ECB", rate: "2.65%", color: "#B8860B" },
-    { bank: "Bank of Japan", abbr: "BOJ", rate: "0.50%", color: "#C0392B" },
-    { bank: "Bank of England", abbr: "BOE", rate: "4.50%", color: "#2D8F5E" },
-    { bank: "Swiss National Bank", abbr: "SNB", rate: "0.25%", color: "#8B5E3C" },
-  ];
 
   return (
     <MarketPageLayout title="FX &" titleAccent="Currencies" accentColor="#2D8F5E" subtitle="Live exchange rates, Dollar Index, and central bank rate comparison. Data from Open Exchange Rates & Yahoo Finance.">
@@ -44,30 +115,17 @@ export default function FxClient({ fx, macro }: { fx: any; macro: any }) {
         <KPICard label="DXY" value={macro?.dxy ?? "—"} color="#3B6CB4" subtitle="Trade-weighted dollar" />
       </div>
 
-      {/* Charts */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 12, marginBottom: 24 }}>
-        <TVChart symbol="EURUSD=X" title="EUR / USD" type="area" range="6mo" color="#B8860B" />
-        <TVChart symbol="USDJPY=X" title="USD / JPY" type="area" range="6mo" color="#C0392B" />
-        <TVChart symbol="GBPUSD=X" title="GBP / USD" type="area" range="6mo" color="#2D8F5E" />
-        <TVChart symbol="DX-Y.NYB" title="Dollar Index (DXY)" type="line" range="1y" color="#3B6CB4" />
+      {/* Interest Rate Ticker */}
+      <RatesTicker />
+
+      {/* Currency Pair Charts — 2-col grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, marginBottom: 24 }}>
+        {fxCharts.map((c) => (
+          <TVChart key={c.symbol} symbol={c.symbol} title={c.title} type="candlestick" range="2y" />
+        ))}
       </div>
 
-      {/* FX Pairs Grid */}
-      <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", marginBottom: 24 }}>
-        <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#2D8F5E", fontWeight: 600, textTransform: "uppercase" }}>Exchange Rates</span>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 0 }}>
-          {pairs.map((f) => (
-            <div key={f.p} style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", borderRight: "1px solid rgba(255,255,255,0.04)" }}>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", fontWeight: 600, color: f.major ? "#fff" : "rgba(255,255,255,0.6)", marginBottom: 3 }}>{f.p}</div>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "1rem", fontWeight: 500, color: "#2D8F5E" }}>{f.v}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Central Bank Rates */}
+      {/* Central Bank Policy Rates Table */}
       <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", marginBottom: 24 }}>
         <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#2D8F5E", fontWeight: 600, textTransform: "uppercase" }}>Central Bank Policy Rates</span>

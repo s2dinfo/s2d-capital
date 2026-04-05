@@ -1,11 +1,8 @@
 "use client";
-import dynamic from "next/dynamic";
 import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
 import LiveGeoEvents from "@/components/LiveGeoEvents";
-
-const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
 const geoEvents = [
   { title: "Iran–US/Israel Conflict", status: "ACTIVE", statusColor: "#f87171", desc: "Strait of Hormuz disrupted. QatarEnergy LNG halted. Brent $100+. TTF gas +57%.", date: "Since Feb 28, 2026" },
@@ -29,14 +26,6 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
         <KPICard label="M2 Money Supply" value={macro?.m2 ? "$" + (parseFloat(macro.m2) / 1e3).toFixed(1) + "T" : "—"} color="#5B4FA0" subtitle="Global liquidity driver" />
         <KPICard label="Dollar Index" value={macro?.dxy ?? "—"} color="#2D8F5E" subtitle="Trade-weighted" />
         <KPICard label="Active Crises" value={geoEvents.filter(e => e.status === "ACTIVE").length.toString()} color="#f87171" subtitle="Ongoing geopolitical events" />
-      </div>
-
-      {/* Charts */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 12, marginBottom: 24 }}>
-        <TVChart symbol="GC=F" title="Gold (Geopolitical Hedge)" type="area" range="1y" color="#B8860B" />
-        <TVChart symbol="CL=F" title="WTI Oil (Supply Risk)" type="area" range="6mo" color="#8B5E3C" />
-        <TVChart symbol="DX-Y.NYB" title="Dollar Index" type="line" range="2y" color="#2D8F5E" />
-        <TVChart symbol="^VIX" title="VIX (Market Fear)" type="area" range="6mo" color="#C0392B" />
       </div>
 
       {/* Active Geopolitical Events */}

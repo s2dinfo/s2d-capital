@@ -18,7 +18,7 @@ export default function MacroClient({ macro }: { macro: any }) {
     { l: "10Y Treasury", v: macro?.t10y ? macro.t10y + "%" : "—", desc: "US government bond yield", c: "#3B6CB4" },
     { l: "2Y Treasury", v: macro?.t2y ? macro.t2y + "%" : "—", desc: "Short-term bond yield", c: "#3B6CB4" },
     { l: "Yield Curve", v: macro?.yieldSpread ? macro.yieldSpread + "%" : "—", desc: spreadLabel, c: spreadColor },
-    { l: "CPI Index", v: macro?.cpi ?? "—", desc: "Consumer Price Index", c: "#D4A843" },
+    { l: "CPI Index", v: macro?.cpi ? parseFloat(macro.cpi).toFixed(1) : "—", desc: "Consumer Price Index level", c: "#D4A843" },
     { l: "Unemployment", v: macro?.unemp ? macro.unemp + "%" : "—", desc: "US labor market", c: "#C0392B" },
     { l: "M2 Money Supply", v: macro?.m2 ? "$" + (parseFloat(macro.m2) / 1e3).toFixed(1) + "T" : "—", desc: "Broad money supply", c: "#5B4FA0" },
     { l: "Dollar Index", v: macro?.dxy ?? "—", desc: "Trade-weighted dollar", c: "#2D8F5E" },
