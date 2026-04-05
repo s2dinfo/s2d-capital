@@ -39,16 +39,17 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{
-            fontFamily: "var(--font-serif, 'Cormorant Garamond', serif)",
+            fontFamily: "var(--font-display, 'Space Grotesk', sans-serif)",
             fontSize: "1.1rem",
-            fontWeight: 600,
+            fontWeight: 700,
             color: "var(--gold-light, #D4B85C)",
+            letterSpacing: "-0.02em",
           }}>S2D</span>
           <span style={{
-            fontFamily: "var(--font-serif, 'Cormorant Garamond', serif)",
-            fontSize: "0.85rem",
+            fontFamily: "var(--font-sans, 'DM Sans', sans-serif)",
+            fontSize: "0.8rem",
             fontWeight: 400,
-            color: "rgba(255,255,255,0.5)",
+            color: "rgba(255,255,255,0.45)",
           }}>Capital Insights</span>
         </Link>
 

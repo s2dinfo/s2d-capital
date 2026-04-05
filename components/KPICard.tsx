@@ -24,15 +24,15 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
       onMouseEnter={() => setH(true)}
       onMouseLeave={() => setH(false)}
       style={{
-        background: h ? "rgba(17,25,40,0.85)" : "rgba(17,25,40,0.65)",
+        background: h ? "rgba(17,25,40,0.8)" : "rgba(17,25,40,0.5)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
-        border: `1px solid ${h ? color + "33" : "rgba(255,255,255,0.06)"}`,
-        borderRadius: 6,
-        padding: "16px 14px",
-        transition: "all 0.3s ease",
-        transform: h ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: h ? `0 8px 24px ${color}12` : "none",
+        border: `1px solid ${h ? color + "44" : "rgba(255,255,255,0.06)"}`,
+        borderRadius: 8,
+        padding: "18px 16px",
+        transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+        transform: h ? "translateY(-3px)" : "translateY(0)",
+        boxShadow: h ? `0 12px 40px ${color}15` : "none",
         position: "relative",
         overflow: "hidden",
         minHeight: 100,
@@ -40,7 +40,7 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
     >
       {/* Label */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.1em", color, fontWeight: 500, textTransform: "uppercase" }}>{label}</span>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", letterSpacing: "0.06em", color, fontWeight: 600, textTransform: "uppercase" }}>{label}</span>
         {hasChange && (
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", fontWeight: 600, color: isPos ? "#34d399" : "#f87171" }}>
             {isPos ? "▲" : "▼"} {isPos ? "+" : ""}{change!.toFixed(1)}%
@@ -49,7 +49,7 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
       </div>
 
       {/* Value */}
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "1.3rem", fontWeight: 700, color: "#fff", marginBottom: subtitle ? 2 : sparkData ? 6 : 0, lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "1.35rem", fontWeight: 700, color: "#fff", marginBottom: subtitle ? 2 : sparkData ? 6 : 0, lineHeight: 1.1, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
         {value}
       </div>
 

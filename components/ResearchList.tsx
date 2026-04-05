@@ -76,9 +76,9 @@ export default function ResearchList() {
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.62rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold-light, #D4B85C)", marginBottom: 16 }}>
             S2D Capital Insights
           </div>
-          <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(2rem, 4vw, 2.8rem)", fontWeight: 400, color: "#fff", marginBottom: 14 }}>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 4vw, 2.8rem)", fontWeight: 700, color: "#fff", marginBottom: 14, letterSpacing: "-0.02em" }}>
             Articles &{" "}
-            <em style={{ fontStyle: "italic", color: "var(--gold-light, #D4B85C)" }}>Analysis</em>
+            <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontStyle: "italic", color: "var(--gold-light, #D4B85C)" }}>Analysis</span>
           </h1>
           <p style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.5)", maxWidth: 480, margin: "0 auto", lineHeight: 1.7 }}>
             In-depth briefings across crypto regulation, macro policy, commodities, FX, and geopolitics.
@@ -295,7 +295,7 @@ export default function ResearchList() {
                     </div>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.35)" }}>{a.date} · {a.readTime}</span>
                   </div>
-                  <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "1.4rem", fontWeight: 400, color: "#fff", marginBottom: 8 }}>{a.title}</h2>
+                  <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.4rem", fontWeight: 600, color: "#fff", marginBottom: 8, letterSpacing: "-0.01em" }}>{a.title}</h2>
                   <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.6, marginBottom: 12 }}>{a.excerpt}</p>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "var(--gold-light, #D4B85C)", fontWeight: 500 }}>Read Article →</span>
                 </div>
@@ -317,7 +317,7 @@ export default function ResearchList() {
                   </div>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "var(--gold-light, #D4B85C)", background: "rgba(184,134,11,0.1)", padding: "3px 10px", borderRadius: 3, fontWeight: 600 }}>Coming Soon</span>
                 </div>
-                <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "1.2rem", fontWeight: 400, color: "rgba(255,255,255,0.7)", marginBottom: 6 }}>{a.title}</h2>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.2rem", fontWeight: 500, color: "rgba(255,255,255,0.7)", marginBottom: 6 }}>{a.title}</h2>
                 <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>{a.excerpt}</p>
               </div>
             ))}

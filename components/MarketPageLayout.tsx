@@ -16,12 +16,12 @@ export default function MarketPageLayout({ title, titleAccent, accentColor, subt
       <div className="mpl-content" style={{ maxWidth: 1280, margin: "0 auto" }}>
       <style>{`.mpl-content{padding:28px 48px 64px}@media(max-width:768px){.mpl-content{padding:20px 16px 48px}}`}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-        <div style={{ width: 5, height: 32, background: accentColor, borderRadius: 2 }} />
-        <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(1.5rem,3vw,2.2rem)", fontWeight: 400, color: "#fff" }}>
-          {title} <em style={{ fontStyle: "italic", color: accentColor }}>{titleAccent}</em>
+        <div style={{ width: 3, height: 28, background: accentColor, borderRadius: 2 }} />
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem,3vw,2.2rem)", fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>
+          {title} <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontStyle: "italic", color: accentColor }}>{titleAccent}</span>
         </h1>
       </div>
-      <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)", fontWeight: 300, marginBottom: 28, maxWidth: 600 }}>
+      <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.4)", fontWeight: 300, marginBottom: 28, maxWidth: 600, lineHeight: 1.7 }}>
         {subtitle}
       </p>
       {children}
