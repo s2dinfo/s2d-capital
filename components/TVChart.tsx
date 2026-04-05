@@ -58,10 +58,11 @@ export default function TVChart({
         const areaData: { time: string; value: number }[] = [];
         const candleData: { time: string; open: number; high: number; low: number; close: number }[] = [];
 
+        const isIntraday = activeRange === "1wk";
         for (let i = 0; i < timestamps.length; i++) {
           const c = quote.close?.[i];
           if (c == null) continue;
-          const time = new Date(timestamps[i] * 1000).toISOString().split("T")[0];
+          const time = isIntraday ? timestamps[i] as any : new Date(timestamps[i] * 1000).toISOString().split("T")[0];
           areaData.push({ time, value: c });
           candleData.push({
             time,
@@ -100,7 +101,7 @@ export default function TVChart({
             horzLine: { color: "rgba(184,134,11,0.3)", width: 1, style: 3, labelBackgroundColor: "#B8860B" },
           },
           rightPriceScale: { borderColor: "rgba(255,255,255,0.06)", scaleMargins: { top: 0.1, bottom: 0.1 } },
-          timeScale: { borderColor: "rgba(255,255,255,0.06)", timeVisible: false },
+          timeScale: { borderColor: "rgba(255,255,255,0.06)", timeVisible: isIntraday },
           handleScroll: { vertTouchDrag: false },
         });
         chartRef.current = chart;

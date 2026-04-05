@@ -51,12 +51,13 @@ export default function LiveChart({
         const quote = result.indicators?.quote?.[0];
         if (!timestamps || !quote) { if (mounted) { setError(true); setLoading(false); } return; }
 
-        const candles: { time: string; value: number }[] = [];
+        const isIntraday = activeRange === "1wk";
+        const candles: { time: any; value: number }[] = [];
         for (let i = 0; i < timestamps.length; i++) {
           const c = quote.close?.[i];
           if (c == null) continue;
-          const date = new Date(timestamps[i] * 1000);
-          candles.push({ time: date.toISOString().split("T")[0], value: c });
+          const time = isIntraday ? timestamps[i] : new Date(timestamps[i] * 1000).toISOString().split("T")[0];
+          candles.push({ time, value: c });
         }
 
         if (candles.length === 0 || !mounted) { if (mounted) { setError(true); setLoading(false); } return; }
@@ -86,7 +87,7 @@ export default function LiveChart({
             horzLine: { color: "rgba(184,134,11,0.3)", width: 1, style: 2 },
           },
           rightPriceScale: { borderColor: "rgba(255,255,255,0.08)" },
-          timeScale: { borderColor: "rgba(255,255,255,0.08)", timeVisible: false },
+          timeScale: { borderColor: "rgba(255,255,255,0.08)", timeVisible: isIntraday },
           handleScroll: { vertTouchDrag: false },
         });
 
