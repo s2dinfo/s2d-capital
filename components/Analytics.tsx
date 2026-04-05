@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 
 // PostHog Analytics — free tier: 1M events/month
 // Sign up at https://us.posthog.com and replace this key
-const POSTHOG_KEY = ''; // TODO: Add your PostHog project API key
+const POSTHOG_KEY = 'phc_spdNfjs4nSyAYBvpt9AbC2q4DxhGenmziyN9yzDuJBNm';
 
 export default function Analytics() {
   const pathname = usePathname();
