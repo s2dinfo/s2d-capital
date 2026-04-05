@@ -3,6 +3,7 @@ import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
 import LiveGeoEvents from "@/components/LiveGeoEvents";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 const geoEvents = [
   { title: "Iran–US/Israel Conflict", status: "ACTIVE", statusColor: "#f87171", desc: "Strait of Hormuz disrupted. QatarEnergy LNG halted. Brent $100+. TTF gas +57%.", date: "Since Feb 28, 2026" },
@@ -28,11 +29,13 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
         <KPICard label="Active Crises" value={geoEvents.filter(e => e.status === "ACTIVE").length.toString()} color="#f87171" subtitle="Ongoing geopolitical events" />
       </div>
 
+      {/* Hint */}
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.25)', marginBottom: 16, letterSpacing: '0.1em' }}>
+        ▾ Click a section below to view charts
+      </p>
+
       {/* Active Geopolitical Events */}
-      <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", marginBottom: 24 }}>
-        <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#8B2252", fontWeight: 600, textTransform: "uppercase" }}>Active Geopolitical Events</span>
-        </div>
+      <CollapsibleSection title="Active Geopolitical Events" count={geoEvents.length} color="#8B2252" defaultOpen={true}>
         {geoEvents.map((e) => (
           <div key={e.title} style={{ padding: "16px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 16, alignItems: "flex-start" }}>
             <div style={{ flex: "0 0 auto" }}>
@@ -45,17 +48,16 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
             </div>
           </div>
         ))}
-      </div>
+      </CollapsibleSection>
 
       {/* Live GDELT Events */}
-      <LiveGeoEvents />
+      <CollapsibleSection title="Live GDELT Events" color="#8B2252">
+        <LiveGeoEvents />
+      </CollapsibleSection>
 
       {/* World GDP Table */}
       {gdp && gdp.length > 0 && (
-        <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", marginBottom: 24 }}>
-          <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#8B2252", fontWeight: 600, textTransform: "uppercase" }}>World GDP — Top Economies ({gdp[0]?.year || "2023"})</span>
-          </div>
+        <CollapsibleSection title={`World GDP — Top Economies (${gdp[0]?.year || "2023"})`} color="#8B2252">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 0 }}>
             {gdp.sort((a: any, b: any) => (b.gdp || 0) - (a.gdp || 0)).map((c: any) => (
               <div key={c.code} style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", borderRight: "1px solid rgba(255,255,255,0.04)" }}>
@@ -64,7 +66,7 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
               </div>
             ))}
           </div>
-        </div>
+        </CollapsibleSection>
       )}
 
       <CrossRef items={[

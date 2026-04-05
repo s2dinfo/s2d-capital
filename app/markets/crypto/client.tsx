@@ -5,6 +5,7 @@ import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import FearGreedGauge from "@/components/FearGreedGauge";
 import CrossRef from "@/components/CrossRef";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
@@ -109,30 +110,38 @@ export default function CryptoClient({ coins, global, fg, trending }: any) {
         </div>
       </div>
 
-      {/* ── Core Charts (2-col, no gaps) ── */}
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#B8860B", fontWeight: 600, textTransform: "uppercase", marginBottom: 8 }}>Core Charts</div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 0, marginBottom: 12 }}>
-        <TVChart symbol="BTC-USD" title="Bitcoin / USD" type="candlestick" range="2y" color="#B8860B" />
-        <TVChart symbol="ETH-USD" title="Ethereum / USD" type="candlestick" range="2y" color="#3B6CB4" />
-        <TVChart symbol="TOTAL-USD" title="Total Crypto Market Cap" type="candlestick" range="2y" color="#6366f1" />
-        <TVChart symbol="ETH-BTC" title="ETH / BTC" type="candlestick" range="2y" color="#8B5CF6" />
-        <TVChart symbol="SOL-USD" title="Solana / USD" type="candlestick" range="2y" color="#9945FF" />
-        <TVChart symbol="XRP-USD" title="XRP / USD" type="candlestick" range="2y" color="#2D8F5E" />
-      </div>
+      {/* Hint */}
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.25)', marginBottom: 16, letterSpacing: '0.1em' }}>
+        ▾ Click a section below to view charts
+      </p>
+
+      {/* ── Core Charts ── */}
+      <CollapsibleSection title="Core Charts" subtitle="BTC, ETH, SOL, XRP" count={6} color="#B8860B" defaultOpen={true}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 0 }}>
+          <TVChart symbol="BTC-USD" title="Bitcoin / USD" type="candlestick" range="2y" color="#B8860B" />
+          <TVChart symbol="ETH-USD" title="Ethereum / USD" type="candlestick" range="2y" color="#3B6CB4" />
+          <TVChart symbol="TOTAL-USD" title="Total Crypto Market Cap" type="candlestick" range="2y" color="#6366f1" />
+          <TVChart symbol="ETH-BTC" title="ETH / BTC" type="candlestick" range="2y" color="#8B5CF6" />
+          <TVChart symbol="SOL-USD" title="Solana / USD" type="candlestick" range="2y" color="#9945FF" />
+          <TVChart symbol="XRP-USD" title="XRP / USD" type="candlestick" range="2y" color="#2D8F5E" />
+        </div>
+      </CollapsibleSection>
 
       {/* ── Correlation Heatmap ── */}
-      <CorrelationHeatmap />
+      <CollapsibleSection title="Asset Correlations" count={1} color="#3B6CB4">
+        <CorrelationHeatmap />
+      </CollapsibleSection>
 
       {/* ── Sector Coverage ── */}
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#B8860B", fontWeight: 600, textTransform: "uppercase", marginBottom: 8 }}>Sector Coverage</div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, marginBottom: 12 }}>
-        {SECTORS.map((s) => <SectorCard key={s.name} sector={s} />)}
-      </div>
+      <CollapsibleSection title="Sector Coverage" subtitle="DeFi, L1, L2, Gaming, AI, Memecoins, RWA" count={7} color="#B8860B">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+          {SECTORS.map((s) => <SectorCard key={s.name} sector={s} />)}
+        </div>
+      </CollapsibleSection>
 
       {/* ── Trending ── */}
       {trending && trending.length > 0 && (
-        <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", padding: 20, borderRadius: 6, marginBottom: 12 }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#B8860B", fontWeight: 600, textTransform: "uppercase", marginBottom: 12 }}>Trending Coins</div>
+        <CollapsibleSection title="Trending Now" color="#B8860B">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 6 }}>
             {trending.map((t: any, i: number) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
@@ -144,7 +153,7 @@ export default function CryptoClient({ coins, global, fg, trending }: any) {
               </div>
             ))}
           </div>
-        </div>
+        </CollapsibleSection>
       )}
 
       <CrossRef items={[

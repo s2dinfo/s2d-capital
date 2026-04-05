@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
@@ -118,18 +119,22 @@ export default function FxClient({ fx, macro }: { fx: any; macro: any }) {
       {/* Interest Rate Ticker */}
       <RatesTicker />
 
-      {/* Currency Pair Charts — 2-col grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, marginBottom: 24 }}>
-        {fxCharts.map((c) => (
-          <TVChart key={c.symbol} symbol={c.symbol} title={c.title} type="candlestick" range="2y" />
-        ))}
-      </div>
+      {/* Hint */}
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.25)', marginBottom: 16, letterSpacing: '0.1em' }}>
+        ▾ Click a section below to view charts
+      </p>
+
+      {/* Currency Pair Charts */}
+      <CollapsibleSection title="Currency Pairs" subtitle="Major and cross pairs" count={8} color="#2D8F5E" defaultOpen={true}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+          {fxCharts.map((c) => (
+            <TVChart key={c.symbol} symbol={c.symbol} title={c.title} type="candlestick" range="2y" />
+          ))}
+        </div>
+      </CollapsibleSection>
 
       {/* Central Bank Policy Rates Table */}
-      <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", marginBottom: 24 }}>
-        <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#2D8F5E", fontWeight: 600, textTransform: "uppercase" }}>Central Bank Policy Rates</span>
-        </div>
+      <CollapsibleSection title="Central Bank Policy Rates" subtitle="Current rates for 8 major central banks" count={8} color="#2D8F5E">
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
@@ -149,7 +154,7 @@ export default function FxClient({ fx, macro }: { fx: any; macro: any }) {
             ))}
           </tbody>
         </table>
-      </div>
+      </CollapsibleSection>
 
       <CrossRef items={[
         { label: "Stablecoins vs. SWIFT", href: "/research/stablecoins-vs-swift", type: "research" },

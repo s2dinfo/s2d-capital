@@ -4,6 +4,7 @@ import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
 import EconomicCalendar from "@/components/EconomicCalendar";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
@@ -35,19 +36,23 @@ export default function MacroClient({ macro }: { macro: any }) {
         <KPICard label="VIX" value={macro?.vix != null ? macro.vix.toFixed(1) : "—"} color="#C0392B" subtitle="Implied Volatility (S&P 500)" />
       </div>
 
-      {/* Charts */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 12, marginBottom: 24 }}>
-        <TVChart symbol="^TNX" title="US 10Y Yield" type="line" range="2y" color="#3B6CB4" />
-        <TVChart symbol="^GSPC" title="S&P 500" type="candlestick" range="1y" color="#B8860B" />
-        <TVChart symbol="^VIX" title="VIX (Volatility)" type="area" range="6mo" color="#C0392B" />
-        <TVChart symbol="DX-Y.NYB" title="Dollar Index (DXY)" type="line" range="1y" color="#2D8F5E" />
-      </div>
+      {/* Hint */}
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.25)', marginBottom: 16, letterSpacing: '0.1em' }}>
+        ▾ Click a section below to view charts
+      </p>
 
-      {/* Macro Data Table */}
-      <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, overflow: "hidden", marginBottom: 24 }}>
-        <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#3B6CB4", fontWeight: 600, textTransform: "uppercase" }}>Key Indicators</span>
+      {/* Charts */}
+      <CollapsibleSection title="Charts" count={4} color="#3B6CB4" defaultOpen={true}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 12 }}>
+          <TVChart symbol="^TNX" title="US 10Y Yield" type="line" range="2y" color="#3B6CB4" />
+          <TVChart symbol="^GSPC" title="S&P 500" type="candlestick" range="1y" color="#B8860B" />
+          <TVChart symbol="^VIX" title="VIX (Volatility)" type="area" range="6mo" color="#C0392B" />
+          <TVChart symbol="DX-Y.NYB" title="Dollar Index (DXY)" type="line" range="1y" color="#2D8F5E" />
         </div>
+      </CollapsibleSection>
+
+      {/* Key Indicators */}
+      <CollapsibleSection title="Key Indicators" count={8} color="#3B6CB4">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 0 }}>
           {metrics.map((m) => (
             <div key={m.l} style={{ padding: "16px", borderBottom: "1px solid rgba(255,255,255,0.04)", borderRight: "1px solid rgba(255,255,255,0.04)" }}>
@@ -57,7 +62,7 @@ export default function MacroClient({ macro }: { macro: any }) {
             </div>
           ))}
         </div>
-      </div>
+      </CollapsibleSection>
 
       <EconomicCalendar />
 

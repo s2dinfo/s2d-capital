@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
@@ -33,144 +34,122 @@ const CONTRACT_SPECS = [
   { name: 'Lumber', symbol: 'LBS=F', size: '27,500 bd ft', unit: 'USD/bd ft', exchange: 'CME' },
 ];
 
-function SectionHeader({ label }: { label: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, marginTop: 24 }}>
-      <div style={{ width: 4, height: 20, background: '#8B5E3C', borderRadius: 2 }} />
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.15em', color: '#8B5E3C', fontWeight: 600, textTransform: 'uppercase' }}>{label}</span>
-    </div>
-  );
-}
-
 function ChartGrid({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-      {children}
-    </div>
-  );
+  return <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>{children}</div>;
 }
 
 export default function CommClient({ commod }: { commod: any }) {
   const [specsOpen, setSpecsOpen] = useState(false);
 
   return (
-    <MarketPageLayout title="Commodities &" titleAccent="Energy" accentColor="#8B5E3C" subtitle="Oil, gold, natural gas, and energy markets. Live data from Yahoo Finance futures.">
+    <MarketPageLayout title="Commodities &" titleAccent="Energy" accentColor="#8B5E3C" subtitle="Comprehensive coverage across precious metals, energy, base metals, agriculture, and livestock. Click any section to expand.">
 
-      {/* KPI Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 24 }}>
+      {/* KPI Cards — always visible summary */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(145px, 1fr))", gap: 10, marginBottom: 20 }}>
         <KPICard label="WTI Crude" value={fmt(commod.oil)} change={commod.oilChg} color="#8B5E3C" subtitle="Light sweet crude" />
         <KPICard label="Brent Crude" value={fmt(commod.brent)} change={commod.brentChg} color="#C0392B" subtitle="Global benchmark" />
-        <KPICard label="Gold" value={fmt(commod.gold, 0)} change={commod.goldChg} color="#B8860B" subtitle="Spot futures" />
+        <KPICard label="Gold" value={fmt(commod.gold, 0)} change={commod.goldChg} color="#B8860B" />
         <KPICard label="Silver" value={fmt(commod.silver)} change={commod.silverChg} color="#9CA3AF" />
         <KPICard label="Natural Gas" value={fmt(commod.natgas, 3)} change={commod.natgasChg} color="#D4A843" subtitle="Henry Hub" />
       </div>
 
+      {/* Hint */}
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.25)', marginBottom: 16, letterSpacing: '0.1em' }}>
+        ▾ Click a section below to view charts
+      </p>
+
       {/* Precious Metals */}
-      <SectionHeader label="Precious Metals" />
-      <ChartGrid>
-        <TVChart symbol="GC=F" title="Gold" type="candlestick" range="2y" color="#B8860B" />
-        <TVChart symbol="SI=F" title="Silver" type="candlestick" range="2y" color="#9CA3AF" />
-        <TVChart symbol="PL=F" title="Platinum" type="candlestick" range="2y" color="#A0A0A0" />
-        <TVChart symbol="PA=F" title="Palladium" type="candlestick" range="2y" color="#7B7B7B" />
-      </ChartGrid>
+      <CollapsibleSection title="Precious Metals" subtitle="Gold, Silver, Platinum, Palladium" count={4} color="#B8860B" defaultOpen={true}>
+        <ChartGrid>
+          <TVChart symbol="GC=F" title="Gold" color="#B8860B" />
+          <TVChart symbol="SI=F" title="Silver" color="#9CA3AF" />
+          <TVChart symbol="PL=F" title="Platinum" color="#A0A0A0" />
+          <TVChart symbol="PA=F" title="Palladium" color="#7B7B7B" />
+        </ChartGrid>
+      </CollapsibleSection>
 
       {/* Energy */}
-      <SectionHeader label="Energy" />
-      <ChartGrid>
-        <TVChart symbol="CL=F" title="WTI Crude Oil" type="candlestick" range="2y" color="#8B5E3C" />
-        <TVChart symbol="BZ=F" title="Brent Crude" type="candlestick" range="2y" color="#C0392B" />
-        <TVChart symbol="NG=F" title="Henry Hub Natural Gas" type="candlestick" range="2y" color="#D4A843" />
-      </ChartGrid>
+      <CollapsibleSection title="Energy" subtitle="Crude Oil, Natural Gas" count={3} color="#C0392B">
+        <ChartGrid>
+          <TVChart symbol="CL=F" title="WTI Crude Oil" color="#8B5E3C" />
+          <TVChart symbol="BZ=F" title="Brent Crude" color="#C0392B" />
+          <TVChart symbol="NG=F" title="Henry Hub Natural Gas" color="#D4A843" />
+        </ChartGrid>
+      </CollapsibleSection>
 
       {/* Base Metals */}
-      <SectionHeader label="Base Metals" />
-      <ChartGrid>
-        <TVChart symbol="HG=F" title="Copper" type="candlestick" range="2y" color="#B87333" />
-        <TVChart symbol="ALI=F" title="Aluminum" type="candlestick" range="2y" color="#848484" />
-      </ChartGrid>
+      <CollapsibleSection title="Base & Industrial Metals" subtitle="Copper, Aluminum" count={2} color="#B87333">
+        <ChartGrid>
+          <TVChart symbol="HG=F" title="Copper" color="#B87333" />
+          <TVChart symbol="ALI=F" title="Aluminum" color="#848484" />
+        </ChartGrid>
+      </CollapsibleSection>
 
       {/* Grains */}
-      <SectionHeader label="Grains" />
-      <ChartGrid>
-        <TVChart symbol="ZW=F" title="Wheat" type="candlestick" range="2y" color="#DAA520" />
-        <TVChart symbol="ZC=F" title="Corn" type="candlestick" range="2y" color="#E8B830" />
-        <TVChart symbol="ZS=F" title="Soybeans" type="candlestick" range="2y" color="#6B8E23" />
-        <TVChart symbol="ZO=F" title="Oats" type="candlestick" range="2y" color="#C4A35A" />
-      </ChartGrid>
+      <CollapsibleSection title="Grains" subtitle="Wheat, Corn, Soybeans, Oats" count={4} color="#DAA520">
+        <ChartGrid>
+          <TVChart symbol="ZW=F" title="Wheat" color="#DAA520" />
+          <TVChart symbol="ZC=F" title="Corn" color="#E8B830" />
+          <TVChart symbol="ZS=F" title="Soybeans" color="#6B8E23" />
+          <TVChart symbol="ZO=F" title="Oats" color="#C4A35A" />
+        </ChartGrid>
+      </CollapsibleSection>
 
       {/* Softs */}
-      <SectionHeader label="Softs" />
-      <ChartGrid>
-        <TVChart symbol="KC=F" title="Coffee" type="candlestick" range="2y" color="#6F4E37" />
-        <TVChart symbol="CC=F" title="Cocoa" type="candlestick" range="2y" color="#7B3F00" />
-        <TVChart symbol="SB=F" title="Sugar" type="candlestick" range="2y" color="#F5F5DC" />
-        <TVChart symbol="CT=F" title="Cotton" type="candlestick" range="2y" color="#E8D5B7" />
-        <TVChart symbol="OJ=F" title="Orange Juice" type="candlestick" range="2y" color="#FFA500" />
-      </ChartGrid>
+      <CollapsibleSection title="Softs" subtitle="Coffee, Cocoa, Sugar, Cotton, Orange Juice" count={5} color="#6F4E37">
+        <ChartGrid>
+          <TVChart symbol="KC=F" title="Coffee" color="#6F4E37" />
+          <TVChart symbol="CC=F" title="Cocoa" color="#7B3F00" />
+          <TVChart symbol="SB=F" title="Sugar" color="#D4A843" />
+          <TVChart symbol="CT=F" title="Cotton" color="#C4A35A" />
+          <TVChart symbol="OJ=F" title="Orange Juice" color="#FFA500" />
+        </ChartGrid>
+      </CollapsibleSection>
 
       {/* Livestock */}
-      <SectionHeader label="Livestock" />
-      <ChartGrid>
-        <TVChart symbol="LE=F" title="Live Cattle" type="candlestick" range="2y" color="#8B4513" />
-        <TVChart symbol="HE=F" title="Lean Hogs" type="candlestick" range="2y" color="#CD853F" />
-      </ChartGrid>
+      <CollapsibleSection title="Livestock" subtitle="Live Cattle, Lean Hogs" count={2} color="#8B4513">
+        <ChartGrid>
+          <TVChart symbol="LE=F" title="Live Cattle" color="#8B4513" />
+          <TVChart symbol="HE=F" title="Lean Hogs" color="#CD853F" />
+        </ChartGrid>
+      </CollapsibleSection>
 
       {/* Other */}
-      <SectionHeader label="Other" />
-      <ChartGrid>
-        <TVChart symbol="LBS=F" title="Lumber" type="candlestick" range="2y" color="#A0522D" />
-      </ChartGrid>
+      <CollapsibleSection title="Other" subtitle="Lumber" count={1} color="#A0522D">
+        <TVChart symbol="LBS=F" title="Lumber" color="#A0522D" />
+      </CollapsibleSection>
 
       {/* Contract Specifications */}
-      <div style={{ marginTop: 32, marginBottom: 24 }}>
-        <button
-          onClick={() => setSpecsOpen(!specsOpen)}
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 6,
-            padding: "12px 18px",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            width: "100%",
-          }}
-        >
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.15em", color: "#8B5E3C", fontWeight: 600, textTransform: "uppercase" }}>Contract Specifications</span>
-          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.75rem", marginLeft: "auto" }}>{specsOpen ? "▲" : "▼"}</span>
-        </button>
-        {specsOpen && (
-          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderTop: "none", borderRadius: "0 0 6px 6px", overflow: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem" }}>
-              <thead>
-                <tr>
-                  {["NAME", "SYMBOL", "CONTRACT SIZE", "UNIT", "EXCHANGE"].map((h) => (
-                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontFamily: "var(--font-mono)", fontSize: "0.5rem", letterSpacing: "0.12em", color: "rgba(255,255,255,0.3)", fontWeight: 600, borderBottom: "1px solid rgba(255,255,255,0.06)", whiteSpace: "nowrap" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {CONTRACT_SPECS.map((c) => (
-                  <tr key={c.symbol}>
-                    <td style={{ padding: "10px 16px", color: "#fff", fontWeight: 500, borderBottom: "1px solid rgba(255,255,255,0.04)", whiteSpace: "nowrap" }}>{c.name}</td>
-                    <td style={{ padding: "10px 16px", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "#8B5E3C", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>{c.symbol}</td>
-                    <td style={{ padding: "10px 16px", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "rgba(255,255,255,0.5)", borderBottom: "1px solid rgba(255,255,255,0.04)", whiteSpace: "nowrap" }}>{c.size}</td>
-                    <td style={{ padding: "10px 16px", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>{c.unit}</td>
-                    <td style={{ padding: "10px 16px", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>{c.exchange}</td>
-                  </tr>
+      <CollapsibleSection title="Contract Specifications" subtitle="Contract sizes, units, and exchanges for all commodities" count={21} color="#8B5E3C">
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+            <thead>
+              <tr>
+                {['COMMODITY', 'SYMBOL', 'CONTRACT SIZE', 'UNIT', 'EXCHANGE'].map(h => (
+                  <th key={h} style={{ padding: '10px 12px', textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.35)', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>{h}</th>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+              </tr>
+            </thead>
+            <tbody>
+              {CONTRACT_SPECS.map(s => (
+                <tr key={s.symbol}>
+                  <td style={{ padding: '8px 12px', color: '#fff', fontWeight: 500, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{s.name}</td>
+                  <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: '#8B5E3C', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{s.symbol}</td>
+                  <td style={{ padding: '8px 12px', color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{s.size}</td>
+                  <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{s.unit}</td>
+                  <td style={{ padding: '8px 12px', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{s.exchange}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CollapsibleSection>
 
       <CrossRef items={[
         { label: "Europe's Energy System, Decoded", href: "/research/europe-energy-decoded", type: "research" },
         { label: "Gold at $3,000: Safe Haven or Bubble?", href: "/research/gold-3000-safe-haven-or-bubble", type: "research" },
-        { label: "Global Macro & Policy Signals", href: "/markets/geopolitics", type: "market" },
-        { label: "Macro & Central Banks", href: "/markets/macro", type: "market" },
+        { label: "Geopolitics", href: "/markets/geopolitics", type: "market" },
+        { label: "Monetary Policy & Central Banks", href: "/markets/macro", type: "market" },
       ]} />
     </MarketPageLayout>
   );
