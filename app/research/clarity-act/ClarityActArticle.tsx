@@ -5,6 +5,7 @@ import ArticleProgress from "@/components/ArticleProgress";
 import RelatedArticles from "@/components/RelatedArticles";
 import Term from "@/components/Term";
 import ThesisTracker from "@/components/ThesisTracker";
+import ChartReveal from "@/components/ChartReveal";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -288,7 +289,7 @@ export default function ClarityActArticle() {
         </div>
 
         {/* Inline BTC chart — relevant after discussing market impact */}
-        <LiveChart symbol="BTC-USD" label="Bitcoin (BTC/USD)" range="6mo" height={280} />
+        <ChartReveal><LiveChart symbol="BTC-USD" label="Bitcoin (BTC/USD)" range="6mo" height={280} /></ChartReveal>
 
         <p>
           What does this mean for you as an investor? The crypto industry is facing a structural shift.
@@ -469,7 +470,7 @@ export default function ClarityActArticle() {
         </p>
 
         {/* Inline ETH chart — relevant in market outlook section */}
-        <LiveChart symbol="ETH-USD" label="Ethereum (ETH/USD)" range="6mo" height={280} />
+        <ChartReveal><LiveChart symbol="ETH-USD" label="Ethereum (ETH/USD)" range="6mo" height={280} /></ChartReveal>
 
         <h3 style={S.h3}>4.1 Institutional Price Targets for Bitcoin</h3>
 
@@ -525,7 +526,7 @@ export default function ClarityActArticle() {
         </p>
 
         {/* Second BTC chart showing longer timeframe */}
-        <LiveChart symbol="BTC-USD" label="Bitcoin (BTC/USD) — 1 Year" range="1y" height={280} />
+        <ChartReveal><LiveChart symbol="BTC-USD" label="Bitcoin (BTC/USD) — 1 Year" range="1y" height={280} /></ChartReveal>
 
         {/* ── Section 5 ── */}
         <h2 id="sec-6" style={S.h2}>5. Why This Cycle Is Structurally Different</h2>

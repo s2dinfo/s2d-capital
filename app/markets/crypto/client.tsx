@@ -8,6 +8,7 @@ import CrossRef from "@/components/CrossRef";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
+const CorrelationHeatmap = dynamic(() => import("@/components/CorrelationHeatmap"), { ssr: false });
 
 const tip = { fontSize: "0.7rem", background: "#1e2240", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 2, color: "rgba(255,255,255,0.8)" };
 const fP = (n: number) => { if (n >= 1e12) return "$" + (n / 1e12).toFixed(2) + "T"; if (n >= 1e9) return "$" + (n / 1e9).toFixed(1) + "B"; if (n >= 1000) return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 }); if (n >= 1) return "$" + n.toFixed(2); return "$" + n.toFixed(4); };
@@ -118,6 +119,9 @@ export default function CryptoClient({ coins, global, fg, trending }: any) {
         <TVChart symbol="SOL-USD" title="Solana / USD" type="candlestick" range="2y" color="#9945FF" />
         <TVChart symbol="XRP-USD" title="XRP / USD" type="candlestick" range="2y" color="#2D8F5E" />
       </div>
+
+      {/* ── Correlation Heatmap ── */}
+      <CorrelationHeatmap />
 
       {/* ── Sector Coverage ── */}
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.15em", color: "#B8860B", fontWeight: 600, textTransform: "uppercase", marginBottom: 8 }}>Sector Coverage</div>

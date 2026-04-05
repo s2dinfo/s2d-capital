@@ -5,6 +5,7 @@ import ArticleProgress from "@/components/ArticleProgress";
 import RelatedArticles from "@/components/RelatedArticles";
 import Term from "@/components/Term";
 import ThesisTracker from "@/components/ThesisTracker";
+import ChartReveal from "@/components/ChartReveal";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -460,7 +461,7 @@ export default function EnergyArticle() {
           <p><strong>Mar 16–18:</strong> EU energy, environment, and general affairs ministers convene. The Russian gas ban&apos;s stepwise prohibition begins. EU leaders debate emergency measures including gas price caps, electricity tax cuts, and ETS suspension.</p>
         </div>
 
-        <LiveChart symbol="BZ=F" label="Brent Crude Oil ($/bbl)" range="6mo" height={280} />
+        <ChartReveal><LiveChart symbol="BZ=F" label="Brent Crude Oil ($/bbl)" range="6mo" height={280} /></ChartReveal>
 
         <p>
           The EU paid an additional €2.5 billion for fossil fuel imports in just the first 10 days of the conflict. For context, EU governments spent €651 billion between September 2021 and June 2023 to shield citizens and businesses from the previous energy crisis. The prospect of another round of subsidies weighs heavily on already-strained public finances.
@@ -500,7 +501,7 @@ export default function EnergyArticle() {
           Brent crude hit $120 before the IEA&apos;s record reserve release brought it back to ~$100. The EIA has raised its 2026 WTI average forecast by $20/bbl. Analysts warn that if the Strait of Hormuz disruption persists, $200 oil is not impossible — a scenario that would trigger global recession fears. OPEC+ has moved to increase output, but the market remains nervous about the loss of Iranian supply and the physical bottleneck at Hormuz.
         </p>
 
-        <LiveChart symbol="CL=F" label="WTI Crude Oil ($/bbl)" range="3mo" height={280} />
+        <ChartReveal><LiveChart symbol="CL=F" label="WTI Crude Oil ($/bbl)" range="3mo" height={280} /></ChartReveal>
 
         <h3 style={S.h3}>8.2 Natural Gas</h3>
         <p>

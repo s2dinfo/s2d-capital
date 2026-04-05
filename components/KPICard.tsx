@@ -24,7 +24,9 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
       onMouseEnter={() => setH(true)}
       onMouseLeave={() => setH(false)}
       style={{
-        background: h ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.025)",
+        background: h ? "rgba(17,25,40,0.85)" : "rgba(17,25,40,0.65)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
         border: `1px solid ${h ? color + "33" : "rgba(255,255,255,0.06)"}`,
         borderRadius: 6,
         padding: "16px 14px",
@@ -47,7 +49,7 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
       </div>
 
       {/* Value */}
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "1.3rem", fontWeight: 700, color: "#fff", marginBottom: subtitle ? 2 : sparkData ? 6 : 0, lineHeight: 1.1 }}>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "1.3rem", fontWeight: 700, color: "#fff", marginBottom: subtitle ? 2 : sparkData ? 6 : 0, lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>
         {value}
       </div>
 

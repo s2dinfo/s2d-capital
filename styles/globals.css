@@ -282,6 +282,28 @@ input::placeholder { color: rgba(255,255,255,0.3) !important; }
 }
 [data-theme="light"] input::placeholder { color: rgba(26,26,46,0.35) !important; }
 
+/* ══ Glassmorphism Panels ══ */
+.glass {
+  background: rgba(17, 25, 40, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+}
+
+/* Tabular numbers for financial data alignment */
+.tabular-nums, .mono {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Theme transition */
 html, body, main {
   transition: background-color 0.3s ease, color 0.3s ease;

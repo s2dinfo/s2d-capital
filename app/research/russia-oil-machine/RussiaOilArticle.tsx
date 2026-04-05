@@ -7,6 +7,7 @@ import Footnote from "@/components/Footnote";
 import Term from "@/components/Term";
 import ThesisTracker from "@/components/ThesisTracker";
 
+import ChartReveal from "@/components/ChartReveal";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -215,7 +216,7 @@ export default function RussiaOilArticle() {
             </p>
           </div>
 
-          <LiveChart symbol="BZ=F" label="Brent Crude Oil (BZ=F)" range="6mo" height={280} />
+          <ChartReveal><LiveChart symbol="BZ=F" label="Brent Crude Oil (BZ=F)" range="6mo" height={280} /></ChartReveal>
         </motion.div>
 
         {/* ── Section 3: Before the Break ── */}
@@ -330,7 +331,7 @@ export default function RussiaOilArticle() {
             </p>
           </div>
 
-          <LiveChart symbol="CL=F" label="WTI Crude Oil (CL=F)" range="6mo" height={280} />
+          <ChartReveal><LiveChart symbol="CL=F" label="WTI Crude Oil (CL=F)" range="6mo" height={280} /></ChartReveal>
         </motion.div>
 
         {/* ── Section 6: The Customer ── */}
@@ -480,7 +481,7 @@ export default function RussiaOilArticle() {
             </p>
           </div>
 
-          <LiveChart symbol="USDRUB=X" label="USD/RUB Exchange Rate" range="1y" height={280} />
+          <ChartReveal><LiveChart symbol="USDRUB=X" label="USD/RUB Exchange Rate" range="1y" height={280} /></ChartReveal>
         </motion.div>
 
         {/* ── Section 9: The Spiral ── */}
@@ -642,7 +643,7 @@ export default function RussiaOilArticle() {
             This is what trading outside the dollar system looks like under stress. Not a clean break from Western hegemony, but a constant, grinding tax on every transaction, paid in discounts, in logistics costs, in overnight rates, and in lost bargaining power.
           </p>
 
-          <LiveChart symbol="GC=F" label="Gold — Geopolitical Hedge (GC=F)" range="6mo" height={280} />
+          <ChartReveal><LiveChart symbol="GC=F" label="Gold — Geopolitical Hedge (GC=F)" range="6mo" height={280} /></ChartReveal>
         </motion.div>
 
         {/* ── Section 13: The India Route ── */}

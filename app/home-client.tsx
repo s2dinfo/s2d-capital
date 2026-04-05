@@ -150,7 +150,7 @@ function StatCard({name,val,chg,color,prefix,dec,spark,href}:any){
       <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.1em',color,fontWeight:500}}>{name}</span>
       {chg!==null&&chg!==undefined&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,color:pc(chg)}}>{fp(chg)}</span>}
     </div>
-    <div style={{fontFamily:'var(--font-mono)',fontSize:'1.2rem',fontWeight:600,color:'#fff',marginBottom:4}}>
+    <div style={{fontFamily:'var(--font-mono)',fontSize:'1.2rem',fontWeight:600,color:'#fff',marginBottom:4,fontVariantNumeric:'tabular-nums'}}>
       {val != null && val !== 0 ? `${prefix||''}${Number(val).toLocaleString('en-US',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0})}` : '—'}
     </div>
     <Mini data={spark} color={color}/>
