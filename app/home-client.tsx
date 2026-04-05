@@ -458,7 +458,7 @@ export default function HomeClient(){
           <Image src="/logo-dark.png" alt="S2D Capital Insights" width={320} height={200} style={{objectFit:'contain',margin:'0 auto 20px',mixBlendMode:'lighten',filter:'drop-shadow(0 4px 30px rgba(184,134,11,0.15))',maxWidth:'80vw',height:'auto'}} priority/>
         </motion.div>
         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}} style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.35em',color:'var(--gold-light)',marginBottom:16}}>FINANCIAL INTELLIGENCE</motion.p>
-        <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2.2rem,5vw,3.5rem)',fontWeight:400,lineHeight:1.1,color:'#ffffff',marginBottom:14,maxWidth:650,margin:'0 auto 14px',textShadow:'0 2px 30px rgba(184,134,11,0.15)'}}>
+        <motion.h1 className="gradient-text" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2.2rem,5vw,3.5rem)',fontWeight:400,lineHeight:1.1,marginBottom:14,maxWidth:650,margin:'0 auto 14px',textShadow:'0 2px 30px rgba(184,134,11,0.15)'}}>
           Where Markets Meet Clarity
         </motion.h1>
         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.6}} style={{fontSize:'0.95rem',color:'rgba(255,255,255,0.6)',maxWidth:480,margin:'0 auto 36px',lineHeight:1.7}}>

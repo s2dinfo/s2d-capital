@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
 import Analytics from '@/components/Analytics';
 import SiteSearch from '@/components/SiteSearch';
+import CursorGlow from '@/components/CursorGlow';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
@@ -97,6 +98,7 @@ export default function RootLayout({
         />
       </head>
       <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100%' }}>
+        <CursorGlow />
         <a href="#main-content" className="skip-to-content">Skip to content</a>
         <Navbar />
         <Analytics />
