@@ -143,7 +143,7 @@ export default function EconomicCalendar() {
                     transition: 'all 0.2s', letterSpacing: '0.05em',
                   }}
                 >
-                  {isOpen ? 'CLOSE' : 'WHY?'}
+                  {isOpen ? 'CLOSE' : 'INFO'}
                 </button>
               </div>
             </div>

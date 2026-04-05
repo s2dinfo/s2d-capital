@@ -10,14 +10,14 @@ interface LiveChartProps {
   range?: string;
 }
 
-const RANGES = ["1wk", "1mo", "3mo", "6mo", "1y", "2y"];
-const RANGE_LABELS: Record<string, string> = { "1wk": "1W", "1mo": "1M", "3mo": "3M", "6mo": "6M", "1y": "1Y", "2y": "2Y" };
+const RANGES = ["1wk", "1mo", "3mo", "6mo", "1y", "2y", "5y"];
+const RANGE_LABELS: Record<string, string> = { "1wk": "1W", "1mo": "1M", "3mo": "3M", "6mo": "6M", "1y": "1Y", "2y": "2Y", "5y": "5Y" };
 
 export default function LiveChart({
   symbol,
   label,
   height = 300,
-  range = "3mo",
+  range = "2y",
 }: LiveChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
@@ -39,7 +39,7 @@ export default function LiveChart({
         const { createChart, AreaSeries } = await import("lightweight-charts");
 
         const apiRange = activeRange === "1wk" ? "5d" : activeRange;
-        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : "1wk";
+        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1h" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : activeRange === "1y" ? "1d" : activeRange === "2y" ? "1wk" : "1wk";
         const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${apiRange}&interval=${interval}`);
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
@@ -51,7 +51,7 @@ export default function LiveChart({
         const quote = result.indicators?.quote?.[0];
         if (!timestamps || !quote) { if (mounted) { setError(true); setLoading(false); } return; }
 
-        const isIntraday = activeRange === "1wk";
+        const isIntraday = activeRange === "1wk" || activeRange === "1mo";
         const candles: { time: any; value: number }[] = [];
         for (let i = 0; i < timestamps.length; i++) {
           const c = quote.close?.[i];

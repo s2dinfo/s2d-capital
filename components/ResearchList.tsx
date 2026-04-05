@@ -77,7 +77,7 @@ export default function ResearchList() {
             S2D Capital Insights
           </div>
           <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(2rem, 4vw, 2.8rem)", fontWeight: 400, color: "#fff", marginBottom: 14 }}>
-            Research &{" "}
+            Articles &{" "}
             <em style={{ fontStyle: "italic", color: "var(--gold-light, #D4B85C)" }}>Analysis</em>
           </h1>
           <p style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.5)", maxWidth: 480, margin: "0 auto", lineHeight: 1.7 }}>
@@ -105,7 +105,7 @@ export default function ResearchList() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search articles..."
+                placeholder="Search articles & analysis..."
                 style={{
                   width: "100%",
                   padding: "10px 14px 10px 36px",

@@ -21,7 +21,7 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
   const spreadColor = spread !== null ? (spread >= 0 ? "#34d399" : "#f87171") : "rgba(255,255,255,0.3)";
 
   return (
-    <MarketPageLayout title="Global Macro &" titleAccent="Policy Signals" accentColor="#8B2252" subtitle="Recession indicators, geopolitical risk, liquidity metrics, and macro policy signals. Data from FRED, Yahoo Finance & World Bank.">
+    <MarketPageLayout title="Geopolitics" titleAccent="" accentColor="#8B2252" subtitle="Geopolitical risk, conflict zones, sanctions, trade wars, and their market impact. Data from FRED, Yahoo Finance & World Bank.">
 
       {/* KPI Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 24 }}>

@@ -13,7 +13,6 @@ import dynamic from 'next/dynamic';
 const TVChart = dynamic(() => import('@/components/TVChart'), { ssr: false, loading: () => <div style={{ height: 300, background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.06)' }} /> });
 import FearGreedGauge from '@/components/FearGreedGauge';
 import InteractiveVerticalCard from '@/components/InteractiveVerticalCard';
-import MarketFlowDiagram from '@/components/MarketFlowDiagram';
 import Watchlist from '@/components/Watchlist';
 import EconomicCalendar from '@/components/EconomicCalendar';
 
@@ -599,21 +598,6 @@ export default function HomeClient(){
       <p style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.4)',textAlign:'center',marginTop:20,maxWidth:600,margin:'20px auto 0'}}><strong style={{color:'#fff'}}>Fed rate decision</strong> → Dollar → Gold & Oil → EM Currencies → Crypto allocation. <strong style={{color:'#fff'}}>We connect these dots.</strong></p>
     </div></Section>
 
-    <div className="gold-line"/>
-
-    {/* ══ CROSS-MARKET FLOW ══ */}
-    <Section delay={0.1}><div className="hp-section" style={{paddingTop:32,paddingBottom:32}}>
-      <MarketFlowDiagram data={{
-        fedRate: macro?.fedRate ?? undefined,
-        dxy: macro?.dxy ?? undefined,
-        gold: commod?.gold ?? undefined,
-        oil: commod?.oil ?? undefined,
-        btc: btc?.usd ?? undefined,
-        eurUsd: fx?.EUR ? (1/fx.EUR).toFixed(4) : undefined,
-      }} />
-    </div></Section>
-
-    <div className="gold-line"/>
 
     {/* ══ NEWSLETTER CTA ══ */}
     <Section delay={0.15}><div className="hp-section" style={{paddingTop:0,paddingBottom:48,marginTop:32}}>

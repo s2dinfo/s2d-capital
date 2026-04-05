@@ -72,7 +72,7 @@ const venues = [
 ];
 
 export default function EnergyArticle() {
-  return (<><BackButton label="Back to Research" href="/research" />
+  return (<><BackButton label="Continue Reading" href="/research" />
     <ArticleProgress sections={[
       { id: "sec-1", title: "Executive Summary", number: "1" },
       { id: "sec-2", title: "How Europe's Energy System Actually Works", number: "2" },

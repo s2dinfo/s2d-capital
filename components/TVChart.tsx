@@ -7,7 +7,7 @@ interface TVChartProps {
   symbol: string;
   title: string;
   type?: "area" | "candlestick" | "line" | "histogram";
-  range?: "1wk" | "1mo" | "3mo" | "6mo" | "1y" | "2y";
+  range?: "1wk" | "1mo" | "3mo" | "6mo" | "1y" | "2y" | "5y";
   height?: number;
   color?: string;
   showPrice?: boolean;
@@ -17,8 +17,8 @@ interface TVChartProps {
 export default function TVChart({
   symbol,
   title,
-  type = "area",
-  range = "3mo",
+  type = "candlestick",
+  range = "2y",
   height = 280,
   color = "#B8860B",
   showPrice = true,
@@ -30,7 +30,8 @@ export default function TVChart({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [activeRange, setActiveRange] = useState(range);
-  const ranges: ("1wk" | "1mo" | "3mo" | "6mo" | "1y" | "2y")[] = ["1wk", "1mo", "3mo", "6mo", "1y", "2y"];
+  const ranges: ("1wk" | "1mo" | "3mo" | "6mo" | "1y" | "2y" | "5y")[] = ["1wk", "1mo", "3mo", "6mo", "1y", "2y", "5y"];
+  const RANGE_LABELS: Record<string,string> = {"1wk":"1W","1mo":"1M","3mo":"3M","6mo":"6M","1y":"1Y","2y":"2Y","5y":"5Y"};
 
   useEffect(() => {
     let mounted = true;
@@ -43,7 +44,7 @@ export default function TVChart({
         const { createChart, CandlestickSeries, AreaSeries, LineSeries, HistogramSeries, CrosshairMode } = mod;
 
         const apiRange = activeRange === "1wk" ? "5d" : activeRange;
-        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : "1wk";
+        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1h" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : activeRange === "1y" ? "1d" : activeRange === "2y" ? "1wk" : "1wk";
         const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${apiRange}&interval=${interval}`);
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
@@ -58,7 +59,7 @@ export default function TVChart({
         const areaData: { time: string; value: number }[] = [];
         const candleData: { time: string; open: number; high: number; low: number; close: number }[] = [];
 
-        const isIntraday = activeRange === "1wk";
+        const isIntraday = activeRange === "1wk" || activeRange === "1mo";
         for (let i = 0; i < timestamps.length; i++) {
           const c = quote.close?.[i];
           if (c == null) continue;
@@ -177,7 +178,7 @@ export default function TVChart({
               color: activeRange === r ? color : "rgba(255,255,255,0.3)",
               transition: "all 0.15s",
               letterSpacing: "0.05em",
-            }}>{r === '1wk' ? '1W' : r.toUpperCase()}</button>
+            }}>{RANGE_LABELS[r] || r.toUpperCase()}</button>
           ))}
         </div>
         {showPrice && price != null && (

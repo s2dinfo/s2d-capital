@@ -50,7 +50,7 @@ const S = {
 export default function RussiaOilArticle() {
   return (
     <>
-      <BackButton label="Back to Research" href="/research" />
+      <BackButton label="Continue Reading" href="/research" />
       <ArticleProgress sections={[
         { id: "sec-1", title: "Executive Summary", number: "1" },
         { id: "sec-2", title: "The Barrel", number: "2" },

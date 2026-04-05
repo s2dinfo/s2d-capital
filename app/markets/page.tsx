@@ -4,11 +4,10 @@ import BackButton from '@/components/BackButton';
 
 const verticalsMeta = [
   { slug: 'crypto', label: 'Crypto & Digital Assets', desc: 'Regulation, ETFs, Tokenization, DeFi', color: '#B8860B', icon: '₿' },
-  { slug: 'macro', label: 'Macro & Central Banks', desc: 'Fed, ECB, BOJ, Rates, Liquidity', color: '#3B6CB4', icon: '🏛' },
+  { slug: 'macro', label: 'Monetary Policy & Central Banks', desc: 'Fed, ECB, BOJ, Interest Rates, Yields, Inflation', color: '#3B6CB4', icon: '🏛' },
   { slug: 'commodities', label: 'Commodities & Energy', desc: 'Oil, Gold, Agriculture, Supply Chains', color: '#8B5E3C', icon: '🛢' },
   { slug: 'fx', label: 'FX & Currencies', desc: 'Dollar, EUR/USD, EM Currencies, Stablecoins', color: '#2D8F5E', icon: '💱' },
   { slug: 'geopolitics', label: 'Geopolitics & Policy', desc: 'Trade Wars, Sanctions, Elections', color: '#8B2252', icon: '🌍' },
-  { slug: 'structure', label: 'Market Structure', desc: 'Institutional Flows, ETF Architecture, TradFi', color: '#5B4FA0', icon: '⚙' },
 ];
 
 export default function MarketsPage() {
@@ -34,7 +33,7 @@ export default function MarketsPage() {
             Markets & <em style={{ fontStyle: 'italic', color: 'var(--gold-light, #D4B85C)' }}>Data</em>
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
-            Live data and analysis across six verticals. Choose your market.
+            Live data and analysis across five verticals. Choose your market.
           </p>
         </div>
       </div>

@@ -25,14 +25,14 @@ export default function MacroClient({ macro }: { macro: any }) {
   ];
 
   return (
-    <MarketPageLayout title="Macro &" titleAccent="Central Banks" accentColor="#3B6CB4" subtitle="Federal Reserve data, treasury yields, inflation metrics, and recession indicators. Data from FRED & Yahoo Finance.">
+    <MarketPageLayout title="Monetary Policy &" titleAccent="Central Banks" accentColor="#3B6CB4" subtitle="Federal Reserve data, treasury yields, inflation metrics, and monetary policy signals. Data from FRED & Yahoo Finance.">
 
       {/* KPI Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 24 }}>
         <KPICard label="Fed Rate" value={macro?.fedRate ? macro.fedRate + "%" : "—"} color="#3B6CB4" subtitle="Federal Reserve" />
         <KPICard label="10Y Yield" value={macro?.t10y ? macro.t10y + "%" : "—"} color="#3B6CB4" subtitle="US Treasury" />
         <KPICard label="Yield Curve" value={macro?.yieldSpread ? macro.yieldSpread + "%" : "—"} color={spreadColor} subtitle={spreadLabel} />
-        <KPICard label="VIX" value={macro?.vix != null ? macro.vix.toFixed(1) : "—"} color="#C0392B" subtitle="Fear index" />
+        <KPICard label="VIX" value={macro?.vix != null ? macro.vix.toFixed(1) : "—"} color="#C0392B" subtitle="Implied Volatility (S&P 500)" />
       </div>
 
       {/* Charts */}
