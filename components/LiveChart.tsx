@@ -10,6 +10,9 @@ interface LiveChartProps {
   range?: string;
 }
 
+const RANGES = ["1wk", "1mo", "3mo", "6mo", "1y", "2y"];
+const RANGE_LABELS: Record<string, string> = { "1wk": "1W", "1mo": "1M", "3mo": "3M", "6mo": "6M", "1y": "1Y", "2y": "2Y" };
+
 export default function LiveChart({
   symbol,
   label,
@@ -22,26 +25,30 @@ export default function LiveChart({
   const [priceChange, setPriceChange] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [activeRange, setActiveRange] = useState(range);
 
   useEffect(() => {
     let mounted = true;
 
     async function init() {
       if (!containerRef.current) return;
+      setLoading(true);
+      setError(false);
 
       try {
         const { createChart, AreaSeries } = await import("lightweight-charts");
 
-        const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${range}`);
+        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : "1wk";
+        const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${activeRange}&interval=${interval}`);
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
         const result = json?.chart?.result?.[0];
 
-        if (!result || !mounted) { setError(true); setLoading(false); return; }
+        if (!result || !mounted) { if (mounted) { setError(true); setLoading(false); } return; }
 
         const timestamps = result.timestamp;
         const quote = result.indicators?.quote?.[0];
-        if (!timestamps || !quote) { setError(true); setLoading(false); return; }
+        if (!timestamps || !quote) { if (mounted) { setError(true); setLoading(false); } return; }
 
         const candles: { time: string; value: number }[] = [];
         for (let i = 0; i < timestamps.length; i++) {
@@ -51,7 +58,7 @@ export default function LiveChart({
           candles.push({ time: date.toISOString().split("T")[0], value: c });
         }
 
-        if (candles.length === 0 || !mounted) { setError(true); setLoading(false); return; }
+        if (candles.length === 0 || !mounted) { if (mounted) { setError(true); setLoading(false); } return; }
 
         const last = candles[candles.length - 1].value;
         const first = candles[0].value;
@@ -107,8 +114,7 @@ export default function LiveChart({
         return () => ro.disconnect();
       } catch (e) {
         console.error("Chart error:", e);
-        if (mounted) setError(true);
-        setLoading(false);
+        if (mounted) { setError(true); setLoading(false); }
       }
     }
 
@@ -117,20 +123,32 @@ export default function LiveChart({
       mounted = false;
       if (chartRef.current) { chartRef.current.remove(); chartRef.current = null; }
     };
-  }, [symbol, range, height]);
+  }, [symbol, activeRange, height]);
 
   const isPositive = (priceChange ?? 0) >= 0;
 
   return (
     <div style={{ border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, overflow: "hidden", background: "rgba(255,255,255,0.02)", margin: "28px 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", flexWrap: "wrap", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontFamily: "var(--mono)", fontSize: "0.72rem", fontWeight: 700, color: "#ffffff", letterSpacing: "0.05em" }}>{label}</span>
-          <span style={{ fontFamily: "var(--mono)", fontSize: "0.58rem", letterSpacing: "0.1em", color: "rgba(255,255,255,0.35)", textTransform: "uppercase" as const, background: "rgba(184,134,11,0.1)", padding: "2px 6px", borderRadius: 3 }}>LIVE · {range.toUpperCase()}</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* Timeframe selector */}
+          <div style={{ display: "flex", gap: 2 }}>
+            {RANGES.map(r => (
+              <button key={r} onClick={() => setActiveRange(r)} style={{
+                fontFamily: "var(--mono)", fontSize: "0.52rem", fontWeight: 600,
+                padding: "3px 8px", borderRadius: 3, border: "none", cursor: "pointer",
+                background: activeRange === r ? "rgba(184,134,11,0.25)" : "transparent",
+                color: activeRange === r ? "#D4B85C" : "rgba(255,255,255,0.3)",
+                transition: "all 0.15s", letterSpacing: "0.05em",
+              }}>{RANGE_LABELS[r] || r.toUpperCase()}</button>
+            ))}
+          </div>
+          {/* Price + change */}
           {currentPrice != null && (
-            <span style={{ fontFamily: "var(--serif)", fontSize: "1.1rem", fontWeight: 500, color: "#ffffff" }}>
+            <span style={{ fontFamily: "var(--serif)", fontSize: "1.1rem", fontWeight: 500, color: "#ffffff", marginLeft: 8 }}>
               ${currentPrice.toLocaleString("en-US", { maximumFractionDigits: currentPrice > 100 ? 0 : 2 })}
             </span>
           )}
@@ -147,7 +165,7 @@ export default function LiveChart({
         <div ref={containerRef} style={{ width: "100%", height }} />
       </div>
       <div style={{ padding: "8px 20px", borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", fontFamily: "var(--mono)", fontSize: "0.56rem", color: "rgba(255,255,255,0.25)", letterSpacing: "0.08em", display: "flex", justifyContent: "space-between" }}>
-        <span>Source: Yahoo Finance · Auto-refresh 60s</span>
+        <span>Source: Yahoo Finance</span>
         <span>S2D Capital Insights</span>
       </div>
     </div>

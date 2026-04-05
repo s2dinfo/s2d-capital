@@ -7,7 +7,7 @@ interface TVChartProps {
   symbol: string;
   title: string;
   type?: "area" | "candlestick" | "line" | "histogram";
-  range?: "1mo" | "3mo" | "6mo" | "1y" | "2y";
+  range?: "1wk" | "1mo" | "3mo" | "6mo" | "1y" | "2y";
   height?: number;
   color?: string;
   showPrice?: boolean;
@@ -30,7 +30,7 @@ export default function TVChart({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [activeRange, setActiveRange] = useState(range);
-  const ranges: ("1mo" | "3mo" | "6mo" | "1y" | "2y")[] = ["1mo", "3mo", "6mo", "1y", "2y"];
+  const ranges: ("1wk" | "1mo" | "3mo" | "6mo" | "1y" | "2y")[] = ["1wk", "1mo", "3mo", "6mo", "1y", "2y"];
 
   useEffect(() => {
     let mounted = true;
@@ -42,7 +42,7 @@ export default function TVChart({
         const mod = await import("lightweight-charts");
         const { createChart, CandlestickSeries, AreaSeries, LineSeries, HistogramSeries, CrosshairMode } = mod;
 
-        const interval = activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : activeRange === "1y" ? "1wk" : "1wk";
+        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : activeRange === "1y" ? "1wk" : "1wk";
         const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${activeRange}&interval=${interval}`);
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
@@ -175,7 +175,7 @@ export default function TVChart({
               color: activeRange === r ? color : "rgba(255,255,255,0.3)",
               transition: "all 0.15s",
               letterSpacing: "0.05em",
-            }}>{r.toUpperCase()}</button>
+            }}>{r === '1wk' ? '1W' : r.toUpperCase()}</button>
           ))}
         </div>
         {showPrice && price != null && (
