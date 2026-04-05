@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
+import Analytics from '@/components/Analytics';
+import SiteSearch from '@/components/SiteSearch';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://s2d.info"),
@@ -96,6 +98,8 @@ export default function RootLayout({
       <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100%' }}>
         <a href="#main-content" className="skip-to-content">Skip to content</a>
         <Navbar />
+        <Analytics />
+        <SiteSearch />
         <main id="main-content" style={{ overflowX: 'hidden' }}>{children}</main>
       </body>
     </html>

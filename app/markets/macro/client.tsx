@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
+import EconomicCalendar from "@/components/EconomicCalendar";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
 
@@ -57,6 +58,8 @@ export default function MacroClient({ macro }: { macro: any }) {
           ))}
         </div>
       </div>
+
+      <EconomicCalendar />
 
       <CrossRef items={[
         { label: "Fed Pivot or Pause?", href: "/research/fed-pivot-or-pause", type: "research" },
