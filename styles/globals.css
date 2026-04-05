@@ -57,8 +57,15 @@
 
 /* Reset */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; }
+html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; -webkit-font-smoothing: antialiased; }
 html, body { position: relative; }
+
+/* GPU acceleration for smooth animations */
+.glow, .aurora-blob, .ambient-orb { will-change: transform; transform: translateZ(0); }
+
+/* Smooth page transitions */
+main { animation: pageIn 0.3s ease-out; }
+@keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
 
 body {
   font-family: var(--font-sans);

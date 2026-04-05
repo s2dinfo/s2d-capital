@@ -9,7 +9,8 @@ import { VERTICALS } from '@/lib/verticals';
 import { articles } from '@/lib/articles';
 import ParticleField from '@/components/ParticleField';
 import AnimatedCounter from '@/components/AnimatedCounter';
-import TVCandlestickChart, { generateMockCandles } from '@/components/TVCandlestickChart';
+import dynamic from 'next/dynamic';
+const TVChart = dynamic(() => import('@/components/TVChart'), { ssr: false, loading: () => <div style={{ height: 300, background: 'rgba(255,255,255,0.02)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.06)' }} /> });
 import FearGreedGauge from '@/components/FearGreedGauge';
 import InteractiveVerticalCard from '@/components/InteractiveVerticalCard';
 import MarketFlowDiagram from '@/components/MarketFlowDiagram';
@@ -234,27 +235,43 @@ const TOPICS = [
 
 function TopicCard({t,onSelect,selected}:{t:typeof TOPICS[0];onSelect:(k:string)=>void;selected:string|null}){
   const[h,setH]=useState(false);
+  const[ripple,setRipple]=useState(false);
   const isSelected = selected===t.key;
+
+  const handleClick = () => {
+    setRipple(true);
+    setTimeout(()=>setRipple(false), 400);
+    onSelect(isSelected?'':t.key);
+  };
+
   return <motion.div
     onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-    onClick={()=>onSelect(isSelected?'':t.key)}
+    onClick={handleClick}
     layout
-    whileHover={{y:-3}} whileTap={{scale:0.98}}
-    style={{cursor:'pointer',padding:'20px 16px',borderRadius:8,
-      background:isSelected?`linear-gradient(135deg,${t.color}22,${t.color}08)`:'rgba(255,255,255,0.03)',
-      border:`1.5px solid ${isSelected?t.color+'66':h?'rgba(255,255,255,0.12)':'rgba(255,255,255,0.06)'}`,
-      transition:'all 0.4s cubic-bezier(0.4,0,0.2,1)',textAlign:'center',position:'relative',overflow:'hidden'}}>
-    {isSelected&&<motion.div layoutId="topicAccent" style={{position:'absolute',top:0,left:0,right:0,height:2,background:t.color}} transition={{duration:0.3}}/>}
-    <div style={{fontSize:'1.5rem',marginBottom:8,transition:'transform 0.3s',transform:isSelected?'scale(1.15)':'scale(1)'}}>{t.icon}</div>
-    <div style={{fontFamily:'var(--font-serif)',fontSize:'0.88rem',fontWeight:500,color:isSelected?'#fff':'rgba(255,255,255,0.8)',marginBottom:4,transition:'color 0.3s'}}>{t.label}</div>
-    <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:isSelected?t.color:'rgba(255,255,255,0.4)',letterSpacing:'0.05em',transition:'color 0.3s'}}>{t.sub}</div>
+    whileHover={{y:-4,scale:1.02}} whileTap={{scale:0.95}}
+    transition={{type:'spring',stiffness:400,damping:25}}
+    style={{cursor:'pointer',padding:'20px 16px',borderRadius:10,
+      background:isSelected?`linear-gradient(135deg,${t.color}25,${t.color}10)`:'rgba(255,255,255,0.03)',
+      border:`1.5px solid ${isSelected?t.color+'88':h?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.06)'}`,
+      boxShadow:isSelected?`0 0 24px ${t.color}20, 0 8px 32px rgba(0,0,0,0.2)`:h?'0 4px 20px rgba(0,0,0,0.15)':'none',
+      transition:'background 0.2s, border-color 0.2s, box-shadow 0.3s',
+      textAlign:'center',position:'relative',overflow:'hidden'}}>
+    {/* Top accent bar */}
+    {isSelected&&<motion.div layoutId="topicAccent" style={{position:'absolute',top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,transparent,${t.color},transparent)`,borderRadius:'0 0 2px 2px'}} transition={{type:'spring',stiffness:300,damping:25}}/>}
+    {/* Bottom glow */}
+    {isSelected&&<div style={{position:'absolute',bottom:'-50%',left:'10%',right:'10%',height:'60%',background:`radial-gradient(ellipse,${t.color}15,transparent)`,pointerEvents:'none'}}/>}
+    {/* Ripple effect */}
+    {ripple&&<div style={{position:'absolute',top:'50%',left:'50%',width:200,height:200,marginLeft:-100,marginTop:-100,borderRadius:'50%',background:`${t.color}20`,animation:'rippleOut 0.4s ease-out forwards',pointerEvents:'none'}}/>}
+    <div style={{fontSize:'1.6rem',marginBottom:8,transition:'transform 0.2s',transform:isSelected?'scale(1.2)':'scale(1)',filter:isSelected?`drop-shadow(0 0 8px ${t.color}40)`:'none'}}>{t.icon}</div>
+    <div style={{fontFamily:'var(--font-serif)',fontSize:'0.88rem',fontWeight:600,color:isSelected?'#fff':'rgba(255,255,255,0.75)',marginBottom:4,transition:'color 0.2s'}}>{t.label}</div>
+    <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:isSelected?t.color:'rgba(255,255,255,0.35)',letterSpacing:'0.05em',transition:'color 0.2s'}}>{t.sub}</div>
     <AnimatePresence>
       {isSelected && (
         <motion.div
           initial={{opacity:0,height:0,marginTop:0}}
-          animate={{opacity:1,height:'auto',marginTop:12}}
+          animate={{opacity:1,height:'auto',marginTop:14}}
           exit={{opacity:0,height:0,marginTop:0}}
-          transition={{duration:0.3,ease:[0.4,0,0.2,1]}}
+          transition={{type:'spring',stiffness:300,damping:25}}
           style={{display:'flex',gap:8,justifyContent:'center',overflow:'hidden'}}
         >
           <TopicButtons dataHref={t.dataHref} articleHref={t.articleHref} color={t.color} />
@@ -278,8 +295,7 @@ export default function HomeClient(){
   const[time,setTime]=useState('');
   const[selectedTopic,setSelectedTopic]=useState<string|null>(null);
   const[sidebarOpen,setSidebarOpen]=useState(false);
-  const[btcCandles]=useState(()=>generateMockCandles(84500,90,1800));
-  const[ethCandles]=useState(()=>generateMockCandles(2150,90,80));
+  // Charts use real TVChart component with live Yahoo Finance data
   useEffect(()=>{const iv=setInterval(()=>setTime(new Date().toLocaleTimeString('en-US',{hour12:false})),1000);setTime(new Date().toLocaleTimeString('en-US',{hour12:false}));return()=>clearInterval(iv);},[]); 
 
   const fgVal=fg?.current?.value??50;const fgLabel=fg?.current?.label??'Neutral';
@@ -312,6 +328,7 @@ export default function HomeClient(){
       @keyframes floatUp{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}100%{transform:translateY(0) scale(1)}}
       @keyframes floatDown{0%{transform:translateY(0) scale(1.05)}50%{transform:translateY(20px) scale(0.95)}100%{transform:translateY(0) scale(1.05)}}
       @keyframes gridFade{0%,100%{opacity:0.03}50%{opacity:0.07}}
+      @keyframes rippleOut{0%{transform:scale(0);opacity:1}100%{transform:scale(1.5);opacity:0}}
       .hero-bg{position:relative;overflow:hidden;background:#1A1A2E}
       .glow{position:absolute;border-radius:50%;pointer-events:none;will-change:transform}
       .glow-gold{background:radial-gradient(circle,rgba(184,134,11,0.5) 0%,rgba(184,134,11,0.2) 40%,transparent 70%);filter:blur(80px)}
@@ -542,8 +559,8 @@ export default function HomeClient(){
       }} />
 
       <div className="hp-grid-2col" style={{marginBottom:12,marginTop:12}}>
-        <TVCandlestickChart data={btcCandles} title="BTC / USD" height={300}/>
-        <TVCandlestickChart data={ethCandles} title="ETH / USD" height={300}/>
+        <TVChart symbol="BTC-USD" title="Bitcoin / USD" type="candlestick" range="3mo" color="#B8860B" height={300}/>
+        <TVChart symbol="ETH-USD" title="Ethereum / USD" type="candlestick" range="3mo" color="#3B6CB4" height={300}/>
       </div>
 
       <div className="hp-grid-2col">
