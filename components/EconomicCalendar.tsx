@@ -1,66 +1,52 @@
 'use client';
-import { useEffect, useState } from 'react';
 
-interface CalendarEvent {
-  date: string;
-  country: string;
-  event: string;
-  impact: string | number;
-  actual: string | number | null;
-  estimate: string | number | null;
-  prev: string | number | null;
-  unit: string;
-}
+// Key recurring economic events that move markets
+const EVENTS = [
+  { event: 'FOMC Rate Decision', flag: '🇺🇸', freq: 'Every 6 weeks', impact: 'high' },
+  { event: 'US Non-Farm Payrolls', flag: '🇺🇸', freq: 'First Friday monthly', impact: 'high' },
+  { event: 'US CPI Inflation', flag: '🇺🇸', freq: 'Monthly', impact: 'high' },
+  { event: 'ECB Rate Decision', flag: '🇪🇺', freq: 'Every 6 weeks', impact: 'high' },
+  { event: 'BOJ Rate Decision', flag: '🇯🇵', freq: 'Every 6 weeks', impact: 'high' },
+  { event: 'US GDP (Quarterly)', flag: '🇺🇸', freq: 'Quarterly', impact: 'high' },
+  { event: 'OPEC+ Meeting', flag: '🛢️', freq: 'Monthly', impact: 'high' },
+  { event: 'BOE Rate Decision', flag: '🇬🇧', freq: 'Every 6 weeks', impact: 'high' },
+  { event: 'US Retail Sales', flag: '🇺🇸', freq: 'Monthly', impact: 'medium' },
+  { event: 'US Unemployment Rate', flag: '🇺🇸', freq: 'Monthly', impact: 'medium' },
+];
 
 export default function EconomicCalendar() {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/calendar')
-      .then(r => r.json())
-      .then(d => { setEvents(d.events || []); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
-
-  const countryFlag: Record<string, string> = {
-    US: '\u{1F1FA}\u{1F1F8}', EU: '\u{1F1EA}\u{1F1FA}', GB: '\u{1F1EC}\u{1F1E7}', JP: '\u{1F1EF}\u{1F1F5}', CN: '\u{1F1E8}\u{1F1F3}', DE: '\u{1F1E9}\u{1F1EA}',
-    CA: '\u{1F1E8}\u{1F1E6}', AU: '\u{1F1E6}\u{1F1FA}', CH: '\u{1F1E8}\u{1F1ED}', NZ: '\u{1F1F3}\u{1F1FF}',
-  };
-
-  if (loading) return <div style={{ padding: 20, textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-mono)', fontSize: '0.65rem' }}>Loading calendar...</div>;
-  if (events.length === 0) return null;
-
   return (
     <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, overflow: 'hidden', marginBottom: 24 }}>
       <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', letterSpacing: '0.15em', color: '#3B6CB4', fontWeight: 600, textTransform: 'uppercase' }}>Economic Calendar — This Week</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', letterSpacing: '0.15em', color: '#3B6CB4', fontWeight: 600, textTransform: 'uppercase' }}>Key Economic Events</span>
       </div>
-      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
           <thead>
             <tr>
-              <th style={{ padding: '10px 12px', textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>DATE</th>
               <th style={{ padding: '10px 12px', textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>EVENT</th>
-              <th style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>ESTIMATE</th>
-              <th style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>PREVIOUS</th>
+              <th style={{ padding: '10px 12px', textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>FREQUENCY</th>
+              <th style={{ padding: '10px 12px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>IMPACT</th>
             </tr>
           </thead>
           <tbody>
-            {events.map((e, i) => (
+            {EVENTS.map((e, i) => (
               <tr key={i}>
-                <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', borderBottom: '1px solid rgba(255,255,255,0.04)', whiteSpace: 'nowrap' }}>
-                  {e.date ? new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '\u2014'}
-                </td>
                 <td style={{ padding: '10px 12px', color: '#fff', fontWeight: 500, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ marginRight: 6 }}>{countryFlag[e.country] || '\u{1F30D}'}</span>
-                  {e.event}
+                  <span style={{ marginRight: 8 }}>{e.flag}</span>{e.event}
                 </td>
-                <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  {e.estimate ?? '\u2014'}
+                <td style={{ padding: '10px 12px', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  {e.freq}
                 </td>
-                <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  {e.prev ?? '\u2014'}
+                <td style={{ padding: '10px 12px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)', fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.06em',
+                    color: e.impact === 'high' ? '#f87171' : '#FBBF24',
+                    background: e.impact === 'high' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.1)',
+                    padding: '3px 8px', borderRadius: 3,
+                  }}>
+                    {e.impact === 'high' ? 'HIGH' : 'MEDIUM'}
+                  </span>
                 </td>
               </tr>
             ))}
