@@ -519,6 +519,8 @@ export default function HomeClient(){
         <StatCard name="NAT GAS" val={commod?.natgas} chg={commod?.natgasChg} color="#D4A843" prefix="$" dec={2} spark={sp('NATGAS')} href="/markets/commodities"/>
       </div>}
 
+      <EconomicCalendar />
+
       <Watchlist data={{
         BTC: { label: 'Bitcoin', value: btc?.usd ? '$'+btc.usd.toLocaleString('en-US',{maximumFractionDigits:0}) : '—', color: '#B8860B' },
         ETH: { label: 'Ethereum', value: prices?.ethereum?.usd ? '$'+prices.ethereum.usd.toLocaleString('en-US',{maximumFractionDigits:0}) : '—', color: '#3B6CB4' },
@@ -557,13 +559,6 @@ export default function HomeClient(){
           <span style={{fontFamily:'var(--font-mono)',fontSize:'1rem',fontWeight:600,color:'var(--gold-light)'}}><AnimatedCounter value={global?.btcDom||56.2} suffix="%" decimals={1} className=""/></span>
         </div>
       </div>
-    </div></Section>
-
-    <div className="gold-line"/>
-
-    {/* ══ ECONOMIC CALENDAR ══ */}
-    <Section><div className="hp-section" style={{paddingTop:28,paddingBottom:28}}>
-      <EconomicCalendar />
     </div></Section>
 
     <div className="gold-line"/>
