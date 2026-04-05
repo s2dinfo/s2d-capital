@@ -14,6 +14,7 @@ import FearGreedGauge from '@/components/FearGreedGauge';
 import InteractiveVerticalCard from '@/components/InteractiveVerticalCard';
 import MarketFlowDiagram from '@/components/MarketFlowDiagram';
 import Watchlist from '@/components/Watchlist';
+import EconomicCalendar from '@/components/EconomicCalendar';
 
 /* ── Helpers ── */
 function Mini({data,color,h=44}:{data:number[];color:string;h?:number}) {
@@ -556,6 +557,13 @@ export default function HomeClient(){
           <span style={{fontFamily:'var(--font-mono)',fontSize:'1rem',fontWeight:600,color:'var(--gold-light)'}}><AnimatedCounter value={global?.btcDom||56.2} suffix="%" decimals={1} className=""/></span>
         </div>
       </div>
+    </div></Section>
+
+    <div className="gold-line"/>
+
+    {/* ══ ECONOMIC CALENDAR ══ */}
+    <Section><div className="hp-section" style={{paddingTop:28,paddingBottom:28}}>
+      <EconomicCalendar />
     </div></Section>
 
     <div className="gold-line"/>
