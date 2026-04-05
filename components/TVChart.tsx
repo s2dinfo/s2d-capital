@@ -42,8 +42,9 @@ export default function TVChart({
         const mod = await import("lightweight-charts");
         const { createChart, CandlestickSeries, AreaSeries, LineSeries, HistogramSeries, CrosshairMode } = mod;
 
-        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : activeRange === "1y" ? "1wk" : "1wk";
-        const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${activeRange}&interval=${interval}`);
+        const apiRange = activeRange === "1wk" ? "5d" : activeRange;
+        const interval = activeRange === "1wk" ? "15m" : activeRange === "1mo" ? "1d" : activeRange === "3mo" ? "1d" : activeRange === "6mo" ? "1d" : "1wk";
+        const res = await fetch(`/api/chart-data?symbol=${encodeURIComponent(symbol)}&range=${apiRange}&interval=${interval}`);
         if (!res.ok) throw new Error("API error");
         const json = await res.json();
         const result = json?.chart?.result?.[0];
