@@ -2,6 +2,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import MarketPageLayout from "@/components/MarketPageLayout";
+import MarketTicker from "@/components/MarketTicker";
 import KPICard from "@/components/KPICard";
 import FearGreedGauge from "@/components/FearGreedGauge";
 import CrossRef from "@/components/CrossRef";
@@ -84,8 +85,24 @@ export default function CryptoClient({ coins, global, fg, trending }: any) {
   const fgVal = fg?.current?.value ?? 50;
   const fgLbl = fg?.current?.label ?? "Neutral";
 
+  const btc = coins?.find((c: any) => c.id === "bitcoin");
+  const eth = coins?.find((c: any) => c.id === "ethereum");
+  const sol = coins?.find((c: any) => c.id === "solana");
+  const xrp = coins?.find((c: any) => c.id === "ripple");
+
   return (
     <MarketPageLayout title="Crypto &" titleAccent="Digital Assets" accentColor="#B8860B" subtitle="Live prices, charts, sentiment, and trending coins. Data from CoinGecko, Alternative.me & Yahoo Finance.">
+
+      <MarketTicker accentColor="rgba(184,134,11,0.2)" items={[
+        { label: 'BTC', value: btc?.current_price ? '$' + Number(btc.current_price).toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—', color: btc?.price_change_percentage_24h > 0 ? '#34d399' : '#f87171' },
+        { label: 'ETH', value: eth?.current_price ? '$' + Number(eth.current_price).toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—', color: eth?.price_change_percentage_24h > 0 ? '#34d399' : '#f87171' },
+        { label: 'SOL', value: sol?.current_price ? '$' + Number(sol.current_price).toFixed(2) : '—' },
+        { label: 'XRP', value: xrp?.current_price ? '$' + Number(xrp.current_price).toFixed(2) : '—' },
+        { label: 'Total MCap', value: global?.totalMcap ? '$' + (global.totalMcap / 1e12).toFixed(2) + 'T' : '—' },
+        { label: 'BTC Dom', value: global?.btcDom ? global.btcDom.toFixed(1) + '%' : '—', color: '#B8860B' },
+        { label: '24h Vol', value: global?.vol24h ? '$' + (global.vol24h / 1e9).toFixed(0) + 'B' : '—' },
+        { label: 'Fear/Greed', value: fgVal ? String(fgVal) : '—', color: fgVal > 50 ? '#34d399' : '#f87171' },
+      ]} />
 
       {/* ── KPI Cards ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 12 }}>
@@ -120,7 +137,7 @@ export default function CryptoClient({ coins, global, fg, trending }: any) {
         <div className="chart-grid-resp"><style>{`.chart-grid-resp{display:grid;grid-template-columns:repeat(2,1fr);gap:0}@media(max-width:640px){.chart-grid-resp{grid-template-columns:1fr;gap:8px}}`}</style>
           <TVChart symbol="BTC-USD" title="Bitcoin / USD" type="candlestick" range="2y" color="#B8860B" />
           <TVChart symbol="ETH-USD" title="Ethereum / USD" type="candlestick" range="2y" color="#3B6CB4" />
-          <TVChart symbol="TOTAL-USD" title="Total Crypto Market Cap" type="candlestick" range="2y" color="#6366f1" />
+          <TVChart symbol="BITW" title="Crypto Index Fund (BITW)" type="candlestick" range="2y" color="#6366f1" />
           <TVChart symbol="ETH-BTC" title="ETH / BTC" type="candlestick" range="2y" color="#8B5CF6" />
           <TVChart symbol="SOL-USD" title="Solana / USD" type="candlestick" range="2y" color="#9945FF" />
           <TVChart symbol="XRP-USD" title="XRP / USD" type="candlestick" range="2y" color="#2D8F5E" />

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import MarketPageLayout from "@/components/MarketPageLayout";
+import MarketTicker from "@/components/MarketTicker";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
 import CollapsibleSection from "@/components/CollapsibleSection";
@@ -31,7 +32,6 @@ const CONTRACT_SPECS = [
   { name: 'Orange Juice', symbol: 'OJ=F', size: '15,000 lbs', unit: 'USD/lb', exchange: 'ICE' },
   { name: 'Live Cattle', symbol: 'LE=F', size: '40,000 lbs', unit: 'USD/lb', exchange: 'CME' },
   { name: 'Lean Hogs', symbol: 'HE=F', size: '40,000 lbs', unit: 'USD/lb', exchange: 'CME' },
-  { name: 'Lumber', symbol: 'LBS=F', size: '27,500 bd ft', unit: 'USD/bd ft', exchange: 'CME' },
 ];
 
 function ChartGrid({ children }: { children: React.ReactNode }) {
@@ -43,6 +43,14 @@ export default function CommClient({ commod }: { commod: any }) {
 
   return (
     <MarketPageLayout title="Commodities &" titleAccent="Energy" accentColor="#8B5E3C" subtitle="Comprehensive coverage across precious metals, energy, base metals, agriculture, and livestock. Click any section to expand.">
+
+      <MarketTicker accentColor="rgba(139,94,60,0.25)" items={[
+        { label: 'WTI Oil', value: `${fmt(commod.oil)}  ${commod.oilChg != null ? (commod.oilChg >= 0 ? '+' : '') + commod.oilChg.toFixed(2) + '%' : ''}`, color: commod.oilChg >= 0 ? '#34d399' : '#f87171' },
+        { label: 'Brent', value: `${fmt(commod.brent)}  ${commod.brentChg != null ? (commod.brentChg >= 0 ? '+' : '') + commod.brentChg.toFixed(2) + '%' : ''}`, color: commod.brentChg >= 0 ? '#34d399' : '#f87171' },
+        { label: 'Gold', value: `${fmt(commod.gold, 0)}  ${commod.goldChg != null ? (commod.goldChg >= 0 ? '+' : '') + commod.goldChg.toFixed(2) + '%' : ''}`, color: commod.goldChg >= 0 ? '#34d399' : '#f87171' },
+        { label: 'Silver', value: `${fmt(commod.silver)}  ${commod.silverChg != null ? (commod.silverChg >= 0 ? '+' : '') + commod.silverChg.toFixed(2) + '%' : ''}`, color: commod.silverChg >= 0 ? '#34d399' : '#f87171' },
+        { label: 'Nat Gas', value: `${fmt(commod.natgas, 3)}  ${commod.natgasChg != null ? (commod.natgasChg >= 0 ? '+' : '') + commod.natgasChg.toFixed(2) + '%' : ''}`, color: commod.natgasChg >= 0 ? '#34d399' : '#f87171' },
+      ]} />
 
       {/* KPI Cards — always visible summary */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(145px, 1fr))", gap: 10, marginBottom: 20 }}>
@@ -114,10 +122,6 @@ export default function CommClient({ commod }: { commod: any }) {
         </ChartGrid>
       </CollapsibleSection>
 
-      {/* Other */}
-      <CollapsibleSection title="Other" subtitle="Lumber" count={1} color="#A0522D">
-        <TVChart symbol="LBS=F" title="Lumber" color="#A0522D" />
-      </CollapsibleSection>
 
       {/* Contract Specifications */}
       <CollapsibleSection title="Contract Specifications" subtitle="Contract sizes, units, and exchanges for all commodities" count={21} color="#8B5E3C">

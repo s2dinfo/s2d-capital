@@ -1,6 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import MarketPageLayout from "@/components/MarketPageLayout";
+import MarketTicker from "@/components/MarketTicker";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
 import EconomicCalendar from "@/components/EconomicCalendar";
@@ -27,6 +28,17 @@ export default function MacroClient({ macro }: { macro: any }) {
 
   return (
     <MarketPageLayout title="Monetary Policy &" titleAccent="Central Banks" accentColor="#3B6CB4" subtitle="Federal Reserve data, treasury yields, inflation metrics, and monetary policy signals. Data from FRED & Yahoo Finance.">
+
+      <MarketTicker accentColor="rgba(59,108,180,0.2)" items={[
+        { label: "Fed Rate", value: macro?.fedRate ? macro.fedRate + "%" : "—", color: "#3B6CB4" },
+        { label: "10Y Yield", value: macro?.t10y ? macro.t10y + "%" : "—", color: "#3B6CB4" },
+        { label: "2Y Yield", value: macro?.t2y ? macro.t2y + "%" : "—", color: "#3B6CB4" },
+        { label: "Yield Spread", value: macro?.yieldSpread ? macro.yieldSpread + "%" : "—", color: spreadColor },
+        { label: "CPI", value: macro?.cpi ? parseFloat(macro.cpi).toFixed(1) : "—", color: "#D4A843" },
+        { label: "Unemployment", value: macro?.unemp ? macro.unemp + "%" : "—", color: "#C0392B" },
+        { label: "DXY", value: macro?.dxy ?? "—", color: "#2D8F5E" },
+        { label: "VIX", value: macro?.vix != null ? macro.vix.toFixed(1) : "—", color: "#C0392B" },
+      ]} />
 
       {/* KPI Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 24 }}>

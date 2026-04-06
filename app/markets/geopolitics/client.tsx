@@ -2,7 +2,6 @@
 import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
-import LiveGeoEvents from "@/components/LiveGeoEvents";
 import CollapsibleSection from "@/components/CollapsibleSection";
 
 const geoEvents = [
@@ -10,6 +9,11 @@ const geoEvents = [
   { title: "EU Russian Gas Ban", status: "PHASING IN", statusColor: "#FBBF24", desc: "Stepwise ban began March 18, 2026. Full LNG ban by end 2026, pipeline gas by autumn 2027.", date: "Since Mar 18, 2026" },
   { title: "US–China Trade War", status: "ESCALATING", statusColor: "#FBBF24", desc: "New tariff rounds in 2026. Semiconductor export controls tightened. Rare earth retaliation risk.", date: "Ongoing" },
   { title: "Russia–Ukraine War", status: "ONGOING", statusColor: "#f87171", desc: "No ceasefire in sight. European defense spending accelerating. Energy supply restructuring continues.", date: "Since Feb 2022" },
+  { title: "India–Pakistan Border Tensions", status: "ESCALATING", statusColor: "#C0392B", desc: "Renewed military posturing along the Line of Control following the Pahalgam terror attack. India suspended the Indus Waters Treaty.", date: "Apr 2025 – present" },
+  { title: "Sudan Civil War", status: "ONGOING", statusColor: "#E88A3C", desc: "RSF and SAF continue fighting. Humanitarian crisis with 10M+ displaced. International mediation stalled.", date: "Apr 2023 – present" },
+  { title: "South China Sea Disputes", status: "ACTIVE", statusColor: "#C0392B", desc: "Increased Chinese coast guard activity near Philippine-claimed reefs. US freedom of navigation ops continue.", date: "Ongoing" },
+  { title: "EU Green Deal Industrial Policy", status: "IN EFFECT", statusColor: "#2D8F5E", desc: "Carbon Border Adjustment Mechanism (CBAM) transitional phase. Affecting steel, cement, aluminum imports.", date: "Oct 2023 – present" },
+  { title: "OPEC+ Production Cuts", status: "EXTENDING", statusColor: "#E88A3C", desc: "Saudi-led voluntary cuts of 2.2M bpd extended through Q2 2026. Balancing market amid weak Chinese demand.", date: "Nov 2023 – present" },
 ];
 
 export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
@@ -48,11 +52,6 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
             </div>
           </div>
         ))}
-      </CollapsibleSection>
-
-      {/* Live GDELT Events */}
-      <CollapsibleSection title="Live GDELT Events" color="#8B2252">
-        <LiveGeoEvents />
       </CollapsibleSection>
 
       {/* World GDP Table */}
