@@ -74,11 +74,11 @@ function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:
       {/* Label — flows below circle, centered */}
       <div style={{marginTop:8,whiteSpace:'nowrap',textAlign:'center'}}>
         <div style={{fontFamily:'var(--font-display)',fontSize:small?'0.6rem':'0.75rem',fontWeight:700,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
-        {isSelected && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',color:'rgba(255,255,255,0.35)',marginTop:3}}>{t.sub}</motion.div>}
+        {isSelected && !small && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',color:'rgba(255,255,255,0.35)',marginTop:3}}>{t.sub}</motion.div>}
       </div>
 
-      {/* Expanded buttons */}
-      <AnimatePresence>
+      {/* Expanded buttons — desktop only, mobile shows them below orbit */}
+      {!small && <AnimatePresence>
         {isSelected && (
           <motion.div initial={{opacity:0,scale:0.8,y:-4}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.8}} transition={{type:'spring',stiffness:400,damping:25}} style={{display:'flex',gap:8,marginTop:10,justifyContent:'center'}}>
             <Link href={t.dataHref} onClick={e=>e.stopPropagation()}
@@ -105,7 +105,7 @@ function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:
               }}>Articles</Link>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>}
     </motion.div>
   );
 }
@@ -148,6 +148,18 @@ function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:str
       {TOPICS.map((t,i)=>(
         <OrbitNode key={t.key} t={t} index={i} total={TOPICS.length} selected={selected} onSelect={onSelect} radius={radius} containerSize={containerSize} small={isMobile}/>
       ))}
+
+      {/* Mobile: buttons below the orbit */}
+      {isMobile && (() => {
+        const sel = TOPICS.find(t=>t.key===selected);
+        if (!sel) return null;
+        return (
+          <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} key={sel.key} style={{position:'absolute',bottom:-16,left:0,right:0,display:'flex',gap:10,justifyContent:'center'}}>
+            <Link href={sel.dataHref} style={{fontFamily:'var(--font-display)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:sel.color,color:'#fff',textDecoration:'none',border:`1.5px solid ${sel.color}`,boxShadow:`0 4px 16px ${sel.color}44`}}>Markets</Link>
+            <Link href={sel.articleHref} style={{fontFamily:'var(--font-display)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:'transparent',color:'rgba(255,255,255,0.65)',textDecoration:'none',border:`1.5px solid ${sel.color}66`}}>Articles</Link>
+          </motion.div>
+        );
+      })()}
     </motion.div>
   );
 }

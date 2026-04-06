@@ -69,7 +69,7 @@ export default function CollapsibleSection({
         {/* Title + subtitle */}
         <div style={{ flex: 1 }}>
           <div style={{
-            fontFamily: 'var(--font-display)', fontSize: '0.65rem', letterSpacing: '0.08em',
+            fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.12em',
             color: open ? color : 'rgba(255,255,255,0.6)',
             fontWeight: 700, textTransform: 'uppercase',
             transition: 'color 0.2s',

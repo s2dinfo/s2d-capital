@@ -17,7 +17,7 @@ export default function MarketPageLayout({ title, titleAccent, accentColor, subt
       <style>{`.mpl-content{padding:28px 48px 64px}@media(max-width:768px){.mpl-content{padding:20px 16px 48px}}`}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
         <div style={{ width: 3, height: 28, background: accentColor, borderRadius: 2 }} />
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem,3vw,2.2rem)", fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>
+        <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(1.5rem,3vw,2.2rem)", fontWeight: 400, color: "#fff" }}>
           {title} <span style={{ fontFamily: "var(--font-serif)", fontWeight: 400, fontStyle: "italic", color: accentColor }}>{titleAccent}</span>
         </h1>
       </div>

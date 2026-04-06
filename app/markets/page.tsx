@@ -29,8 +29,8 @@ export default function MarketsPage() {
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--gold-light, #D4B85C)', marginBottom: 16 }}>
             S2D Capital Insights
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 700, color: '#fff', marginBottom: 14, letterSpacing: '-0.02em' }}>
-            Markets & <span style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontStyle: 'italic', color: 'var(--gold-light, #D4B85C)' }}>Data</span>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 400, color: '#fff', marginBottom: 14 }}>
+            Markets & <em style={{ fontStyle: 'italic', color: 'var(--gold-light, #D4B85C)' }}>Data</em>
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.5)', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
             Live data and analysis across five verticals. Choose your market.
@@ -68,7 +68,7 @@ export default function MarketsPage() {
                 }}
               >
                 <div style={{ fontSize: '1.5rem', marginBottom: 10 }}>{v.icon}</div>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 600, color: '#fff', marginBottom: 6 }}>{v.label}</h2>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 500, color: '#fff', marginBottom: 6 }}>{v.label}</h2>
                 <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, flex: 1 }}>{v.desc}</p>
                 <span style={{ display: 'inline-block', marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: '0.58rem', color: v.color, fontWeight: 600 }}>View Data →</span>
               </div>
