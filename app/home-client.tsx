@@ -408,19 +408,23 @@ export default function HomeClient(){
       .hero-mesh-2{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;animation:meshFloat2 25s ease-in-out infinite}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent 5%,rgba(184,134,11,0.25) 50%,transparent 95%)}
       .hp-section{padding-left:40px;padding-right:40px;max-width:1200px;margin-left:auto;margin-right:auto;box-sizing:border-box;width:100%}
-      .hp-grid-verticals{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-      .hp-grid-verticals>*,.hp-grid-stats>*,.hp-grid-2col>*{min-width:0;overflow:hidden}
+      .hp-grid-verticals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+      .hp-grid-verticals-bottom{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:66.666%;margin:12px auto 0}
+      .hp-grid-verticals>*,.hp-grid-verticals-bottom>*{min-width:0;overflow:hidden}
+      .hp-grid-stats>*,.hp-grid-2col>*{min-width:0;overflow:hidden}
       .hp-grid-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
       .hp-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
       @media(max-width:768px){
         .hp-section{padding-left:16px;padding-right:16px}
         .hp-grid-verticals{grid-template-columns:repeat(2,1fr)}
+        .hp-grid-verticals-bottom{max-width:100%;grid-template-columns:repeat(2,1fr)}
         .hp-grid-stats{grid-template-columns:repeat(2,1fr)}
         .hp-grid-2col{grid-template-columns:1fr}
       }
       @media(max-width:420px){
         .hp-section{padding-left:12px;padding-right:12px}
         .hp-grid-verticals{grid-template-columns:1fr;gap:8px}
+        .hp-grid-verticals-bottom{max-width:100%;grid-template-columns:1fr;gap:8px;margin-top:8px}
         .hp-grid-stats{grid-template-columns:repeat(2,1fr);gap:8px}
       }
     `}</style>
@@ -655,15 +659,23 @@ export default function HomeClient(){
         Five Perspectives. <span style={{fontFamily:'var(--font-serif)',fontWeight:400,fontStyle:'italic',color:'var(--gold-light)'}}>One Picture.</span>
       </h2>
       <p style={{fontFamily:'var(--font-sans)',fontSize:'0.88rem',color:'rgba(255,255,255,0.4)',maxWidth:540,marginBottom:24,lineHeight:1.7,fontWeight:300}}>Markets are interconnected. We analyze each vertical independently and show how everything connects.</p>
-      <div className="hp-grid-verticals">
-        {[
+      {(() => {
+        const verts = [
           {shortLabel:'Crypto',title:'Crypto & Digital Assets',subtitle:'Regulation, ETFs, Tokenization, DeFi',tags:['CLARITY','ETFs','BTC','DeFi'],color:'#B8860B',href:'/markets/crypto'},
           {shortLabel:'Macro',title:'Macro & Central Banks',subtitle:'Fed, ECB, BOJ, Rates, Liquidity',tags:['Fed','ECB','Rates','CPI'],color:'#3B6CB4',href:'/markets/macro'},
           {shortLabel:'Commodities',title:'Commodities & Energy',subtitle:'Oil, Gold, Agriculture, Supply Chains',tags:['Gold','Oil','Copper'],color:'#8B5E3C',href:'/markets/commodities'},
           {shortLabel:'FX',title:'FX & Currencies',subtitle:'Dollar, EUR/USD, EM Currencies, Stablecoins',tags:['DXY','EUR','Stablecoins'],color:'#2D8F5E',href:'/markets/fx'},
           {shortLabel:'Geopolitics',title:'Geopolitics & Policy',subtitle:'Trade Wars, Sanctions, Elections',tags:['Tariffs','Sanctions','EU'],color:'#8B2252',href:'/markets/geopolitics'},
-        ].map((v,i)=><VerticalCard key={v.shortLabel} index={i} {...v}/>)}
-      </div>
+        ];
+        return <>
+          <div className="hp-grid-verticals">
+            {verts.slice(0,3).map((v,i)=><VerticalCard key={v.shortLabel} index={i} {...v}/>)}
+          </div>
+          <div className="hp-grid-verticals-bottom">
+            {verts.slice(3).map((v,i)=><VerticalCard key={v.shortLabel} index={i+3} {...v}/>)}
+          </div>
+        </>;
+      })()}
       <p style={{fontFamily:'var(--font-sans)',fontSize:'0.85rem',color:'rgba(255,255,255,0.35)',textAlign:'center',marginTop:24,maxWidth:600,margin:'24px auto 0',lineHeight:1.7}}>
         <strong style={{color:'#fff',fontWeight:600}}>Fed rate decision</strong> → Dollar → Gold & Oil → EM Currencies → Crypto allocation. <strong style={{color:'#fff',fontWeight:600}}>We connect these dots.</strong>
       </p>

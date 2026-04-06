@@ -94,9 +94,9 @@ function daysUntil(d: string): number {
   return Math.ceil((new Date(d + 'T12:00:00').getTime() - Date.now()) / 86400000);
 }
 
-export default function EconomicCalendar() {
+export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?: boolean } = {}) {
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const events = getUpcoming(60);
   if (events.length === 0) return null;
 

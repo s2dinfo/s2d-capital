@@ -93,8 +93,8 @@ const S = {
     fontSize: "1.6rem",
     fontWeight: 400,
     color: "#ffffff",
-    marginTop: 56,
-    marginBottom: 20,
+    marginTop: 40,
+    marginBottom: 16,
     lineHeight: 1.25,
   } as React.CSSProperties,
   h3: {
@@ -102,8 +102,8 @@ const S = {
     fontSize: "1.2rem",
     fontWeight: 500,
     color: "#ffffff",
-    marginTop: 36,
-    marginBottom: 14,
+    marginTop: 28,
+    marginBottom: 12,
     lineHeight: 1.3,
   } as React.CSSProperties,
   callout: {
