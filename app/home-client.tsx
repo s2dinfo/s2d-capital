@@ -507,7 +507,7 @@ export default function HomeClient(){
         {/* Main headline — Space Grotesk 700, massive */}
         <motion.h1 initial={{opacity:0,y:30,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{delay:0.5,duration:0.8,ease:[0.16,1,0.3,1]}} style={{fontFamily:'var(--font-display)',fontSize:'clamp(2.4rem,6vw,4.2rem)',fontWeight:700,lineHeight:1.05,marginBottom:20,color:'#fff',letterSpacing:'-0.03em'}}>
           Where Markets{' '}
-          <span className="gradient-text" style={{fontFamily:'var(--font-serif)',fontWeight:400,fontStyle:'italic'}}>Meet Clarity</span>
+          <span className="gradient-text" style={{fontFamily:'var(--font-serif)',fontWeight:700,fontStyle:'italic'}}>Meet Clarity</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -519,7 +519,7 @@ export default function HomeClient(){
 
       {/* ── ORBITAL TOPIC SELECTOR ── */}
       <div style={{position:'relative',zIndex:2,width:'100%',display:'flex',flexDirection:'column',alignItems:'center'}}>
-        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.5}} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.25em',color:'rgba(255,255,255,0.25)',textAlign:'center',marginBottom:8}}>WHAT INTERESTS YOU?</motion.p>
+        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.5}} style={{fontFamily:'var(--font-display)',fontSize:'0.85rem',letterSpacing:'0.15em',color:'rgba(255,255,255,0.45)',textAlign:'center',marginBottom:16,fontWeight:600}}>WHAT INTERESTS YOU?</motion.p>
         <OrbitSelector selected={selectedTopic} onSelect={setSelectedTopic}/>
       </div>
     </div>
