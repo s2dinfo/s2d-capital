@@ -134,7 +134,7 @@ export default function CryptoClient({ coins, global, fg, trending }: any) {
 
       {/* ── Core Charts ── */}
       <CollapsibleSection title="Core Charts" subtitle="BTC, ETH, SOL, XRP" count={6} color="#B8860B" defaultOpen={true}>
-        <div className="chart-grid-resp"><style>{`.chart-grid-resp{display:grid;grid-template-columns:repeat(2,1fr);gap:0}@media(max-width:640px){.chart-grid-resp{grid-template-columns:1fr;gap:8px}}`}</style>
+        <div className="crypto-chart-grid"><style>{`.crypto-chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0}@media(max-width:640px){.crypto-chart-grid{grid-template-columns:1fr;gap:8px}}`}</style>
           <TVChart symbol="BTC-USD" title="Bitcoin / USD" type="candlestick" range="2y" color="#B8860B" />
           <TVChart symbol="ETH-USD" title="Ethereum / USD" type="candlestick" range="2y" color="#3B6CB4" />
           <TVChart symbol="BITW" title="Crypto Index Fund (BITW)" type="candlestick" range="2y" color="#6366f1" />

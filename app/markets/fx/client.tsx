@@ -126,7 +126,7 @@ export default function FxClient({ fx, macro }: { fx: any; macro: any }) {
 
       {/* Currency Pair Charts */}
       <CollapsibleSection title="Currency Pairs" subtitle="Major and cross pairs" count={8} color="#2D8F5E" defaultOpen={true}>
-        <div className="chart-grid-resp" style={{ gap: 12 }}><style>{`.chart-grid-resp{display:grid;grid-template-columns:repeat(2,1fr)}@media(max-width:640px){.chart-grid-resp{grid-template-columns:1fr}}`}</style>
+        <div className="fx-chart-grid" style={{ gap: 12 }}><style>{`.fx-chart-grid{display:grid;grid-template-columns:repeat(2,1fr)}@media(max-width:640px){.fx-chart-grid{grid-template-columns:1fr}}`}</style>
           {fxCharts.map((c) => (
             <TVChart key={c.symbol} symbol={c.symbol} title={c.title} type="candlestick" range="2y" />
           ))}

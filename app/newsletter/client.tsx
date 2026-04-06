@@ -117,7 +117,7 @@ export default function NewsletterClient() {
             color: 'var(--text-muted)', letterSpacing: '0.06em',
             textTransform: 'uppercase', marginBottom: 8,
           }}>
-            March 28, 2026
+            April 4, 2026
           </div>
           <h3 style={{
             fontFamily: 'var(--font-serif)', fontSize: '1.05rem',

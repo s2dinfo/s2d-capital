@@ -35,7 +35,7 @@ const CONTRACT_SPECS = [
 ];
 
 function ChartGrid({ children }: { children: React.ReactNode }) {
-  return <><div className="chart-grid-resp">{children}</div><style>{`.chart-grid-resp{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media(max-width:640px){.chart-grid-resp{grid-template-columns:1fr}}`}</style></>;
+  return <><div className="commod-chart-grid">{children}</div><style>{`.commod-chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media(max-width:640px){.commod-chart-grid{grid-template-columns:1fr}}`}</style></>;
 }
 
 export default function CommClient({ commod }: { commod: any }) {
@@ -44,7 +44,7 @@ export default function CommClient({ commod }: { commod: any }) {
   return (
     <MarketPageLayout title="Commodities &" titleAccent="Energy" accentColor="#8B5E3C" subtitle="Comprehensive coverage across precious metals, energy, base metals, agriculture, and livestock. Click any section to expand.">
 
-      <MarketTicker accentColor="rgba(139,94,60,0.25)" items={[
+      <MarketTicker accentColor="rgba(139,94,60,0.2)" items={[
         { label: 'WTI Oil', value: `${fmt(commod.oil)}  ${commod.oilChg != null ? (commod.oilChg >= 0 ? '+' : '') + commod.oilChg.toFixed(2) + '%' : ''}`, color: commod.oilChg >= 0 ? '#34d399' : '#f87171' },
         { label: 'Brent', value: `${fmt(commod.brent)}  ${commod.brentChg != null ? (commod.brentChg >= 0 ? '+' : '') + commod.brentChg.toFixed(2) + '%' : ''}`, color: commod.brentChg >= 0 ? '#34d399' : '#f87171' },
         { label: 'Gold', value: `${fmt(commod.gold, 0)}  ${commod.goldChg != null ? (commod.goldChg >= 0 ? '+' : '') + commod.goldChg.toFixed(2) + '%' : ''}`, color: commod.goldChg >= 0 ? '#34d399' : '#f87171' },
@@ -151,7 +151,7 @@ export default function CommClient({ commod }: { commod: any }) {
 
       <CrossRef items={[
         { label: "Europe's Energy System, Decoded", href: "/research/europe-energy-decoded", type: "research" },
-        { label: "Gold at $3,000: Safe Haven or Bubble?", href: "/research/gold-3000-safe-haven-or-bubble", type: "research" },
+        { label: "Gold at $3,000: Safe Haven or Bubble?", href: "/research", type: "research" },
         { label: "Geopolitics", href: "/markets/geopolitics", type: "market" },
         { label: "Monetary Policy & Central Banks", href: "/markets/macro", type: "market" },
       ]} />

@@ -409,7 +409,7 @@ export default function HomeClient(){
       .gold-line{height:1px;background:linear-gradient(90deg,transparent 5%,rgba(184,134,11,0.25) 50%,transparent 95%)}
       .hp-section{padding-left:40px;padding-right:40px;max-width:1200px;margin-left:auto;margin-right:auto;box-sizing:border-box;width:100%}
       .hp-grid-verticals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-      .hp-grid-verticals-bottom{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:66.666%;margin:12px auto 0}
+      .hp-grid-verticals-bottom{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:calc(66.666% - 4px);margin:12px auto 0}
       .hp-grid-verticals>*,.hp-grid-verticals-bottom>*{min-width:0;overflow:hidden}
       .hp-grid-stats>*,.hp-grid-2col>*{min-width:0;overflow:hidden}
       .hp-grid-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}

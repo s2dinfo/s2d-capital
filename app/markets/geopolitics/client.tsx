@@ -95,7 +95,7 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
 
       <CrossRef items={[
         { label: "Europe's Energy System, Decoded", href: "/research/europe-energy-decoded", type: "research" },
-        { label: "Trump's 2026 Tariff Escalation", href: "/research/trump-tariff-escalation-2026", type: "research" },
+        { label: "Trump's 2026 Tariff Escalation", href: "/research", type: "research" },
         { label: "Commodities & Energy", href: "/markets/commodities", type: "market" },
         { label: "FX & Currencies", href: "/markets/fx", type: "market" },
       ]} />
