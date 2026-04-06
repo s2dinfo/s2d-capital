@@ -31,6 +31,7 @@ function OrbitNode({t,index,total,selected,onSelect,radius}:{t:typeof TOPICS[0];
   const y = Math.sin(angle) * radius;
   const isSelected = selected === t.key;
   const [h, setH] = useState(false);
+  const [btnHover, setBtnHover] = useState<'data'|'articles'|null>(null);
 
   return (
     <motion.div
@@ -47,34 +48,54 @@ function OrbitNode({t,index,total,selected,onSelect,radius}:{t:typeof TOPICS[0];
       }}
     >
       {/* Glow ring when selected */}
-      {isSelected && <motion.div layoutId="orbitGlow" style={{position:'absolute',inset:-8,borderRadius:'50%',border:`2px solid ${t.color}66`,boxShadow:`0 0 20px ${t.color}33`,pointerEvents:'none'}} transition={{type:'spring',stiffness:300,damping:25}}/>}
+      {isSelected && <motion.div layoutId="orbitGlow" style={{position:'absolute',inset:-12,borderRadius:'50%',border:`2px solid ${t.color}66`,boxShadow:`0 0 30px ${t.color}33`,pointerEvents:'none'}} transition={{type:'spring',stiffness:300,damping:25}}/>}
 
       {/* Node circle */}
       <div style={{
-        width:isSelected?72:64,height:isSelected?72:64,borderRadius:'50%',
+        width:isSelected?96:84,height:isSelected?96:84,borderRadius:'50%',
         background:isSelected?`radial-gradient(circle,${t.color}30,rgba(17,25,40,0.9))`:`radial-gradient(circle,rgba(17,25,40,0.9),rgba(17,25,40,0.7))`,
         backdropFilter:'blur(12px)',
         border:`1.5px solid ${isSelected?t.color:h?t.color+'66':'rgba(255,255,255,0.1)'}`,
         display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
         transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-        boxShadow:isSelected?`0 0 30px ${t.color}25`:h?`0 4px 20px rgba(0,0,0,0.3)`:'none',
+        boxShadow:isSelected?`0 0 40px ${t.color}30`:h?`0 4px 24px rgba(0,0,0,0.4)`:'none',
         transform:h&&!isSelected?'scale(1.1)':'scale(1)',
       }}>
-        <span style={{fontSize:isSelected?'1.4rem':'1.2rem',transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 8px ${t.color}60)`:'none'}}>{t.icon}</span>
+        <span style={{fontSize:isSelected?'2rem':'1.7rem',transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none',lineHeight:1}}>{t.icon}</span>
       </div>
 
       {/* Label */}
-      <div style={{marginTop:6,whiteSpace:'nowrap'}}>
-        <div style={{fontFamily:'var(--font-display)',fontSize:'0.6rem',fontWeight:600,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
-        {isSelected && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.48rem',color:'rgba(255,255,255,0.35)',marginTop:2}}>{t.sub}</motion.div>}
+      <div style={{marginTop:8,whiteSpace:'nowrap'}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:'0.72rem',fontWeight:700,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
+        {isSelected && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',color:'rgba(255,255,255,0.35)',marginTop:3}}>{t.sub}</motion.div>}
       </div>
 
-      {/* Expanded buttons */}
+      {/* Expanded buttons — color follows hover */}
       <AnimatePresence>
         {isSelected && (
-          <motion.div initial={{opacity:0,scale:0.8,y:-4}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.8}} transition={{type:'spring',stiffness:400,damping:25}} style={{display:'flex',gap:6,marginTop:8,justifyContent:'center'}}>
-            <Link href={t.dataHref} onClick={e=>e.stopPropagation()} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',fontWeight:600,padding:'5px 12px',borderRadius:4,background:t.color,color:'#fff',textDecoration:'none',boxShadow:`0 2px 10px ${t.color}44`,whiteSpace:'nowrap'}}>Data</Link>
-            <Link href={t.articleHref} onClick={e=>e.stopPropagation()} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',fontWeight:600,padding:'5px 12px',borderRadius:4,background:'transparent',color:'rgba(255,255,255,0.6)',border:`1px solid ${t.color}55`,textDecoration:'none',whiteSpace:'nowrap'}}>Articles</Link>
+          <motion.div initial={{opacity:0,scale:0.8,y:-4}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.8}} transition={{type:'spring',stiffness:400,damping:25}} style={{display:'flex',gap:8,marginTop:10,justifyContent:'center'}}>
+            <Link href={t.dataHref} onClick={e=>e.stopPropagation()}
+              onMouseEnter={()=>setBtnHover('data')} onMouseLeave={()=>setBtnHover(null)}
+              style={{
+                fontFamily:'var(--font-display)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
+                background:btnHover==='data'?t.color:btnHover==='articles'?'transparent':t.color,
+                color:btnHover==='data'?'#fff':btnHover==='articles'?'rgba(255,255,255,0.5)':'#fff',
+                border:`1.5px solid ${t.color}`,
+                boxShadow:btnHover==='data'||btnHover===null?`0 4px 16px ${t.color}44`:'none',
+                transition:'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+                transform:btnHover==='data'?'translateY(-1px)':'translateY(0)',
+              }}>Markets</Link>
+            <Link href={t.articleHref} onClick={e=>e.stopPropagation()}
+              onMouseEnter={()=>setBtnHover('articles')} onMouseLeave={()=>setBtnHover(null)}
+              style={{
+                fontFamily:'var(--font-display)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
+                background:btnHover==='articles'?t.color:'transparent',
+                color:btnHover==='articles'?'#fff':btnHover==='data'?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.65)',
+                border:`1.5px solid ${btnHover==='articles'?t.color:t.color+'66'}`,
+                boxShadow:btnHover==='articles'?`0 4px 16px ${t.color}44`:'none',
+                transition:'all 0.25s cubic-bezier(0.4,0,0.2,1)',
+                transform:btnHover==='articles'?'translateY(-1px)':'translateY(0)',
+              }}>Articles</Link>
           </motion.div>
         )}
       </AnimatePresence>
@@ -92,14 +113,15 @@ function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:str
     return ()=>window.removeEventListener('resize', check);
   },[]);
 
-  const radius = isMobile ? 110 : 160;
+  const radius = isMobile ? 130 : 200;
+  const containerSize = radius * 2 + 200;
 
   return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:radius*2+140,height:radius*2+140,margin:'0 auto',maxWidth:'100%'}}>
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:containerSize,height:containerSize,margin:'0 auto',maxWidth:'100%'}}>
       {/* Center hub */}
       <motion.div initial={{opacity:0,scale:0}} animate={{opacity:1,scale:1}} transition={{delay:1,duration:0.6,ease:[0.16,1,0.3,1]}} style={{position:'absolute',left:'50%',top:'50%',transform:'translate(-50%,-50%)',zIndex:3}}>
-        <div style={{width:48,height:48,borderRadius:'50%',background:'radial-gradient(circle,rgba(184,134,11,0.2),rgba(17,25,40,0.8))',border:'1px solid rgba(184,134,11,0.3)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 40px rgba(184,134,11,0.15)'}}>
-          <span style={{fontFamily:'var(--font-display)',fontSize:'0.6rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
+        <div style={{width:60,height:60,borderRadius:'50%',background:'radial-gradient(circle,rgba(184,134,11,0.25),rgba(17,25,40,0.85))',border:'1.5px solid rgba(184,134,11,0.35)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 50px rgba(184,134,11,0.2)'}}>
+          <span style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
         </div>
       </motion.div>
 
@@ -109,11 +131,10 @@ function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:str
           const angle = (i / TOPICS.length) * 2 * Math.PI - Math.PI / 2;
           const cx = radius * Math.cos(angle);
           const cy = radius * Math.sin(angle);
-          const w = radius*2+140;
-          return <line key={i} x1={w/2} y1={w/2} x2={w/2+cx} y2={w/2+cy} stroke="rgba(184,134,11,0.08)" strokeWidth={1} strokeDasharray="4,4"/>;
+          return <line key={i} x1={containerSize/2} y1={containerSize/2} x2={containerSize/2+cx} y2={containerSize/2+cy} stroke={selected===TOPICS[i].key?TOPICS[i].color+'44':"rgba(184,134,11,0.08)"} strokeWidth={selected===TOPICS[i].key?1.5:1} strokeDasharray="4,4" style={{transition:'stroke 0.3s'}}/>;
         })}
         {/* Orbit ring */}
-        <circle cx={(radius*2+140)/2} cy={(radius*2+140)/2} r={radius} fill="none" stroke="rgba(184,134,11,0.06)" strokeWidth={1} strokeDasharray="2,6"/>
+        <circle cx={containerSize/2} cy={containerSize/2} r={radius} fill="none" stroke="rgba(184,134,11,0.06)" strokeWidth={1} strokeDasharray="2,6"/>
       </svg>
 
       {/* Topic nodes */}
@@ -492,15 +513,6 @@ export default function HomeClient(){
           Six verticals. One picture. Real-time data across equities, crypto, macro, commodities, FX, and geopolitics.
         </motion.p>
 
-        {/* CTA buttons */}
-        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.9,duration:0.6,ease:[0.16,1,0.3,1]}} style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap',marginBottom:32}}>
-          <Link href="/markets" style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:600,letterSpacing:'0.06em',padding:'14px 32px',background:'linear-gradient(135deg,var(--gold),var(--gold-dark))',color:'#fff',borderRadius:6,textDecoration:'none',boxShadow:'0 4px 24px rgba(184,134,11,0.25)',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}>
-            EXPLORE MARKETS
-          </Link>
-          <Link href="/research" style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:500,letterSpacing:'0.06em',padding:'14px 32px',background:'transparent',color:'rgba(255,255,255,0.7)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:6,textDecoration:'none',transition:'all 0.3s'}}>
-            READ RESEARCH
-          </Link>
-        </motion.div>
       </div>
 
       {/* ── ORBITAL TOPIC SELECTOR ── */}
