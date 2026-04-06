@@ -15,6 +15,115 @@ import EconomicCalendar from '@/components/EconomicCalendar';
 import AnimatedCounter from '@/components/AnimatedCounter';
 import GlowCard from '@/components/GlowCard';
 
+/* ── Topics config ── */
+const TOPICS = [
+  {key:'crypto',icon:'₿',label:'Crypto',sub:'ETFs, DeFi, Regulation',color:'#B8860B',dataHref:'/markets/crypto',articleHref:'/research'},
+  {key:'macro',icon:'🏛',label:'Macro',sub:'Fed, ECB, Rates',color:'#3B6CB4',dataHref:'/markets/macro',articleHref:'/research'},
+  {key:'commodities',icon:'🛢',label:'Commodities',sub:'Gold, Oil, Nat Gas',color:'#8B5E3C',dataHref:'/markets/commodities',articleHref:'/research'},
+  {key:'fx',icon:'💱',label:'FX',sub:'EUR/USD, DXY',color:'#2D8F5E',dataHref:'/markets/fx',articleHref:'/research'},
+  {key:'geopolitics',icon:'🌍',label:'Geopolitics',sub:'Tariffs, Sanctions',color:'#8B2252',dataHref:'/markets/geopolitics',articleHref:'/research'},
+];
+
+/* ── Orbital Topic Node ── */
+function OrbitNode({t,index,total,selected,onSelect,radius}:{t:typeof TOPICS[0];index:number;total:number;selected:string|null;onSelect:(k:string)=>void;radius:number}) {
+  const angle = (index / total) * 2 * Math.PI - Math.PI / 2; // start from top
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+  const isSelected = selected === t.key;
+  const [h, setH] = useState(false);
+
+  return (
+    <motion.div
+      initial={{opacity:0,scale:0}}
+      animate={{opacity:1,scale:1}}
+      transition={{delay:1.1 + index*0.1,duration:0.5,ease:[0.16,1,0.3,1]}}
+      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+      onClick={()=>onSelect(isSelected?'':t.key)}
+      style={{
+        position:'absolute',
+        left:`calc(50% + ${x}px)`,top:`calc(50% + ${y}px)`,
+        transform:'translate(-50%,-50%)',
+        cursor:'pointer',textAlign:'center',zIndex:isSelected?10:2,
+      }}
+    >
+      {/* Glow ring when selected */}
+      {isSelected && <motion.div layoutId="orbitGlow" style={{position:'absolute',inset:-8,borderRadius:'50%',border:`2px solid ${t.color}66`,boxShadow:`0 0 20px ${t.color}33`,pointerEvents:'none'}} transition={{type:'spring',stiffness:300,damping:25}}/>}
+
+      {/* Node circle */}
+      <div style={{
+        width:isSelected?72:64,height:isSelected?72:64,borderRadius:'50%',
+        background:isSelected?`radial-gradient(circle,${t.color}30,rgba(17,25,40,0.9))`:`radial-gradient(circle,rgba(17,25,40,0.9),rgba(17,25,40,0.7))`,
+        backdropFilter:'blur(12px)',
+        border:`1.5px solid ${isSelected?t.color:h?t.color+'66':'rgba(255,255,255,0.1)'}`,
+        display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+        transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+        boxShadow:isSelected?`0 0 30px ${t.color}25`:h?`0 4px 20px rgba(0,0,0,0.3)`:'none',
+        transform:h&&!isSelected?'scale(1.1)':'scale(1)',
+      }}>
+        <span style={{fontSize:isSelected?'1.4rem':'1.2rem',transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 8px ${t.color}60)`:'none'}}>{t.icon}</span>
+      </div>
+
+      {/* Label */}
+      <div style={{marginTop:6,whiteSpace:'nowrap'}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:'0.6rem',fontWeight:600,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
+        {isSelected && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.48rem',color:'rgba(255,255,255,0.35)',marginTop:2}}>{t.sub}</motion.div>}
+      </div>
+
+      {/* Expanded buttons */}
+      <AnimatePresence>
+        {isSelected && (
+          <motion.div initial={{opacity:0,scale:0.8,y:-4}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.8}} transition={{type:'spring',stiffness:400,damping:25}} style={{display:'flex',gap:6,marginTop:8,justifyContent:'center'}}>
+            <Link href={t.dataHref} onClick={e=>e.stopPropagation()} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',fontWeight:600,padding:'5px 12px',borderRadius:4,background:t.color,color:'#fff',textDecoration:'none',boxShadow:`0 2px 10px ${t.color}44`,whiteSpace:'nowrap'}}>Data</Link>
+            <Link href={t.articleHref} onClick={e=>e.stopPropagation()} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',fontWeight:600,padding:'5px 12px',borderRadius:4,background:'transparent',color:'rgba(255,255,255,0.6)',border:`1px solid ${t.color}55`,textDecoration:'none',whiteSpace:'nowrap'}}>Articles</Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+/* ── Orbital Selector ── */
+function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:string)=>void}) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(()=>{
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return ()=>window.removeEventListener('resize', check);
+  },[]);
+
+  const radius = isMobile ? 110 : 160;
+
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:radius*2+140,height:radius*2+140,margin:'0 auto',maxWidth:'100%'}}>
+      {/* Center hub */}
+      <motion.div initial={{opacity:0,scale:0}} animate={{opacity:1,scale:1}} transition={{delay:1,duration:0.6,ease:[0.16,1,0.3,1]}} style={{position:'absolute',left:'50%',top:'50%',transform:'translate(-50%,-50%)',zIndex:3}}>
+        <div style={{width:48,height:48,borderRadius:'50%',background:'radial-gradient(circle,rgba(184,134,11,0.2),rgba(17,25,40,0.8))',border:'1px solid rgba(184,134,11,0.3)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 40px rgba(184,134,11,0.15)'}}>
+          <span style={{fontFamily:'var(--font-display)',fontSize:'0.6rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
+        </div>
+      </motion.div>
+
+      {/* Connecting lines (SVG) */}
+      <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:1}}>
+        {TOPICS.map((_,i) => {
+          const angle = (i / TOPICS.length) * 2 * Math.PI - Math.PI / 2;
+          const cx = radius * Math.cos(angle);
+          const cy = radius * Math.sin(angle);
+          const w = radius*2+140;
+          return <line key={i} x1={w/2} y1={w/2} x2={w/2+cx} y2={w/2+cy} stroke="rgba(184,134,11,0.08)" strokeWidth={1} strokeDasharray="4,4"/>;
+        })}
+        {/* Orbit ring */}
+        <circle cx={(radius*2+140)/2} cy={(radius*2+140)/2} r={radius} fill="none" stroke="rgba(184,134,11,0.06)" strokeWidth={1} strokeDasharray="2,6"/>
+      </svg>
+
+      {/* Topic nodes */}
+      {TOPICS.map((t,i)=>(
+        <OrbitNode key={t.key} t={t} index={i} total={TOPICS.length} selected={selected} onSelect={onSelect} radius={radius}/>
+      ))}
+    </motion.div>
+  );
+}
+
 /* ── Helpers ── */
 function Mini({data,color,h=44}:{data:number[];color:string;h?:number}) {
   if(!data||data.length<5) return null;
@@ -226,6 +335,7 @@ export default function HomeClient(){
   const sp = (key: string) => _md?.symbols?.[key]?.sparkline?.length ? _md.symbols[key].sparkline : fakeSparkline(100, 10);
   const[time,setTime]=useState('');
   const[sidebarOpen,setSidebarOpen]=useState(false);
+  const[selectedTopic,setSelectedTopic]=useState<string|null>(null);
   useEffect(()=>{const iv=setInterval(()=>setTime(new Date().toLocaleTimeString('en-US',{hour12:false})),1000);setTime(new Date().toLocaleTimeString('en-US',{hour12:false}));return()=>clearInterval(iv);},[]);
 
   const fgVal=fg?.current?.value??50;const fgLabel=fg?.current?.label??'Neutral';
@@ -342,7 +452,7 @@ export default function HomeClient(){
     </AnimatePresence>
 
     {/* ══ HERO — Premium Entrance ══ */}
-    <div style={{position:'relative',overflow:'hidden',minHeight:480,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'72px 24px 48px'}}>
+    <div style={{position:'relative',overflow:'hidden',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'72px 24px 48px'}}>
 
       {/* Background: mesh gradient — 2 refined orbs, no random blobs */}
       <div className="hero-mesh-1" style={{width:800,height:800,top:'-25%',left:'-15%',background:'radial-gradient(circle,rgba(184,134,11,0.18) 0%,rgba(184,134,11,0.05) 40%,transparent 70%)'}}/>
@@ -383,7 +493,7 @@ export default function HomeClient(){
         </motion.p>
 
         {/* CTA buttons */}
-        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.9,duration:0.6,ease:[0.16,1,0.3,1]}} style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}>
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.9,duration:0.6,ease:[0.16,1,0.3,1]}} style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap',marginBottom:32}}>
           <Link href="/markets" style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:600,letterSpacing:'0.06em',padding:'14px 32px',background:'linear-gradient(135deg,var(--gold),var(--gold-dark))',color:'#fff',borderRadius:6,textDecoration:'none',boxShadow:'0 4px 24px rgba(184,134,11,0.25)',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}>
             EXPLORE MARKETS
           </Link>
@@ -391,6 +501,12 @@ export default function HomeClient(){
             READ RESEARCH
           </Link>
         </motion.div>
+      </div>
+
+      {/* ── ORBITAL TOPIC SELECTOR ── */}
+      <div style={{position:'relative',zIndex:2}}>
+        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.5}} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.25em',color:'rgba(255,255,255,0.25)',textAlign:'center',marginBottom:8}}>WHAT INTERESTS YOU?</motion.p>
+        <OrbitSelector selected={selectedTopic} onSelect={setSelectedTopic}/>
       </div>
     </div>
 
