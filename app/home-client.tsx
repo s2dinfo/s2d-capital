@@ -416,15 +416,13 @@ export default function HomeClient(){
       .hp-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
       @media(max-width:768px){
         .hp-section{padding-left:16px;padding-right:16px}
-        .hp-grid-verticals{grid-template-columns:repeat(2,1fr)}
-        .hp-grid-verticals-bottom{max-width:100%;grid-template-columns:repeat(2,1fr)}
+        .hp-grid-verticals{grid-template-columns:1fr;gap:8px}
+        .hp-grid-verticals-bottom{max-width:100%;grid-template-columns:1fr;gap:8px;margin-top:8px}
         .hp-grid-stats{grid-template-columns:repeat(2,1fr)}
         .hp-grid-2col{grid-template-columns:1fr}
       }
       @media(max-width:420px){
         .hp-section{padding-left:12px;padding-right:12px}
-        .hp-grid-verticals{grid-template-columns:1fr;gap:8px}
-        .hp-grid-verticals-bottom{max-width:100%;grid-template-columns:1fr;gap:8px;margin-top:8px}
         .hp-grid-stats{grid-template-columns:repeat(2,1fr);gap:8px}
       }
     `}</style>

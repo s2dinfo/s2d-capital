@@ -121,16 +121,16 @@ export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?:
       </button>
 
       {open && <>
-      {/* Header row */}
-      <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
-        <div style={{ width: 100, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>DATE</div>
+      {/* Desktop header row */}
+      <div className="ecal-header" style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
+        <div style={{ width: 90, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>DATE</div>
         <div style={{ flex: 1, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>EVENT</div>
-        <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>PREVIOUS</div>
-        <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>FORECAST</div>
-        <div style={{ width: 48, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>IMPACT</div>
-        <div style={{ width: 40, textAlign: 'right', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>IN</div>
-        <div style={{ width: 50, flexShrink: 0 }}/>
+        <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>PREVIOUS</div>
+        <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>FORECAST</div>
+        <div style={{ width: 40, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>IN</div>
+        <div style={{ width: 44, flexShrink: 0 }}/>
       </div>
+      <style>{`@media(max-width:640px){.ecal-hide-mobile{display:none!important}.ecal-header{display:none!important}}`}</style>
 
       {events.map((e, i) => {
         const days = daysUntil(e.date);
@@ -138,68 +138,54 @@ export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?:
         const isSoon = days <= 3;
         const key = `${e.date}-${i}`;
         const isOpen = expanded === key;
+        const impactBadge = <span style={{display:'inline-block',fontFamily:'var(--font-mono)',fontSize:'0.48rem',fontWeight:700,letterSpacing:'0.06em',color:e.impact==='high'?'#f87171':'#FBBF24',background:e.impact==='high'?'rgba(248,113,113,0.1)':'rgba(251,191,36,0.1)',padding:'2px 5px',borderRadius:3}}>{e.impact==='high'?'HIGH':'MED'}</span>;
+        const countdownBadge = <span style={{fontFamily:'var(--font-mono)',fontSize:'0.62rem',color:isToday?'#D4B85C':isSoon?'rgba(255,255,255,0.6)':'rgba(255,255,255,0.3)',fontWeight:isSoon?600:400}}>{isToday?'NOW':`${days}d`}</span>;
 
         return (
           <div key={i}>
-            <div style={{
+            {/* Desktop row */}
+            <div className="ecal-desktop-row" style={{
               display: 'flex', alignItems: 'center', padding: '10px 16px',
               borderBottom: '1px solid rgba(255,255,255,0.04)',
               background: isToday ? 'rgba(184,134,11,0.08)' : isSoon ? 'rgba(255,255,255,0.01)' : 'transparent',
-              transition: 'background 0.2s',
             }}>
-              {/* Date */}
-              <div style={{ width: 100, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: isToday ? '#D4B85C' : 'rgba(255,255,255,0.5)', fontWeight: isToday || isSoon ? 700 : 400 }}>
+              <div style={{ width: 90, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: isToday ? '#D4B85C' : 'rgba(255,255,255,0.5)', fontWeight: isToday || isSoon ? 700 : 400 }}>
                 {formatDate(e.date)}
               </div>
-              {/* Event */}
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
                 <span style={{ flexShrink: 0 }}>{e.flag}</span>
-                <span style={{ fontSize: '0.82rem', color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.event}</span>
+                <span style={{ fontSize: '0.78rem', color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.event}</span>
+                {impactBadge}
               </div>
-              {/* Previous */}
-              <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)' }}>
+              <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'rgba(255,255,255,0.45)' }}>
                 {e.previous}
               </div>
-              {/* Forecast */}
-              <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: e.forecast !== '—' ? '#D4B85C' : 'rgba(255,255,255,0.25)', fontWeight: e.forecast !== '—' ? 600 : 400 }}>
+              <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: e.forecast !== '—' ? '#D4B85C' : 'rgba(255,255,255,0.25)', fontWeight: e.forecast !== '—' ? 600 : 400 }}>
                 {e.forecast}
               </div>
-              {/* Impact */}
-              <div style={{ width: 48, textAlign: 'center', flexShrink: 0 }}>
-                <span style={{
-                  display: 'inline-block', fontFamily: 'var(--font-mono)', fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.06em',
-                  color: e.impact === 'high' ? '#f87171' : '#FBBF24',
-                  background: e.impact === 'high' ? 'rgba(248,113,113,0.1)' : 'rgba(251,191,36,0.1)',
-                  padding: '3px 6px', borderRadius: 3,
-                }}>
-                  {e.impact === 'high' ? 'HIGH' : 'MED'}
-                </span>
+              <div style={{ width: 40, textAlign: 'right', flexShrink: 0 }}>
+                {countdownBadge}
               </div>
-              {/* Countdown */}
-              <div style={{ width: 40, textAlign: 'right', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: isToday ? '#D4B85C' : isSoon ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', fontWeight: isSoon ? 600 : 400 }}>
-                {isToday ? 'NOW' : `${days}d`}
-              </div>
-              {/* Explain button */}
-              <div style={{ width: 50, flexShrink: 0, textAlign: 'right' }}>
+              <div style={{ width: 44, flexShrink: 0, textAlign: 'right' }}>
                 <button
                   onClick={() => setExpanded(isOpen ? null : key)}
                   style={{
                     background: isOpen ? 'rgba(59,108,180,0.2)' : 'rgba(255,255,255,0.05)',
                     border: `1px solid ${isOpen ? 'rgba(59,108,180,0.4)' : 'rgba(255,255,255,0.1)'}`,
-                    borderRadius: 4, padding: '4px 8px', cursor: 'pointer',
-                    fontFamily: 'var(--font-mono)', fontSize: '0.5rem', fontWeight: 600,
+                    borderRadius: 4, padding: '4px 7px', cursor: 'pointer',
+                    fontFamily: 'var(--font-mono)', fontSize: '0.48rem', fontWeight: 600,
                     color: isOpen ? '#6B9BD2' : 'rgba(255,255,255,0.4)',
                     transition: 'all 0.2s', letterSpacing: '0.05em',
                   }}
                 >
-                  {isOpen ? 'CLOSE' : 'INFO'}
+                  {isOpen ? '✕' : 'INFO'}
                 </button>
               </div>
             </div>
             {/* Expandable explanation */}
             {isOpen && (
               <div style={{
-                padding: '14px 16px 14px 116px', background: 'rgba(59,108,180,0.06)',
+                padding: '14px 16px', background: 'rgba(59,108,180,0.06)',
                 borderBottom: '1px solid rgba(255,255,255,0.06)',
                 borderLeft: '3px solid #3B6CB4',
                 fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7,
