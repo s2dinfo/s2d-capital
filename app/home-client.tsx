@@ -25,10 +25,9 @@ const TOPICS = [
 ];
 
 /* ── Orbital Topic Node ── */
-const NODE_SIZE = 88;
-const NODE_SIZE_ACTIVE = 96;
-
-function OrbitNode({t,index,total,selected,onSelect,radius,containerSize}:{t:typeof TOPICS[0];index:number;total:number;selected:string|null;onSelect:(k:string)=>void;radius:number;containerSize:number}) {
+function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:{t:typeof TOPICS[0];index:number;total:number;selected:string|null;onSelect:(k:string)=>void;radius:number;containerSize:number;small:boolean}) {
+  const NODE_SIZE = small ? 66 : 88;
+  const NODE_SIZE_ACTIVE = small ? 72 : 96;
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
   const cx = containerSize / 2 + Math.cos(angle) * radius;
   const cy = containerSize / 2 + Math.sin(angle) * radius;
@@ -69,12 +68,12 @@ function OrbitNode({t,index,total,selected,onSelect,radius,containerSize}:{t:typ
         boxShadow:isSelected?`0 0 40px ${t.color}30`:h?`0 4px 24px rgba(0,0,0,0.4)`:'none',
         transform:h&&!isSelected?'scale(1.08)':'scale(1)',
       }}>
-        <span style={{fontSize:isSelected?'2.2rem':'1.8rem',transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none',lineHeight:1}}>{t.icon}</span>
+        <span style={{fontSize:isSelected?(small?'1.6rem':'2.2rem'):(small?'1.3rem':'1.8rem'),transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none',lineHeight:1}}>{t.icon}</span>
       </div>
 
       {/* Label — flows below circle, centered */}
       <div style={{marginTop:8,whiteSpace:'nowrap',textAlign:'center'}}>
-        <div style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:700,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
+        <div style={{fontFamily:'var(--font-display)',fontSize:small?'0.6rem':'0.75rem',fontWeight:700,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
         {isSelected && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',color:'rgba(255,255,255,0.35)',marginTop:3}}>{t.sub}</motion.div>}
       </div>
 
@@ -121,17 +120,18 @@ function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:str
     return ()=>window.removeEventListener('resize', check);
   },[]);
 
-  const radius = isMobile ? 130 : 200;
-  const containerSize = radius * 2 + 200;
+  const radius = isMobile ? 100 : 200;
+  const containerSize = radius * 2 + (isMobile ? 140 : 200);
 
   return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:containerSize,height:containerSize,margin:'0 auto'}}>
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:containerSize,height:containerSize,margin:'0 auto',maxWidth:'100vw'}}>
       {/* Center hub */}
-      <motion.div initial={{opacity:0,scale:0}} animate={{opacity:1,scale:1}} transition={{delay:1,duration:0.6,ease:[0.16,1,0.3,1]}} style={{position:'absolute',left:containerSize/2-30,top:containerSize/2-30,width:60,height:60,zIndex:3}}>
-        <div style={{width:60,height:60,borderRadius:'50%',background:'radial-gradient(circle,rgba(184,134,11,0.25),rgba(17,25,40,0.85))',border:'1.5px solid rgba(184,134,11,0.35)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 50px rgba(184,134,11,0.2)'}}>
-          <span style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
+      {(() => { const hubSize = isMobile ? 48 : 60; return (
+      <motion.div initial={{opacity:0,scale:0}} animate={{opacity:1,scale:1}} transition={{delay:1,duration:0.6,ease:[0.16,1,0.3,1]}} style={{position:'absolute',left:containerSize/2-hubSize/2,top:containerSize/2-hubSize/2,width:hubSize,height:hubSize,zIndex:3}}>
+        <div style={{width:hubSize,height:hubSize,borderRadius:'50%',background:'radial-gradient(circle,rgba(184,134,11,0.25),rgba(17,25,40,0.85))',border:'1.5px solid rgba(184,134,11,0.35)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 50px rgba(184,134,11,0.2)'}}>
+          <span style={{fontFamily:'var(--font-display)',fontSize:isMobile?'0.6rem':'0.75rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
         </div>
-      </motion.div>
+      </motion.div>); })()}
 
       {/* Connecting lines + orbit ring (SVG) */}
       <svg style={{position:'absolute',inset:0,width:containerSize,height:containerSize,pointerEvents:'none',zIndex:1}} viewBox={`0 0 ${containerSize} ${containerSize}`}>
@@ -146,7 +146,7 @@ function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:str
 
       {/* Topic nodes */}
       {TOPICS.map((t,i)=>(
-        <OrbitNode key={t.key} t={t} index={i} total={TOPICS.length} selected={selected} onSelect={onSelect} radius={radius} containerSize={containerSize}/>
+        <OrbitNode key={t.key} t={t} index={i} total={TOPICS.length} selected={selected} onSelect={onSelect} radius={radius} containerSize={containerSize} small={isMobile}/>
       ))}
     </motion.div>
   );
@@ -504,10 +504,10 @@ export default function HomeClient(){
           <div style={{width:40,height:1,background:'linear-gradient(90deg,var(--gold-light),transparent)'}}/>
         </motion.div>
 
-        {/* Main headline — Space Grotesk 700, massive */}
-        <motion.h1 initial={{opacity:0,y:30,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{delay:0.5,duration:0.8,ease:[0.16,1,0.3,1]}} style={{fontFamily:'var(--font-display)',fontSize:'clamp(2.4rem,6vw,4.2rem)',fontWeight:700,lineHeight:1.05,marginBottom:20,color:'#fff',letterSpacing:'-0.03em'}}>
+        {/* Main headline */}
+        <motion.h1 initial={{opacity:0,y:30,filter:'blur(8px)'}} animate={{opacity:1,y:0,filter:'blur(0px)'}} transition={{delay:0.5,duration:0.8,ease:[0.16,1,0.3,1]}} style={{fontFamily:'var(--font-serif)',fontSize:'clamp(2.4rem,6vw,4.2rem)',fontWeight:400,lineHeight:1.05,marginBottom:20,color:'#fff',letterSpacing:'-0.01em'}}>
           Where Markets{' '}
-          <span className="gradient-text" style={{fontFamily:'var(--font-serif)',fontWeight:700,fontStyle:'italic'}}>Meet Clarity</span>
+          <span className="gradient-text" style={{fontStyle:'italic'}}>Meet Clarity</span>
         </motion.h1>
 
         {/* Subtitle */}
