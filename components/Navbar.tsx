@@ -39,11 +39,10 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{
-            fontFamily: "var(--font-display, 'Space Grotesk', sans-serif)",
+            fontFamily: "var(--font-serif, 'Cormorant Garamond', serif)",
             fontSize: "1.1rem",
-            fontWeight: 700,
+            fontWeight: 600,
             color: "var(--gold-light, #D4B85C)",
-            letterSpacing: "-0.02em",
           }}>S2D</span>
           <span style={{
             fontFamily: "var(--font-sans, 'DM Sans', sans-serif)",

@@ -35,7 +35,7 @@ const CONTRACT_SPECS = [
 ];
 
 function ChartGrid({ children }: { children: React.ReactNode }) {
-  return <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>{children}</div>;
+  return <><div className="chart-grid-resp">{children}</div><style>{`.chart-grid-resp{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media(max-width:640px){.chart-grid-resp{grid-template-columns:1fr}}`}</style></>;
 }
 
 export default function CommClient({ commod }: { commod: any }) {

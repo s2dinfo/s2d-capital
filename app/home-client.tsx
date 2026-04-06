@@ -73,7 +73,7 @@ function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:
 
       {/* Label — flows below circle, centered */}
       <div style={{marginTop:8,whiteSpace:'nowrap',textAlign:'center'}}>
-        <div style={{fontFamily:'var(--font-display)',fontSize:small?'0.6rem':'0.75rem',fontWeight:700,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
+        <div style={{fontFamily:'var(--font-mono)',fontSize:small?'0.55rem':'0.65rem',fontWeight:600,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.06em',transition:'color 0.2s'}}>{t.label}</div>
         {isSelected && !small && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',color:'rgba(255,255,255,0.35)',marginTop:3}}>{t.sub}</motion.div>}
       </div>
 
@@ -84,7 +84,7 @@ function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:
             <Link href={t.dataHref} onClick={e=>e.stopPropagation()}
               onMouseEnter={()=>setBtnHover('data')} onMouseLeave={()=>setBtnHover(null)}
               style={{
-                fontFamily:'var(--font-display)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
+                fontFamily:'var(--font-sans)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
                 background:btnHover==='data'?t.color:btnHover==='articles'?'transparent':t.color,
                 color:btnHover==='data'?'#fff':btnHover==='articles'?'rgba(255,255,255,0.5)':'#fff',
                 border:`1.5px solid ${t.color}`,
@@ -95,7 +95,7 @@ function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:
             <Link href={t.articleHref} onClick={e=>e.stopPropagation()}
               onMouseEnter={()=>setBtnHover('articles')} onMouseLeave={()=>setBtnHover(null)}
               style={{
-                fontFamily:'var(--font-display)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
+                fontFamily:'var(--font-sans)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
                 background:btnHover==='articles'?t.color:'transparent',
                 color:btnHover==='articles'?'#fff':btnHover==='data'?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.65)',
                 border:`1.5px solid ${btnHover==='articles'?t.color:t.color+'66'}`,
@@ -155,8 +155,8 @@ function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:str
         if (!sel) return null;
         return (
           <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} key={sel.key} style={{position:'absolute',bottom:-16,left:0,right:0,display:'flex',gap:10,justifyContent:'center'}}>
-            <Link href={sel.dataHref} style={{fontFamily:'var(--font-display)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:sel.color,color:'#fff',textDecoration:'none',border:`1.5px solid ${sel.color}`,boxShadow:`0 4px 16px ${sel.color}44`}}>Markets</Link>
-            <Link href={sel.articleHref} style={{fontFamily:'var(--font-display)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:'transparent',color:'rgba(255,255,255,0.65)',textDecoration:'none',border:`1.5px solid ${sel.color}66`}}>Articles</Link>
+            <Link href={sel.dataHref} style={{fontFamily:'var(--font-sans)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:sel.color,color:'#fff',textDecoration:'none',border:`1.5px solid ${sel.color}`,boxShadow:`0 4px 16px ${sel.color}44`}}>Markets</Link>
+            <Link href={sel.articleHref} style={{fontFamily:'var(--font-sans)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:'transparent',color:'rgba(255,255,255,0.65)',textDecoration:'none',border:`1.5px solid ${sel.color}66`}}>Articles</Link>
           </motion.div>
         );
       })()}
@@ -300,7 +300,7 @@ function StatCard({name,val,chg,color,prefix,dec,spark,href}:any){
       position:'relative',overflow:'hidden',borderRadius:8
     }}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-        <span style={{fontFamily:'var(--font-display)',fontSize:'0.65rem',letterSpacing:'0.06em',color,fontWeight:600}}>{name}</span>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.1em',color,fontWeight:500}}>{name}</span>
         {chg!==null&&chg!==undefined&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,color:pc(chg),padding:'2px 6px',background:chg>0?'rgba(52,211,153,0.1)':'rgba(248,113,113,0.1)',borderRadius:3}}>{fp(chg)}</span>}
       </div>
       <div style={{fontFamily:'var(--font-mono)',fontSize:'1.35rem',fontWeight:700,color:'#fff',marginBottom:6,fontVariantNumeric:'tabular-nums',letterSpacing:'-0.02em'}}>
@@ -317,7 +317,7 @@ function StatCard({name,val,chg,color,prefix,dec,spark,href}:any){
 /* ── Data Card ── */
 function DataCard({title,color,rows}:{title:string;color:string;rows:{l:string;v:string;c?:string}[]}){
   return <div style={{background:'rgba(17,25,40,0.5)',backdropFilter:'blur(8px)',border:'1px solid rgba(255,255,255,0.06)',padding:'16px 14px',borderRadius:8}}>
-    <span style={{fontFamily:'var(--font-display)',fontSize:'0.6rem',letterSpacing:'0.08em',color,display:'block',marginBottom:12,fontWeight:600}}>{title}</span>
+    <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',color,display:'block',marginBottom:12,fontWeight:600}}>{title}</span>
     {rows.map(m=><div key={m.l} style={{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
       <span style={{fontSize:'0.75rem',color:'rgba(255,255,255,0.45)',fontFamily:'var(--font-sans)'}}>{m.l}</span>
       <span style={{fontFamily:'var(--font-mono)',fontSize:'0.75rem',fontWeight:500,color:m.c||color}}>{m.v}</span>
@@ -346,7 +346,7 @@ function VerticalCard({title,subtitle,shortLabel,tags,color,href,index}:{title:s
         <GlowCard color={h?`${color}88`:`${color}33`}>
           <div onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)} style={{padding:'22px 18px',transition:'all 0.3s',minHeight:160}}>
             {/* Short label */}
-            <div style={{fontFamily:'var(--font-display)',fontSize:'0.7rem',fontWeight:700,letterSpacing:'0.08em',color,marginBottom:8,transition:'transform 0.3s',transform:h?'translateX(4px)':'none'}}>{shortLabel.toUpperCase()}</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.6rem',fontWeight:700,letterSpacing:'0.12em',color,marginBottom:8,transition:'transform 0.3s',transform:h?'translateX(4px)':'none'}}>{shortLabel.toUpperCase()}</div>
             {/* Title */}
             <div style={{fontFamily:'var(--font-sans)',fontSize:'0.92rem',fontWeight:600,color:'#fff',marginBottom:4,lineHeight:1.3}}>{title}</div>
             {/* Subtitle */}
@@ -531,7 +531,7 @@ export default function HomeClient(){
 
       {/* ── ORBITAL TOPIC SELECTOR ── */}
       <div style={{position:'relative',zIndex:2,width:'100%',display:'flex',flexDirection:'column',alignItems:'center'}}>
-        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.5}} style={{fontFamily:'var(--font-display)',fontSize:'0.85rem',letterSpacing:'0.15em',color:'rgba(255,255,255,0.45)',textAlign:'center',marginBottom:16,fontWeight:600}}>WHAT INTERESTS YOU?</motion.p>
+        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.5}} style={{fontFamily:'var(--font-mono)',fontSize:'0.7rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.4)',textAlign:'center',marginBottom:16,fontWeight:500}}>WHAT INTERESTS YOU?</motion.p>
         <OrbitSelector selected={selectedTopic} onSelect={setSelectedTopic}/>
       </div>
     </div>
@@ -542,7 +542,7 @@ export default function HomeClient(){
     {featured&&<Section><div className="hp-section" style={{paddingTop:36,paddingBottom:36}}>
       <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
         <div style={{width:3,height:20,background:'var(--gold)',borderRadius:2}}/>
-        <span style={{fontFamily:'var(--font-display)',fontSize:'0.65rem',letterSpacing:'0.15em',color:'var(--gold-light)',fontWeight:600}}>FEATURED RESEARCH</span>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:600}}>FEATURED RESEARCH</span>
       </div>
       <Link href={`/research/${featured.slug}`} style={{display:'block',textDecoration:'none',color:'inherit'}}>
         <GlowCard color="rgba(184,134,11,0.35)">
@@ -550,7 +550,7 @@ export default function HomeClient(){
             <div style={{display:'flex',gap:6,marginBottom:14}}>
               {featured.tags?.map((t:any)=>{const v=VERTICALS[t as keyof typeof VERTICALS];return v?<span key={t} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.08em',padding:'3px 10px',background:`${v.hex}18`,color:v.hex,borderRadius:3,border:`1px solid ${v.hex}22`}}>{v.labelShort}</span>:null;})}
             </div>
-            <h3 style={{fontFamily:'var(--font-display)',fontSize:'clamp(1.3rem,3vw,1.8rem)',fontWeight:600,color:'#fff',lineHeight:1.25,marginBottom:12,letterSpacing:'-0.02em'}}>{featured.title}</h3>
+            <h3 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.3rem,3vw,1.8rem)',fontWeight:500,color:'#fff',lineHeight:1.25,marginBottom:12}}>{featured.title}</h3>
             <p style={{fontSize:'0.9rem',color:'rgba(255,255,255,0.45)',lineHeight:1.7,maxWidth:640,fontWeight:300}}>{featured.excerpt}</p>
             <div style={{display:'flex',alignItems:'center',gap:12,marginTop:20,fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.3)',flexWrap:'wrap'}}>
               <span>BTC ${btc?.usd?.toLocaleString('en-US',{maximumFractionDigits:0})||'-'}</span>
@@ -569,7 +569,7 @@ export default function HomeClient(){
             <div style={{display:'flex',gap:4,marginBottom:8}}>
               {a.tags?.slice(0,2).map((t:any)=>{const v=VERTICALS[t as keyof typeof VERTICALS];return v?<span key={t} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.06em',padding:'2px 6px',background:`${v.hex}12`,color:v.hex,borderRadius:2}}>{v.labelShort}</span>:null;})}
             </div>
-            <h4 style={{fontFamily:'var(--font-display)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.85)',lineHeight:1.3,marginBottom:8}}>{a.title}</h4>
+            <h4 style={{fontFamily:'var(--font-serif)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.85)',lineHeight:1.3,marginBottom:8}}>{a.title}</h4>
             <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.25)'}}>{a.date} · {a.readTime}</span>
           </div>
         </Link>)}
@@ -584,7 +584,7 @@ export default function HomeClient(){
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <div style={{display:'flex',alignItems:'center',gap:10}}>
             <div style={{width:3,height:20,background:'var(--green)',borderRadius:2}}/>
-            <span style={{fontFamily:'var(--font-display)',fontSize:'0.65rem',letterSpacing:'0.15em',color:'var(--green)',fontWeight:600}}>MARKET PULSE</span>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.18em',color:'var(--green)',fontWeight:500}}>MARKET PULSE</span>
           </div>
           <MarketStatusBadge/>
         </div>
@@ -631,11 +631,11 @@ export default function HomeClient(){
         <DataCard title="MACRO & CENTRAL BANKS" color="#6B9BD2" rows={[{l:'Fed Rate',v:(macro?.fedRate||'-')+'%',c:'#6B9BD2'},{l:'10Y Yield',v:(macro?.t10y||'-')+'%',c:'#6B9BD2'},{l:'CPI',v:macro?.cpi||'-',c:'#D4A843'},{l:'Unemployment',v:macro?.unemp||'-',c:'#E06B6B'},{l:'Dollar (DXY)',v:macro?.dxy||'-',c:'#4CAF7D'}]}/>
         <DataCard title="FX RATES" color="#4CAF7D" rows={fx?[{l:'EUR/USD',v:fx.EUR?(1/fx.EUR).toFixed(4):'-',c:'#4CAF7D'},{l:'GBP/USD',v:fx.GBP?(1/fx.GBP).toFixed(4):'-',c:'#4CAF7D'},{l:'USD/JPY',v:fx.JPY?fx.JPY.toFixed(2):'-',c:'#4CAF7D'},{l:'USD/CHF',v:fx.CHF?fx.CHF.toFixed(4):'-',c:'#4CAF7D'}]:[]}/>
         <div style={{background:'rgba(17,25,40,0.5)',backdropFilter:'blur(8px)',border:'1px solid rgba(255,255,255,0.06)',padding:'18px 14px',textAlign:'center',borderRadius:8}}>
-          <span style={{fontFamily:'var(--font-display)',fontSize:'0.6rem',letterSpacing:'0.1em',color:'var(--gold-light)',display:'block',marginBottom:10,fontWeight:600}}>FEAR & GREED INDEX</span>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',color:'var(--gold-light)',display:'block',marginBottom:10,fontWeight:600}}>FEAR & GREED INDEX</span>
           <FearGreedGauge value={fgVal} label={fgLabel}/>
         </div>
         <div style={{background:'rgba(17,25,40,0.5)',backdropFilter:'blur(8px)',border:'1px solid rgba(255,255,255,0.06)',padding:'16px 14px',textAlign:'center',borderRadius:8}}>
-          <span style={{fontFamily:'var(--font-display)',fontSize:'0.6rem',letterSpacing:'0.1em',color:'var(--gold-light)',display:'block',marginBottom:8,fontWeight:600}}>BTC DOMINANCE</span>
+          <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',color:'var(--gold-light)',display:'block',marginBottom:8,fontWeight:600}}>BTC DOMINANCE</span>
           <div style={{width:90,margin:'0 auto'}}><ResponsiveContainer width="100%" height={90}><PieChart><Pie data={domData.map((d,i)=>({...d,value:i===0?(global?.btcDom||56.2):i===1?(global?.ethDom||10.1):100-(global?.btcDom||56.2)-(global?.ethDom||10.1)}))} cx="50%" cy="50%" innerRadius={28} outerRadius={40} dataKey="value" strokeWidth={0}>{domData.map((d,i)=><Cell key={i} fill={d.color}/>)}</Pie></PieChart></ResponsiveContainer></div>
           <span style={{fontFamily:'var(--font-mono)',fontSize:'1rem',fontWeight:600,color:'var(--gold-light)'}}><AnimatedCounter value={global?.btcDom||56.2} suffix="%" decimals={1} className=""/></span>
         </div>
@@ -649,9 +649,9 @@ export default function HomeClient(){
       {/* Section header */}
       <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
         <div style={{width:3,height:20,background:'var(--gold)',borderRadius:2}}/>
-        <span style={{fontFamily:'var(--font-display)',fontSize:'0.65rem',letterSpacing:'0.15em',color:'var(--gold-light)',fontWeight:600}}>OUR COVERAGE</span>
+        <span style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:600}}>OUR COVERAGE</span>
       </div>
-      <h2 style={{fontFamily:'var(--font-display)',fontSize:'clamp(1.6rem,3.5vw,2.6rem)',fontWeight:700,color:'#fff',marginBottom:6,letterSpacing:'-0.02em'}}>
+      <h2 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.6rem,3.5vw,2.6rem)',fontWeight:400,color:'#fff',marginBottom:6}}>
         Six Perspectives. <span style={{fontFamily:'var(--font-serif)',fontWeight:400,fontStyle:'italic',color:'var(--gold-light)'}}>One Picture.</span>
       </h2>
       <p style={{fontFamily:'var(--font-sans)',fontSize:'0.88rem',color:'rgba(255,255,255,0.4)',maxWidth:540,marginBottom:24,lineHeight:1.7,fontWeight:300}}>Markets are interconnected. We analyze each vertical independently and show how everything connects.</p>
@@ -679,11 +679,11 @@ export default function HomeClient(){
           <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.02) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
           <div style={{position:'relative',zIndex:1}}>
             <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.3em',color:'var(--gold-light)',marginBottom:14,display:'block'}}>NEWSLETTER</span>
-            <h2 style={{fontFamily:'var(--font-display)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:700,color:'#fff',marginBottom:14,letterSpacing:'-0.02em'}}>
+            <h2 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'#fff',marginBottom:14}}>
               Stay <span style={{fontFamily:'var(--font-serif)',fontWeight:400,fontStyle:'italic',color:'var(--gold-light)'}}>Informed</span>
             </h2>
             <p style={{fontFamily:'var(--font-sans)',fontSize:'0.9rem',color:'rgba(255,255,255,0.4)',maxWidth:440,margin:'0 auto 28px',lineHeight:1.8,fontWeight:300}}>Investor briefings directly to your inbox. Choose your topics. No spam, only substance.</p>
-            <Link href="/newsletter" style={{display:'inline-block',fontFamily:'var(--font-display)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.1em',padding:'14px 40px',background:'linear-gradient(135deg,var(--gold),var(--gold-dark))',color:'#fff',borderRadius:6,textDecoration:'none',boxShadow:'0 4px 28px rgba(184,134,11,0.25)',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}>SUBSCRIBE</Link>
+            <Link href="/newsletter" style={{display:'inline-block',fontFamily:'var(--font-sans)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase' as const,padding:'14px 40px',background:'linear-gradient(135deg,var(--gold),var(--gold-dark))',color:'#fff',borderRadius:4,textDecoration:'none',boxShadow:'0 4px 28px rgba(184,134,11,0.25)',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}>Subscribe to Newsletter</Link>
           </div>
         </div>
       </GlowCard>

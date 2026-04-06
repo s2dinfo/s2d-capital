@@ -40,7 +40,7 @@ export default function KPICard({ label, value, change, subtitle, color = "#B886
     >
       {/* Label */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-        <span style={{ fontFamily: "var(--font-display)", fontSize: "0.6rem", letterSpacing: "0.06em", color, fontWeight: 600, textTransform: "uppercase" }}>{label}</span>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", letterSpacing: "0.1em", color, fontWeight: 500, textTransform: "uppercase" }}>{label}</span>
         {hasChange && (
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.52rem", fontWeight: 600, color: isPos ? "#34d399" : "#f87171" }}>
             {isPos ? "▲" : "▼"} {isPos ? "+" : ""}{change!.toFixed(1)}%
