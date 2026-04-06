@@ -25,13 +25,17 @@ const TOPICS = [
 ];
 
 /* ── Orbital Topic Node ── */
-function OrbitNode({t,index,total,selected,onSelect,radius}:{t:typeof TOPICS[0];index:number;total:number;selected:string|null;onSelect:(k:string)=>void;radius:number}) {
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2; // start from top
-  const x = Math.cos(angle) * radius;
-  const y = Math.sin(angle) * radius;
+const NODE_SIZE = 88;
+const NODE_SIZE_ACTIVE = 96;
+
+function OrbitNode({t,index,total,selected,onSelect,radius,containerSize}:{t:typeof TOPICS[0];index:number;total:number;selected:string|null;onSelect:(k:string)=>void;radius:number;containerSize:number}) {
+  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
+  const cx = containerSize / 2 + Math.cos(angle) * radius;
+  const cy = containerSize / 2 + Math.sin(angle) * radius;
   const isSelected = selected === t.key;
   const [h, setH] = useState(false);
   const [btnHover, setBtnHover] = useState<'data'|'articles'|null>(null);
+  const size = isSelected ? NODE_SIZE_ACTIVE : NODE_SIZE;
 
   return (
     <motion.div
@@ -42,35 +46,39 @@ function OrbitNode({t,index,total,selected,onSelect,radius}:{t:typeof TOPICS[0];
       onClick={()=>onSelect(isSelected?'':t.key)}
       style={{
         position:'absolute',
-        left:`calc(50% + ${x}px)`,top:`calc(50% + ${y}px)`,
-        transform:'translate(-50%,-50%)',
-        cursor:'pointer',textAlign:'center',zIndex:isSelected?10:2,
+        /* Position so the circle center sits exactly on the orbit point */
+        left: cx - size/2,
+        top: cy - size/2,
+        width: size,
+        cursor:'pointer',zIndex:isSelected?10:2,
+        display:'flex',flexDirection:'column',alignItems:'center',
+        transition:'left 0.3s, top 0.3s, width 0.3s',
       }}
     >
-      {/* Glow ring when selected */}
-      {isSelected && <motion.div layoutId="orbitGlow" style={{position:'absolute',inset:-12,borderRadius:'50%',border:`2px solid ${t.color}66`,boxShadow:`0 0 30px ${t.color}33`,pointerEvents:'none'}} transition={{type:'spring',stiffness:300,damping:25}}/>}
+      {/* Glow ring — positioned relative to circle */}
+      {isSelected && <motion.div layoutId="orbitGlow" style={{position:'absolute',top:-10,left:-10,width:size+20,height:size+20,borderRadius:'50%',border:`2px solid ${t.color}66`,boxShadow:`0 0 30px ${t.color}33`,pointerEvents:'none'}} transition={{type:'spring',stiffness:300,damping:25}}/>}
 
-      {/* Node circle */}
+      {/* Node circle — fixed size, always centered */}
       <div style={{
-        width:isSelected?96:84,height:isSelected?96:84,borderRadius:'50%',
+        width:size,height:size,borderRadius:'50%',flexShrink:0,
         background:isSelected?`radial-gradient(circle,${t.color}30,rgba(17,25,40,0.9))`:`radial-gradient(circle,rgba(17,25,40,0.9),rgba(17,25,40,0.7))`,
         backdropFilter:'blur(12px)',
         border:`1.5px solid ${isSelected?t.color:h?t.color+'66':'rgba(255,255,255,0.1)'}`,
-        display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+        display:'flex',alignItems:'center',justifyContent:'center',
         transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
         boxShadow:isSelected?`0 0 40px ${t.color}30`:h?`0 4px 24px rgba(0,0,0,0.4)`:'none',
-        transform:h&&!isSelected?'scale(1.1)':'scale(1)',
+        transform:h&&!isSelected?'scale(1.08)':'scale(1)',
       }}>
-        <span style={{fontSize:isSelected?'2rem':'1.7rem',transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none',lineHeight:1}}>{t.icon}</span>
+        <span style={{fontSize:isSelected?'2.2rem':'1.8rem',transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none',lineHeight:1}}>{t.icon}</span>
       </div>
 
-      {/* Label */}
-      <div style={{marginTop:8,whiteSpace:'nowrap'}}>
-        <div style={{fontFamily:'var(--font-display)',fontSize:'0.72rem',fontWeight:700,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
+      {/* Label — flows below circle, centered */}
+      <div style={{marginTop:8,whiteSpace:'nowrap',textAlign:'center'}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:700,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.04em',transition:'color 0.2s'}}>{t.label}</div>
         {isSelected && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',color:'rgba(255,255,255,0.35)',marginTop:3}}>{t.sub}</motion.div>}
       </div>
 
-      {/* Expanded buttons — color follows hover */}
+      {/* Expanded buttons */}
       <AnimatePresence>
         {isSelected && (
           <motion.div initial={{opacity:0,scale:0.8,y:-4}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.8}} transition={{type:'spring',stiffness:400,damping:25}} style={{display:'flex',gap:8,marginTop:10,justifyContent:'center'}}>
@@ -117,29 +125,28 @@ function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:str
   const containerSize = radius * 2 + 200;
 
   return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:containerSize,height:containerSize,margin:'0 auto',maxWidth:'100%'}}>
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:containerSize,height:containerSize,margin:'0 auto'}}>
       {/* Center hub */}
-      <motion.div initial={{opacity:0,scale:0}} animate={{opacity:1,scale:1}} transition={{delay:1,duration:0.6,ease:[0.16,1,0.3,1]}} style={{position:'absolute',left:'50%',top:'50%',transform:'translate(-50%,-50%)',zIndex:3}}>
+      <motion.div initial={{opacity:0,scale:0}} animate={{opacity:1,scale:1}} transition={{delay:1,duration:0.6,ease:[0.16,1,0.3,1]}} style={{position:'absolute',left:containerSize/2-30,top:containerSize/2-30,width:60,height:60,zIndex:3}}>
         <div style={{width:60,height:60,borderRadius:'50%',background:'radial-gradient(circle,rgba(184,134,11,0.25),rgba(17,25,40,0.85))',border:'1.5px solid rgba(184,134,11,0.35)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 50px rgba(184,134,11,0.2)'}}>
           <span style={{fontFamily:'var(--font-display)',fontSize:'0.75rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
         </div>
       </motion.div>
 
-      {/* Connecting lines (SVG) */}
-      <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:1}}>
+      {/* Connecting lines + orbit ring (SVG) */}
+      <svg style={{position:'absolute',inset:0,width:containerSize,height:containerSize,pointerEvents:'none',zIndex:1}} viewBox={`0 0 ${containerSize} ${containerSize}`}>
         {TOPICS.map((_,i) => {
           const angle = (i / TOPICS.length) * 2 * Math.PI - Math.PI / 2;
-          const cx = radius * Math.cos(angle);
-          const cy = radius * Math.sin(angle);
-          return <line key={i} x1={containerSize/2} y1={containerSize/2} x2={containerSize/2+cx} y2={containerSize/2+cy} stroke={selected===TOPICS[i].key?TOPICS[i].color+'44':"rgba(184,134,11,0.08)"} strokeWidth={selected===TOPICS[i].key?1.5:1} strokeDasharray="4,4" style={{transition:'stroke 0.3s'}}/>;
+          const lx = containerSize/2 + radius * Math.cos(angle);
+          const ly = containerSize/2 + radius * Math.sin(angle);
+          return <line key={i} x1={containerSize/2} y1={containerSize/2} x2={lx} y2={ly} stroke={selected===TOPICS[i].key?TOPICS[i].color+'44':"rgba(184,134,11,0.08)"} strokeWidth={selected===TOPICS[i].key?1.5:1} strokeDasharray="4,4" style={{transition:'stroke 0.3s'}}/>;
         })}
-        {/* Orbit ring */}
         <circle cx={containerSize/2} cy={containerSize/2} r={radius} fill="none" stroke="rgba(184,134,11,0.06)" strokeWidth={1} strokeDasharray="2,6"/>
       </svg>
 
       {/* Topic nodes */}
       {TOPICS.map((t,i)=>(
-        <OrbitNode key={t.key} t={t} index={i} total={TOPICS.length} selected={selected} onSelect={onSelect} radius={radius}/>
+        <OrbitNode key={t.key} t={t} index={i} total={TOPICS.length} selected={selected} onSelect={onSelect} radius={radius} containerSize={containerSize}/>
       ))}
     </motion.div>
   );
@@ -473,20 +480,15 @@ export default function HomeClient(){
     </AnimatePresence>
 
     {/* ══ HERO — Premium Entrance ══ */}
-    <div style={{position:'relative',overflow:'hidden',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'72px 24px 48px'}}>
+    <div style={{position:'relative',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'72px 24px 48px'}}>
 
-      {/* Background: mesh gradient — 2 refined orbs, no random blobs */}
-      <div className="hero-mesh-1" style={{width:800,height:800,top:'-25%',left:'-15%',background:'radial-gradient(circle,rgba(184,134,11,0.18) 0%,rgba(184,134,11,0.05) 40%,transparent 70%)'}}/>
-      <div className="hero-mesh-2" style={{width:600,height:600,bottom:'-20%',right:'-10%',background:'radial-gradient(circle,rgba(59,108,180,0.12) 0%,rgba(59,108,180,0.04) 40%,transparent 70%)'}}/>
-
-      {/* Subtle precision grid */}
-      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'80px 80px',pointerEvents:'none',animation:'heroGrid 10s ease-in-out infinite'}}/>
-
-      {/* Horizontal accent line */}
-      <div style={{position:'absolute',top:'50%',left:0,right:0,height:1,background:'linear-gradient(90deg,transparent,rgba(184,134,11,0.08),transparent)',pointerEvents:'none'}}/>
-
-      {/* Vignette */}
-      <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at center, transparent 40%, var(--bg) 100%)',pointerEvents:'none'}}/>
+      {/* Background layer — clipped so glows don't bleed */}
+      <div style={{position:'absolute',inset:0,overflow:'hidden',pointerEvents:'none'}}>
+        <div className="hero-mesh-1" style={{width:800,height:800,top:'-25%',left:'-15%',background:'radial-gradient(circle,rgba(184,134,11,0.18) 0%,rgba(184,134,11,0.05) 40%,transparent 70%)'}}/>
+        <div className="hero-mesh-2" style={{width:600,height:600,bottom:'-20%',right:'-10%',background:'radial-gradient(circle,rgba(59,108,180,0.12) 0%,rgba(59,108,180,0.04) 40%,transparent 70%)'}}/>
+        <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'80px 80px',animation:'heroGrid 10s ease-in-out infinite'}}/>
+        <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at center, transparent 40%, var(--bg) 100%)'}}/>
+      </div>
 
       {/* Content */}
       <div style={{position:'relative',zIndex:2,textAlign:'center',maxWidth:800}}>
@@ -516,7 +518,7 @@ export default function HomeClient(){
       </div>
 
       {/* ── ORBITAL TOPIC SELECTOR ── */}
-      <div style={{position:'relative',zIndex:2}}>
+      <div style={{position:'relative',zIndex:2,width:'100%',display:'flex',flexDirection:'column',alignItems:'center'}}>
         <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.5}} style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.25em',color:'rgba(255,255,255,0.25)',textAlign:'center',marginBottom:8}}>WHAT INTERESTS YOU?</motion.p>
         <OrbitSelector selected={selectedTopic} onSelect={setSelectedTopic}/>
       </div>
