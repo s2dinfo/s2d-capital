@@ -96,22 +96,37 @@ function daysUntil(d: string): number {
 
 export default function EconomicCalendar() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
   const events = getUpcoming(60);
   if (events.length === 0) return null;
 
   return (
     <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, overflow: 'hidden', marginBottom: 16 }}>
-      <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', letterSpacing: '0.15em', color: '#3B6CB4', fontWeight: 600, textTransform: 'uppercase' }}>Economic Calendar</span>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%', padding: '14px 16px 10px', borderBottom: open ? '1px solid rgba(255,255,255,0.06)' : 'none',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8,
+          background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
+        }}
+      >
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', letterSpacing: '0.15em', color: '#3B6CB4', fontWeight: 600, textTransform: 'uppercase' }}>
+          Economic Calendar
+          <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>
+            {events.length} upcoming
+          </span>
+          <span style={{ marginLeft: 8, fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', display: 'inline-block', transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}>&#x25BE;</span>
+        </span>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', color: 'rgba(255,255,255,0.25)' }}>Next 60 days</span>
-      </div>
+      </button>
 
+      {open && <>
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
         <div style={{ width: 100, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>DATE</div>
         <div style={{ flex: 1, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>EVENT</div>
-        <div style={{ width: 55, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>PREV</div>
-        <div style={{ width: 55, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>FCST</div>
+        <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>PREVIOUS</div>
+        <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>FORECAST</div>
         <div style={{ width: 48, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>IMPACT</div>
         <div style={{ width: 40, textAlign: 'right', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>IN</div>
         <div style={{ width: 50, flexShrink: 0 }}/>
@@ -142,11 +157,11 @@ export default function EconomicCalendar() {
                 <span style={{ fontSize: '0.82rem', color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.event}</span>
               </div>
               {/* Previous */}
-              <div style={{ width: 55, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)' }}>
+              <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)' }}>
                 {e.previous}
               </div>
               {/* Forecast */}
-              <div style={{ width: 55, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: e.forecast !== '—' ? '#D4B85C' : 'rgba(255,255,255,0.25)', fontWeight: e.forecast !== '—' ? 600 : 400 }}>
+              <div style={{ width: 70, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: e.forecast !== '—' ? '#D4B85C' : 'rgba(255,255,255,0.25)', fontWeight: e.forecast !== '—' ? 600 : 400 }}>
                 {e.forecast}
               </div>
               {/* Impact */}
@@ -195,6 +210,7 @@ export default function EconomicCalendar() {
           </div>
         );
       })}
+      </>}
     </div>
   );
 }

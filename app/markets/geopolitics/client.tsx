@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import MarketPageLayout from "@/components/MarketPageLayout";
 import KPICard from "@/components/KPICard";
 import CrossRef from "@/components/CrossRef";
@@ -17,6 +18,13 @@ const geoEvents = [
 ];
 
 export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
+  const [headlines, setHeadlines] = useState<{title:string;url:string;date:string;source:string}[]>([]);
+  useEffect(() => {
+    fetch('/api/geopolitical').then(r=>r.json()).then(d=>{
+      if (d.headlines) setHeadlines(d.headlines);
+    }).catch(()=>{});
+  }, []);
+
   const rawSpread = macro?.yieldSpread ? parseFloat(macro.yieldSpread) : NaN;
   const spread = Number.isNaN(rawSpread) ? null : rawSpread;
   const spreadLabel = spread !== null ? (spread >= 0 ? "Normal" : "Inverted") : "";
@@ -53,6 +61,23 @@ export default function GeoClient({ macro, gdp }: { macro: any; gdp: any }) {
           </div>
         ))}
       </CollapsibleSection>
+
+      {/* Live Headlines from GDELT */}
+      {headlines.length > 0 && (
+        <CollapsibleSection title="Live Headlines" subtitle="Auto-updated from global news via GDELT" count={headlines.length} color="#8B2252">
+          {headlines.map((h, i) => (
+            <a key={i} href={h.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'background 0.2s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(139,34,82,0.06)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
+              <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.4, marginBottom: 4 }}>{h.title}</div>
+              <div style={{ display: 'flex', gap: 12, fontFamily: 'var(--font-mono)', fontSize: '0.48rem', color: 'rgba(255,255,255,0.25)' }}>
+                <span>{h.source}</span>
+                {h.date && <span>{new Date(h.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+              </div>
+            </a>
+          ))}
+        </CollapsibleSection>
+      )}
 
       {/* World GDP Table */}
       {gdp && gdp.length > 0 && (

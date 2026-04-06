@@ -62,7 +62,7 @@ export default function ResearchList() {
       <div
         style={{
           textAlign: "center",
-          padding: "48px 24px 40px",
+          padding: "32px 24px 24px",
           position: "relative",
           overflow: "hidden",
         }}
@@ -92,7 +92,7 @@ export default function ResearchList() {
           display: "flex",
           flexDirection: "column",
           gap: 16,
-          marginBottom: 28,
+          marginBottom: 18,
           padding: "20px 24px",
           background: "rgba(255,255,255,0.02)",
           border: "1px solid rgba(255,255,255,0.06)",
@@ -244,7 +244,7 @@ export default function ResearchList() {
       </div>
 
       {/* Article cards */}
-      <div ref={animateRef} style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px 80px" }}>
+      <div ref={animateRef} style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px 48px" }}>
         {published.length > 0 && (
           <>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gold-light, #D4B85C)", marginBottom: 16, fontWeight: 600 }}>
@@ -257,8 +257,8 @@ export default function ResearchList() {
                     background: "rgba(255,255,255,0.03)",
                     border: "1px solid rgba(255,255,255,0.06)",
                     borderRadius: 8,
-                    padding: "28px 32px",
-                    marginBottom: 16,
+                    padding: "20px 24px",
+                    marginBottom: 10,
                     transition: "all 0.3s",
                     cursor: "pointer",
                     position: "relative",
@@ -306,9 +306,9 @@ export default function ResearchList() {
 
         {upcoming.length > 0 && (
           <>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 40, marginBottom: 16, fontWeight: 600 }}>Coming Soon</div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginTop: 28, marginBottom: 10, fontWeight: 600 }}>Coming Soon</div>
             {upcoming.map((a) => (
-              <div key={a.slug} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8, padding: "24px 32px", marginBottom: 12, opacity: 0.5 }}>
+              <div key={a.slug} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8, padding: "18px 24px", marginBottom: 8, opacity: 0.5 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
                   <div style={{ display: "flex", gap: 6 }}>
                     {a.tags.map((t) => (
@@ -327,7 +327,7 @@ export default function ResearchList() {
         {published.length === 0 && upcoming.length === 0 && (
           <div style={{
             textAlign: "center",
-            padding: "60px 24px",
+            padding: "40px 24px",
             color: "rgba(255,255,255,0.35)",
             fontFamily: "var(--font-mono)",
             fontSize: "0.8rem",

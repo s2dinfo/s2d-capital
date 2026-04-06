@@ -408,7 +408,7 @@ export default function HomeClient(){
       .hero-mesh-2{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;animation:meshFloat2 25s ease-in-out infinite}
       .gold-line{height:1px;background:linear-gradient(90deg,transparent 5%,rgba(184,134,11,0.25) 50%,transparent 95%)}
       .hp-section{padding-left:40px;padding-right:40px;max-width:1200px;margin-left:auto;margin-right:auto;box-sizing:border-box;width:100%}
-      .hp-grid-verticals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+      .hp-grid-verticals{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
       .hp-grid-verticals>*,.hp-grid-stats>*,.hp-grid-2col>*{min-width:0;overflow:hidden}
       .hp-grid-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
       .hp-grid-2col{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -420,7 +420,7 @@ export default function HomeClient(){
       }
       @media(max-width:420px){
         .hp-section{padding-left:12px;padding-right:12px}
-        .hp-grid-verticals{grid-template-columns:repeat(2,1fr);gap:8px}
+        .hp-grid-verticals{grid-template-columns:1fr;gap:8px}
         .hp-grid-stats{grid-template-columns:repeat(2,1fr);gap:8px}
       }
     `}</style>
@@ -451,7 +451,7 @@ export default function HomeClient(){
             </Link>
           </div>
           <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',padding:'0 12px 8px'}}>NAVIGATE</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:700,padding:'0 12px 8px'}}>NAVIGATE</div>
             {[{l:'Markets',h:'/markets'},{l:'Articles',h:'/research'},{l:'Newsletter',h:'/newsletter'},{l:'About',h:'/about'}].map(n=>
               <Link key={n.l} href={n.h} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.5)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
                 onMouseEnter={e=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
@@ -460,7 +460,7 @@ export default function HomeClient(){
           </div>
           <div style={{height:1,background:'rgba(255,255,255,0.05)',margin:'16px 20px'}}/>
           <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',padding:'0 12px 8px'}}>VERTICALS</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:700,padding:'0 12px 8px'}}>VERTICALS</div>
             {[{l:'Crypto & Digital Assets',h:'/markets/crypto',c:'#B8860B'},{l:'Macro & Central Banks',h:'/markets/macro',c:'#3B6CB4'},{l:'Commodities & Energy',h:'/markets/commodities',c:'#8B5E3C'},{l:'FX & Currencies',h:'/markets/fx',c:'#2D8F5E'},{l:'Geopolitics & Policy',h:'/markets/geopolitics',c:'#8B2252'}].map(v=>
               <Link key={v.l} href={v.h} onClick={()=>setSidebarOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',color:'rgba(255,255,255,0.5)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2,fontWeight:500}}
                 onMouseEnter={e=>{e.currentTarget.style.color=v.c;e.currentTarget.style.background='rgba(255,255,255,0.03)';}}
@@ -471,7 +471,7 @@ export default function HomeClient(){
           </div>
           <div style={{height:1,background:'rgba(255,255,255,0.05)',margin:'16px 20px'}}/>
           <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.2)',padding:'0 12px 8px'}}>LATEST RESEARCH</div>
+            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:700,padding:'0 12px 8px'}}>LATEST ARTICLES</div>
             {articles.slice(0,4).map((a:any)=>
               <Link key={a.slug} href={`/research/${a.slug}`} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'10px 12px',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
                 onMouseEnter={e=>{e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
@@ -652,7 +652,7 @@ export default function HomeClient(){
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:600}}>OUR COVERAGE</span>
       </div>
       <h2 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.6rem,3.5vw,2.6rem)',fontWeight:400,color:'#fff',marginBottom:6}}>
-        Six Perspectives. <span style={{fontFamily:'var(--font-serif)',fontWeight:400,fontStyle:'italic',color:'var(--gold-light)'}}>One Picture.</span>
+        Five Perspectives. <span style={{fontFamily:'var(--font-serif)',fontWeight:400,fontStyle:'italic',color:'var(--gold-light)'}}>One Picture.</span>
       </h2>
       <p style={{fontFamily:'var(--font-sans)',fontSize:'0.88rem',color:'rgba(255,255,255,0.4)',maxWidth:540,marginBottom:24,lineHeight:1.7,fontWeight:300}}>Markets are interconnected. We analyze each vertical independently and show how everything connects.</p>
       <div className="hp-grid-verticals">
@@ -673,7 +673,7 @@ export default function HomeClient(){
 
     {/* ══ NEWSLETTER CTA ══ */}
     <Section delay={0.15}><div className="hp-section" style={{paddingTop:8,paddingBottom:56,marginTop:36}}>
-      <GlowCard color="rgba(184,134,11,0.3)">
+      <div style={{background:'rgba(17,25,40,0.5)',border:'1px solid rgba(184,134,11,0.15)',borderRadius:8}}>
         <div style={{padding:'56px 36px',textAlign:'center',position:'relative',overflow:'hidden'}}>
           {/* Subtle grid inside */}
           <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.02) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
@@ -686,7 +686,7 @@ export default function HomeClient(){
             <Link href="/newsletter" style={{display:'inline-block',fontFamily:'var(--font-sans)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase' as const,padding:'14px 40px',background:'linear-gradient(135deg,var(--gold),var(--gold-dark))',color:'#fff',borderRadius:4,textDecoration:'none',boxShadow:'0 4px 28px rgba(184,134,11,0.25)',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}>Subscribe to Newsletter</Link>
           </div>
         </div>
-      </GlowCard>
+      </div>
     </div></Section>
 
     {/* ══ FOOTER ══ */}
