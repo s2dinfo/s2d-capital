@@ -13,13 +13,23 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'silicon-the-strategic-commodity',
+    title: 'Silicon: The World\'s Most Strategic Commodity',
+    excerpt: 'How semiconductors became the new oil — from the transistor to TSMC, from export controls to orbital data centers. Genesis, supply chain, geopolitics, the AI capex cycle, and why SpaceX, NVIDIA, and Google are racing to put chips in low Earth orbit.',
+    tags: ['geopolitics', 'commodities'],
+    date: 'May 2026',
+    readTime: '30 min',
+    featured: true,
+    published: true,
+  },
+  {
     slug: 'russia-oil-machine',
     title: 'Russia\'s Oil Machine, Exposed: From the Wellhead to the Yuan Trap',
     excerpt: 'How sanctions, shadow fleets, and a 44% overnight rate reveal the true architecture of global power. Tracked through a single barrel of Russian crude — from Western Siberia to the interbank market in Moscow.',
     tags: ['commodities', 'geopolitics', 'fx'],
     date: 'March 2026',
     readTime: '35 min',
-    featured: true,
+    featured: false,
     published: true,
   },
   {
