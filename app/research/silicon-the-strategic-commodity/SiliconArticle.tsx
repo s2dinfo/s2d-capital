@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import React from "react";
 
-const LiveChart = dynamic(() => import("@/components/LiveChart"), {
+const TVChart = dynamic(() => import("@/components/TVChart"), {
   ssr: false,
   loading: () => (
     <div style={{ height: 300, border: "1px solid var(--border, rgba(255,255,255,0.1))", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", margin: "28px 0", color: "var(--text-muted, rgba(255,255,255,0.35))", fontFamily: "var(--mono)", fontSize: "0.72rem" }}>
@@ -299,6 +299,8 @@ export default function SiliconArticle() {
           The US no longer manufactures the majority of leading-edge chips, but it dominates the layers with the highest margins: chip design (NVIDIA, AMD, Apple, Qualcomm, Broadcom), EDA software (Synopsys, Cadence, Siemens), processor IP (parts of Arm, RISC-V foundations), and some critical equipment (Applied Materials, LAM Research, KLA). The CHIPS and Science Act of 2022, with roughly $39 billion in direct manufacturing subsidies, is now funding new fabs from Intel in Arizona and Ohio, TSMC in Arizona, Samsung in Texas, and Micron in New York. These will not break Taiwan&apos;s leading-edge dominance this decade, but they begin the slow process of rebuilding domestic capacity.
         </p>
 
+        <ChartReveal><TVChart symbol="INTC" title="INTC · Intel Corp" type="area" range="2y" height={280} /></ChartReveal>
+
         <h3 style={S.h3}>4.6 China: The Other Pole</h3>
         <p>
           China is the world&apos;s largest consumer of semiconductors and, simultaneously, the country furthest behind in producing the most advanced ones. SMIC, China&apos;s leading foundry, is operating roughly two to three nodes behind TSMC. Huawei&apos;s 2023 Mate 60 phone, which contained a 7nm-class chip from SMIC, was treated by US policymakers as evidence that export controls were not working as intended. The subsequent tightening of controls in 2023, 2024, and 2025 has been steadily aimed at preventing China from acquiring EUV and the most advanced DUV tools needed to push further.
@@ -370,7 +372,7 @@ export default function SiliconArticle() {
           Add in Oracle, CoreWeave, sovereign AI projects (UAE&apos;s G42, Saudi Arabia&apos;s HUMAIN, France&apos;s sovereign initiatives), and a second tier of large enterprises, and the global AI capex pipeline is genuinely without modern precedent — comparable in scale to the buildout of the Interstate Highway System or the early 2000s telecom fiber boom.
         </p>
 
-        <ChartReveal><LiveChart symbol="NVDA" label="NVIDIA Corp" range="2y" height={280} /></ChartReveal>
+        <ChartReveal><TVChart symbol="NVDA" title="NVDA · NVIDIA Corp" type="area" range="2y" height={280} /></ChartReveal>
 
         <h3 style={S.h3}>6.2 NVIDIA&apos;s Position and Its Mirror Risk</h3>
         <p>
@@ -380,19 +382,23 @@ export default function SiliconArticle() {
           The mirror image of that growth is concentration risk. NVIDIA&apos;s top four customers — the hyperscalers — account for roughly half of its data center revenue. If any combination of them cuts capex sharply, the impact is immediate. The bull case is that AI demand keeps outpacing supply through at least 2027 and that NVIDIA&apos;s software moat (CUDA) prevents customers from migrating to in-house silicon at scale. The bear case is that custom silicon — Google&apos;s TPU v6/v7, Amazon&apos;s Trainium 2, Microsoft&apos;s Maia 100/200 — quietly eats into the same workloads at meaningfully better unit economics.
         </p>
 
-        <ChartReveal><LiveChart symbol="TSM" label="Taiwan Semiconductor (TSMC ADR)" range="2y" height={280} /></ChartReveal>
+        <ChartReveal><TVChart symbol="TSM" title="TSM · Taiwan Semiconductor (TSMC ADR)" type="area" range="2y" height={280} /></ChartReveal>
 
         <h3 style={S.h3}>6.3 TSMC and ASML: The Picks-and-Shovels</h3>
         <p>
           Behind every AI GPU sold is a TSMC wafer. Behind every TSMC wafer is an ASML scanner. These two companies — together with the broader equipment ecosystem of Applied Materials, LAM Research, KLA, and Tokyo Electron — are the picks-and-shovels of the AI gold rush, and they capture economics that do not depend on any single fabless winner. Whether NVIDIA, AMD, or a Google in-house design ultimately wins the GPU war, TSMC manufactures most of them, and ASML supplies the lithography tools.
         </p>
 
-        <ChartReveal><LiveChart symbol="ASML" label="ASML Holding NV" range="2y" height={280} /></ChartReveal>
+        <ChartReveal><TVChart symbol="ASML" title="ASML · ASML Holding NV" type="area" range="2y" height={280} /></ChartReveal>
+
+        <ChartReveal><TVChart symbol="AMAT" title="AMAT · Applied Materials" type="area" range="2y" height={280} /></ChartReveal>
 
         <h3 style={S.h3}>6.4 The Memory Tag-Along</h3>
         <p>
           Every NVIDIA GPU shipped sits next to multiple stacks of high-bandwidth memory. A single Blackwell B200 module uses up to 192 GB of HBM3E across eight stacks. The result has been the most dramatic transformation of the memory industry in 20 years: SK Hynix, Samsung, and Micron — historically commoditized cyclical names — are now strategic suppliers with multi-year visibility, sold-out capacity, and pricing power. Memory cyclicality has not been abolished, but the trough-to-peak amplitude of the cycle has narrowed materially.
         </p>
+
+        <ChartReveal><TVChart symbol="MU" title="MU · Micron Technology" type="area" range="2y" height={280} /></ChartReveal>
 
         <Skill title="You now understand the AI capex cycle">
           The capex flow is: hyperscalers commit dollars → NVIDIA/AMD design GPUs → TSMC manufactures them → ASML supplies the lithography → SK Hynix, Samsung, Micron supply the memory → ASE, Amkor, TSMC&apos;s own CoWoS package them → hyperscalers install them. Every step is a chokepoint. Every chokepoint has a public stock.
@@ -533,7 +539,9 @@ export default function SiliconArticle() {
           NVIDIA remains the dominant AI training name, though the second derivative (custom silicon penetration) is increasingly negative for its terminal margin assumptions. Broadcom has emerged as the leading designer of custom hyperscaler accelerators (Google TPU, Meta MTIA) and networking ASICs. AMD has captured a meaningful inference share with MI300/MI325/MI350. Marvell is a smaller but credible custom-silicon designer. SK Hynix, Samsung, and Micron are the leveraged plays on HBM demand.
         </p>
 
-        <ChartReveal><LiveChart symbol="AVGO" label="Broadcom Inc" range="2y" height={280} /></ChartReveal>
+        <ChartReveal><TVChart symbol="AVGO" title="AVGO · Broadcom Inc" type="area" range="2y" height={280} /></ChartReveal>
+
+        <ChartReveal><TVChart symbol="AMD" title="AMD · Advanced Micro Devices" type="area" range="2y" height={280} /></ChartReveal>
 
         <h3 style={S.h3}>10.3 Reshoring Beneficiaries</h3>
         <p>
