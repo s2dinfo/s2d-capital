@@ -131,7 +131,7 @@ export default function SiliconArticle() {
         <h2 id="sec-1" style={S.h2}>1. Executive Summary</h2>
 
         <p>
-          For most of the 20th century, the commodity that defined geopolitical power was oil. Wars were fought over it. Currencies were pegged to it. Empires rose and fell with its price. In 2026, that role has been taken by something far smaller and far stranger: patterns of atoms etched onto thin discs of silicon.
+          Every era has a strategic input that nations will fight, sanction, and subsidize to control. In 2026, the one at the center of great-power competition is something far smaller and far stranger than anything that came before it: patterns of atoms etched onto thin discs of silicon.
         </p>
         <p>
           A modern smartphone contains chips with transistors smaller than a single virus particle. A high-end <Term definition="Graphics Processing Unit, originally designed for rendering 3D graphics, now the dominant compute architecture for training and running large AI models because of its massive parallel processing capability." href="https://en.wikipedia.org/wiki/Graphics_processing_unit">GPU</Term> trained on the latest manufacturing process packs more than 200 billion transistors into a piece of silicon roughly the size of a postage stamp. The single machine that makes those features possible, ASML&apos;s High-NA EUV lithography scanner, costs roughly $380 million, weighs over 200 tonnes, and requires three Boeing 747 freighters and 40 trucks to ship.
