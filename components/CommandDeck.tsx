@@ -14,6 +14,7 @@ const LENSES = [
   {
     key: 'crypto', label: 'Crypto', Icon: Bitcoin, color: '#B8860B',
     loc: [40.71, -74.0] as [number, number], locLabel: 'NEW YORK — WHERE THE ETF FLOWS LAND',
+    spots: [{ name: 'NEW YORK · ETF FLOWS', loc: [40.71, -74.0] }, { name: 'LONDON', loc: [51.5, -0.13] }, { name: 'ZUG · CRYPTO VALLEY', loc: [47.17, 8.52] }, { name: 'SINGAPORE', loc: [1.35, 103.82] }, { name: 'HONG KONG', loc: [22.32, 114.17] }] as { name: string; loc: [number, number] }[],
     href: '/markets/crypto',
     rows: (md: MarketDataResponse | null) => [
       { l: 'Bitcoin', v: md?.symbols?.BTC?.price ? '$' + md.symbols.BTC.price.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—', chg: md?.symbols?.BTC?.change },
@@ -24,6 +25,7 @@ const LENSES = [
   {
     key: 'macro', label: 'Macro', Icon: Landmark, color: '#3B6CB4',
     loc: [38.9, -77.04] as [number, number], locLabel: 'WASHINGTON — WHERE THE COST OF MONEY IS SET',
+    spots: [{ name: 'WASHINGTON · FED', loc: [38.9, -77.04] }, { name: 'FRANKFURT · ECB', loc: [50.11, 8.68] }, { name: 'LONDON · BOE', loc: [51.5, -0.13] }, { name: 'TOKYO · BOJ', loc: [35.68, 139.69] }, { name: 'BEIJING · PBOC', loc: [39.9, 116.4] }] as { name: string; loc: [number, number] }[],
     href: '/markets/macro',
     rows: (md: MarketDataResponse | null) => [
       { l: 'Fed Rate', v: md?.fedRate ? md.fedRate + '%' : '—' },
@@ -34,6 +36,7 @@ const LENSES = [
   {
     key: 'commodities', label: 'Commodities', Icon: Fuel, color: '#8B5E3C',
     loc: [26.6, 56.5] as [number, number], locLabel: 'STRAIT OF HORMUZ — WHERE A FIFTH OF OIL SQUEEZES THROUGH',
+    spots: [{ name: 'STRAIT OF HORMUZ', loc: [26.6, 56.5] }, { name: 'HOUSTON', loc: [29.76, -95.36] }, { name: 'ROTTERDAM', loc: [51.95, 4.05] }, { name: 'GENEVA · TRADING', loc: [46.2, 6.14] }, { name: 'SINGAPORE', loc: [1.35, 103.82] }] as { name: string; loc: [number, number] }[],
     href: '/markets/commodities',
     rows: (md: MarketDataResponse | null) => [
       { l: 'Gold', v: md?.symbols?.GOLD?.price ? '$' + md.symbols.GOLD.price.toFixed(0) : '—', chg: md?.symbols?.GOLD?.change },
@@ -44,6 +47,7 @@ const LENSES = [
   {
     key: 'fx', label: 'FX', Icon: ArrowLeftRight, color: '#2D8F5E',
     loc: [51.5, -0.13] as [number, number], locLabel: 'LONDON — WHERE CURRENCIES CHANGE HANDS',
+    spots: [{ name: 'LONDON · FX CAPITAL', loc: [51.5, -0.13] }, { name: 'NEW YORK', loc: [40.71, -74.0] }, { name: 'TOKYO', loc: [35.68, 139.69] }, { name: 'ZURICH', loc: [47.38, 8.54] }, { name: 'SYDNEY', loc: [-33.87, 151.21] }] as { name: string; loc: [number, number] }[],
     href: '/markets/fx',
     rows: (md: MarketDataResponse | null) => [
       { l: 'EUR/USD', v: md?.symbols?.EURUSD?.price ? md.symbols.EURUSD.price.toFixed(4) : '—', chg: md?.symbols?.EURUSD?.change },
@@ -54,6 +58,7 @@ const LENSES = [
   {
     key: 'geopolitics', label: 'Geopolitics', Icon: Globe2, color: '#8B2252',
     loc: [25.03, 121.56] as [number, number], locLabel: 'TAIPEI — WHERE THE NEXT CRISIS HAS COORDINATES',
+    spots: [{ name: 'TAIPEI', loc: [25.03, 121.56] }, { name: 'WASHINGTON', loc: [38.9, -77.04] }, { name: 'MOSCOW', loc: [55.75, 37.62] }, { name: 'TEHRAN', loc: [35.69, 51.39] }, { name: 'BRUSSELS', loc: [50.85, 4.35] }] as { name: string; loc: [number, number] }[],
     href: '/markets/geopolitics',
     rows: (md: MarketDataResponse | null) => [
       { l: 'VIX', v: md?.symbols?.VIX?.price ? md.symbols.VIX.price.toFixed(1) : '—', chg: md?.symbols?.VIX?.change },
@@ -106,7 +111,8 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
         {/* Globe flies to the selected lens */}
         <div className="cd-globe">
           <JourneyGlobe
-            markers={LENSES.map((l) => ({ location: l.loc, size: 0.05 }))}
+            markers={lens.spots.map((sp, i) => ({ location: sp.loc, size: i === 0 ? 0.09 : 0.05 }))}
+            arcs={lens.spots.slice(1).map((sp) => ({ from: lens.spots[0].loc, to: sp.loc }))}
             focus={lens.loc}
           />
         </div>
@@ -115,8 +121,11 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
         <AnimatePresence mode="wait">
           <motion.div key={lens.key} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}
             style={{ background: 'rgba(17,25,40,0.65)', border: `1px solid ${lens.color}33`, borderRadius: 10, padding: '26px 26px 22px', backdropFilter: 'blur(10px)' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.56rem', letterSpacing: '0.18em', color: lens.color, fontWeight: 700, marginBottom: 16 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.56rem', letterSpacing: '0.18em', color: lens.color, fontWeight: 700, marginBottom: 8 }}>
               {lens.locLabel}
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.35)', marginBottom: 14, lineHeight: 1.9 }}>
+              ON THE MAP — {lens.spots.map((sp) => sp.name).join('  ·  ')}
             </div>
             {lens.rows(md).map((r) => (
               <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
@@ -146,32 +155,57 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
   );
 }
 
-/* ── Expeditions strip — the journeys as first-class homepage citizens ── */
+/* ── Expeditions strip — sell the experience, not the metadata ── */
+const TAGLINES: Record<string, string> = {
+  silicon: 'Fly the chip supply chain — from a Californian design lab to machines that print atoms, and on to data centers in orbit.',
+  'russia-oil': 'Chase one sanctioned barrel through ghost tankers with their transponders dark, all the way into the yuan trap.',
+  'europe-energy': 'Ride the molecules keeping Europe lit — from North Sea platforms to the Amsterdam screen where the price is set.',
+};
+
 export function ExpeditionsStrip() {
   return (
     <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 24px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, justifyContent: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, justifyContent: 'center' }}>
         <div style={{ width: 40, height: 1, background: 'linear-gradient(90deg,transparent,var(--gold-light))' }} />
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.3em', color: GOLD_LIGHT, fontWeight: 600 }}>EXPEDITIONS</span>
         <div style={{ width: 40, height: 1, background: 'linear-gradient(90deg,var(--gold-light),transparent)' }} />
       </div>
-      <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', fontWeight: 300, color: 'rgba(255,255,255,0.45)', textAlign: 'center', margin: '0 auto 22px', maxWidth: 520, lineHeight: 1.7 }}>
-        Our research as interactive globe briefings — travel a supply chain chapter by chapter with live data at every stop.
-      </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 12 }}>
+      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.5rem,3vw,2.2rem)', fontWeight: 400, color: '#fff', textAlign: 'center', margin: '0 0 28px' }}>
+        Don&apos;t read the report. <em style={{ fontStyle: 'italic', color: GOLD_LIGHT }}>Travel it.</em>
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
         {JOURNEYS.map((j) => (
           <Link key={j.slug} href={`/journey/${j.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div style={{ position: 'relative', background: 'rgba(17,25,40,0.6)', border: '1px solid rgba(184,134,11,0.25)', borderRadius: 8, padding: '20px 20px 16px', height: '100%', overflow: 'hidden' }}>
-              <span style={{ position: 'absolute', top: 12, right: 12, fontFamily: 'var(--font-mono)', fontSize: '0.46rem', letterSpacing: '0.12em', color: '#0D1322', background: GOLD_LIGHT, borderRadius: 3, padding: '3px 7px', fontWeight: 700 }}>
-                INTERACTIVE
+            <div
+              style={{ position: 'relative', background: 'rgba(17,25,40,0.65)', border: '1px solid rgba(184,134,11,0.25)', borderRadius: 10, padding: '24px 22px 20px', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12, transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(212,184,92,0.7)'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(184,134,11,0.15)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(184,134,11,0.25)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <span style={{ position: 'absolute', top: 14, right: 14, fontFamily: 'var(--font-mono)', fontSize: '0.46rem', letterSpacing: '0.12em', color: '#0D1322', background: GOLD_LIGHT, borderRadius: 3, padding: '3px 7px', fontWeight: 700 }}>
+                INTERACTIVE 3D
               </span>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.16em', color: GOLD_LIGHT, fontWeight: 700, marginBottom: 8 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.18em', color: GOLD_LIGHT, fontWeight: 700 }}>
                 {j.name}
               </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.06em', color: 'rgba(255,255,255,0.4)', lineHeight: 1.8 }}>
-                {j.chapters[0].place} → {j.chapters[j.chapters.length - 1].place}
-                <br />
-                {j.chapters.length} CHAPTERS · LIVE DATA · 3D GLOBE
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', fontWeight: 300, lineHeight: 1.7, color: 'rgba(255,255,255,0.62)', margin: 0, flex: 1 }}>
+                {TAGLINES[j.slug] ?? j.description}
+              </p>
+              {/* route line */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                {j.chapters.map((c, i) => (
+                  <span key={c.num} style={{ display: 'flex', alignItems: 'center', flex: i < j.chapters.length - 1 ? 1 : 'none' }}>
+                    <span style={{ width: i === 0 || i === j.chapters.length - 1 ? 7 : 5, height: i === 0 || i === j.chapters.length - 1 ? 7 : 5, borderRadius: '50%', background: GOLD_LIGHT, opacity: i === 0 ? 1 : 0.55, flexShrink: 0 }} />
+                    {i < j.chapters.length - 1 && <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(212,184,92,0.5), rgba(212,184,92,0.15))' }} />}
+                  </span>
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.4)' }}>
+                  {j.chapters[0].place} → {j.chapters[j.chapters.length - 1].place}
+                </span>
+                <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em', color: '#0D1322', background: `linear-gradient(135deg, ${GOLD_LIGHT}, #B8860B)`, padding: '8px 16px', borderRadius: 4 }}>
+                  LAUNCH →
+                </span>
               </div>
             </div>
           </Link>

@@ -30,10 +30,35 @@ export default function JourneyGlobe({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const focusRef = useRef<[number, number]>(locationToAngles(focus[0], focus[1]));
+  const globeInst = useRef<ReturnType<typeof createGlobe> | null>(null);
+  const pointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     focusRef.current = locationToAngles(focus[0], focus[1]);
   }, [focus]);
+
+  // markers/arcs update in place — no WebGL re-creation flash on lens change
+  useEffect(() => {
+    globeInst.current?.update({
+      markers: markers.map((m) => ({ location: m.location, size: m.size ?? 0.05 })),
+      arcs: arcs.map((a) => ({ from: a.from, to: a.to, color: GOLD })),
+    });
+  }, [markers, arcs]);
+
+  // the lights follow the mouse: subtle parallax toward the cursor
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onMove = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      pointerRef.current = {
+        x: Math.max(-1.5, Math.min(1.5, ((e.clientX - r.left) / r.width - 0.5) * 2)),
+        y: Math.max(-1.5, Math.min(1.5, ((e.clientY - r.top) / r.height - 0.5) * 2)),
+      };
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,13 +87,17 @@ export default function JourneyGlobe({
       arcHeight: 0.45,
     });
 
-    // Ease the camera toward the focused stop along the shortest path
+    globeInst.current = globe;
+
+    // Ease the camera toward the focused stop (+ cursor parallax)
     let raf = 0;
     const loop = () => {
-      const [fPhi, fTheta] = focusRef.current;
+      const [fPhiBase, fThetaBase] = focusRef.current;
+      const fPhi = fPhiBase + pointerRef.current.x * 0.1;
+      const fTheta = fThetaBase - pointerRef.current.y * 0.07;
       if (reduced) {
-        phi = fPhi;
-        theta = fTheta;
+        phi = fPhiBase;
+        theta = fThetaBase;
       } else {
         const dPhi = ((fPhi - phi + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
         phi += dPhi * 0.06;
@@ -81,11 +110,12 @@ export default function JourneyGlobe({
 
     return () => {
       cancelAnimationFrame(raf);
+      globeInst.current = null;
       globe.destroy();
     };
-    // markers/arcs are static per journey; rebuild only if they change
+    // created once; markers/arcs update in place via globe.update()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(markers), JSON.stringify(arcs)]);
+  }, []);
 
   return (
     <canvas
