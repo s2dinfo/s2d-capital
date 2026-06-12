@@ -123,6 +123,7 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
         {/* Globe flies to the selected lens */}
         <div className="cd-globe">
           <JourneyGlobeGL
+            key={lens.key}
             stops={lens.spots.map((sp, i) => ({ place: sp.name, location: sp.loc, active: (spot ?? lens.loc).join() === sp.loc.join(), index: i }))}
             arcs={lens.spots.slice(1).map((sp) => ({ from: lens.spots[0].loc, to: sp.loc }))}
             focus={spot ?? lens.loc}
@@ -166,14 +167,14 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
             <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
               <Link href={lens.href}
                 style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: lens.color, color: '#fff', textDecoration: 'none', transition: 'all 0.25s', boxShadow: 'none' }}
-                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = `0 0 26px ${lens.color}aa`; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.filter = 'brightness(1.2)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none'; }}>
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#D4B85C'; e.currentTarget.style.color = '#0D1322'; e.currentTarget.style.boxShadow = '0 6px 30px rgba(212,184,92,0.5)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = lens.color; e.currentTarget.style.color = '#fff'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                 OPEN MARKETS
               </Link>
               <Link href="/research"
                 style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: 'transparent', border: `1px solid ${lens.color}66`, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'all 0.25s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = `${lens.color}2e`; e.currentTarget.style.borderColor = lens.color; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = `${lens.color}66`; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                onMouseEnter={(e) => { e.currentTarget.style.background = lens.color; e.currentTarget.style.borderColor = lens.color; e.currentTarget.style.color = '#fff'; e.currentTarget.style.boxShadow = `0 6px 30px ${lens.color}77`; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = `${lens.color}66`; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                 READ RESEARCH
               </Link>
             </div>

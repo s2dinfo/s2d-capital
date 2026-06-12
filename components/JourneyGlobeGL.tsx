@@ -130,10 +130,10 @@ export default function JourneyGlobeGL({
           arcEndLat={(a: any) => a.to[0]}
           arcEndLng={(a: any) => a.to[1]}
           arcColor={() => ['rgba(212,184,92,0.25)', '#E8CC74', 'rgba(212,184,92,0.25)']}
-          arcStroke={0.45}
+          arcStroke={0.6}
           arcDashLength={0.35}
-          arcDashGap={1.3}
-          arcDashAnimateTime={3200}
+          arcDashGap={0.9}
+          arcDashAnimateTime={2600}
           ringsData={ringsData}
           ringLat={(r: any) => r.lat}
           ringLng={(r: any) => r.lng}
@@ -148,7 +148,7 @@ export default function JourneyGlobeGL({
           labelLat={(l: any) => l.lat}
           labelLng={(l: any) => l.lng}
           labelText={(l: any) => l.text}
-          labelSize={(l: any) => (l.active ? 1.35 : l.danger ? 0.85 : 0.95)}
+          labelSize={(l: any) => (l.active ? 1.5 : l.danger ? 0.95 : 1.1)}
           labelDotRadius={(l: any) => (l.active ? 0.55 : l.danger ? 0.28 : 0.35)}
           labelColor={(l: any) => (l.active ? GOLD_LIGHT : l.danger ? RED : 'rgba(255,255,255,0.6)')}
           labelAltitude={0.012}
