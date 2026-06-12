@@ -14,14 +14,16 @@ import Watchlist from '@/components/Watchlist';
 import EconomicCalendar from '@/components/EconomicCalendar';
 import AnimatedCounter from '@/components/AnimatedCounter';
 import GlowCard from '@/components/GlowCard';
+import Footer from '@/components/Footer';
+import { Bitcoin, Landmark, Fuel, ArrowLeftRight, Globe2 } from 'lucide-react';
 
 /* ── Topics config ── */
 const TOPICS = [
-  {key:'crypto',icon:'₿',label:'Crypto',sub:'ETFs, DeFi, Regulation',color:'#B8860B',dataHref:'/markets/crypto',articleHref:'/research'},
-  {key:'macro',icon:'🏛',label:'Macro',sub:'Fed, ECB, Rates',color:'#3B6CB4',dataHref:'/markets/macro',articleHref:'/research'},
-  {key:'commodities',icon:'🛢',label:'Commodities',sub:'Gold, Oil, Nat Gas',color:'#8B5E3C',dataHref:'/markets/commodities',articleHref:'/research'},
-  {key:'fx',icon:'💱',label:'FX',sub:'EUR/USD, DXY',color:'#2D8F5E',dataHref:'/markets/fx',articleHref:'/research'},
-  {key:'geopolitics',icon:'🌍',label:'Geopolitics',sub:'Tariffs, Sanctions',color:'#8B2252',dataHref:'/markets/geopolitics',articleHref:'/research'},
+  {key:'crypto',Icon:Bitcoin,label:'Crypto',sub:'ETFs, DeFi, Regulation',color:'#B8860B',dataHref:'/markets/crypto',articleHref:'/research'},
+  {key:'macro',Icon:Landmark,label:'Macro',sub:'Fed, ECB, Rates',color:'#3B6CB4',dataHref:'/markets/macro',articleHref:'/research'},
+  {key:'commodities',Icon:Fuel,label:'Commodities',sub:'Gold, Oil, Nat Gas',color:'#8B5E3C',dataHref:'/markets/commodities',articleHref:'/research'},
+  {key:'fx',Icon:ArrowLeftRight,label:'FX',sub:'EUR/USD, DXY',color:'#2D8F5E',dataHref:'/markets/fx',articleHref:'/research'},
+  {key:'geopolitics',Icon:Globe2,label:'Geopolitics',sub:'Tariffs, Sanctions',color:'#8B2252',dataHref:'/markets/geopolitics',articleHref:'/research'},
 ];
 
 /* ── Orbital Topic Node ── */
@@ -68,7 +70,7 @@ function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:
         boxShadow:isSelected?`0 0 40px ${t.color}30`:h?`0 4px 24px rgba(0,0,0,0.4)`:'none',
         transform:h&&!isSelected?'scale(1.08)':'scale(1)',
       }}>
-        <span style={{fontSize:isSelected?(small?'1.6rem':'2.2rem'):(small?'1.3rem':'1.8rem'),transition:'font-size 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none',lineHeight:1}}>{t.icon}</span>
+        <t.Icon size={isSelected?(small?26:36):(small?21:29)} strokeWidth={1.5} color={isSelected?t.color:h?t.color:'rgba(255,255,255,0.65)'} style={{transition:'all 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none'}}/>
       </div>
 
       {/* Label — flows below circle, centered */}
@@ -173,7 +175,8 @@ function Mini({data,color,h=44}:{data:number[];color:string;h?:number}) {
 }
 function Section({children,delay=0}:{children:React.ReactNode;delay?:number}) {
   const ref=useRef(null); const inView=useInView(ref,{once:true,margin:'-50px'});
-  return <motion.div ref={ref} initial={{opacity:0,y:30}} animate={inView?{opacity:1,y:0}:{}} transition={{duration:0.6,delay,ease:'easeOut'}}>{children}</motion.div>;
+  // Partial initial opacity: if the observer never fires, content stays readable.
+  return <motion.div ref={ref} initial={{opacity:0.3,y:18}} animate={inView?{opacity:1,y:0}:{}} transition={{duration:0.5,delay,ease:'easeOut'}}>{children}</motion.div>;
 }
 function fakeSparkline(base:number,vol:number):number[] {
   return Array.from({length:30},(_,i)=>base+Math.sin(i*0.35)*vol+(Math.random()-0.5)*vol*0.6);
@@ -301,7 +304,7 @@ function StatCard({name,val,chg,color,prefix,dec,spark,href}:any){
     }}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
         <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',letterSpacing:'0.1em',color,fontWeight:500}}>{name}</span>
-        {chg!==null&&chg!==undefined&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,color:pc(chg),padding:'2px 6px',background:chg>0?'rgba(52,211,153,0.1)':'rgba(248,113,113,0.1)',borderRadius:3}}>{fp(chg)}</span>}
+        {chg!==null&&chg!==undefined&&<span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',fontWeight:600,color:pc(chg),padding:'2px 6px',background:chg>0?'rgba(52,211,153,0.1)':'rgba(248,113,113,0.1)',borderRadius:3}}>{fp(chg)}<span style={{opacity:0.55,fontWeight:400,marginLeft:3}}>1D</span></span>}
       </div>
       <div style={{fontFamily:'var(--font-mono)',fontSize:'1.35rem',fontWeight:700,color:'#fff',marginBottom:6,fontVariantNumeric:'tabular-nums',letterSpacing:'-0.02em'}}>
         {val != null && val !== 0 ? `${prefix||''}${Number(val).toLocaleString('en-US',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0})}` : '—'}
@@ -323,6 +326,38 @@ function DataCard({title,color,rows}:{title:string;color:string;rows:{l:string;v
       <span style={{fontFamily:'var(--font-mono)',fontSize:'0.75rem',fontWeight:500,color:m.c||color}}>{m.v}</span>
     </div>)}
   </div>;
+}
+
+/* ── Newsletter inline form ── */
+function NewsletterInlineForm() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle'|'sending'|'ok'|'error'>('idle');
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.includes('@') || status === 'sending') return;
+    setStatus('sending');
+    try {
+      const res = await fetch('/api/subscribe', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
+      setStatus(res.ok ? 'ok' : 'error');
+    } catch { setStatus('error'); }
+  }
+  if (status === 'ok') return <p style={{fontFamily:'var(--font-mono)',fontSize:'0.75rem',color:'var(--green)',margin:0}}>✓ Subscribed — check your inbox for a welcome email.</p>;
+  return (
+    <form onSubmit={submit} style={{display:'flex',gap:8,justifyContent:'center',flexWrap:'wrap',maxWidth:440,margin:'0 auto'}}>
+      <input
+        type="email" required value={email} onChange={e=>setEmail(e.target.value)}
+        name="email" id="newsletter-email" placeholder="you@example.com" aria-label="Email address"
+        style={{flex:'1 1 220px',minWidth:0,padding:'13px 16px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:4,color:'#fff',fontFamily:'var(--font-sans)',fontSize:'0.85rem',outline:'none'}}
+        onFocus={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.5)';}}
+        onBlur={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.12)';}}
+      />
+      <button type="submit" disabled={status==='sending'}
+        style={{fontFamily:'var(--font-sans)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase' as const,padding:'13px 28px',background:'linear-gradient(135deg,var(--gold),var(--gold-dark))',color:'#fff',border:'none',borderRadius:4,cursor:'pointer',boxShadow:'0 4px 28px rgba(184,134,11,0.25)',opacity:status==='sending'?0.6:1,transition:'all 0.3s'}}>
+        {status==='sending' ? 'Subscribing…' : 'Subscribe'}
+      </button>
+      {status==='error' && <p style={{width:'100%',fontFamily:'var(--font-mono)',fontSize:'0.62rem',color:'var(--red)',margin:'4px 0 0'}}>Something went wrong — please try again.</p>}
+    </form>
+  );
 }
 
 /* ── Loading Skeleton ── */
@@ -366,7 +401,7 @@ function VerticalCard({title,subtitle,shortLabel,tags,color,href,index}:{title:s
 export default function HomeClient(){
   const { data: _md, loading: _loading } = useMarketData();
   const prices = _md?.symbols ? { bitcoin: { usd: _md.symbols.BTC?.price, usd_24h_change: _md.symbols.BTC?.change, usd_market_cap: null }, ethereum: { usd: _md.symbols.ETH?.price, usd_24h_change: _md.symbols.ETH?.change }, solana: { usd: _md.symbols.SOL?.price }, ripple: { usd: _md.symbols.XRP?.price } } : null;
-  const macro = _md ? { fedRate: _md.fedRate, t10y: _md.symbols?.US10Y?.price?.toFixed(2), t2y: _md.symbols?.US2Y?.price?.toFixed(2), cpi: (_md as any)?.cpi ?? null, unemp: (_md as any)?.unemp ? (_md as any).unemp + '%' : null, yieldSpread: _md.symbols?.US10Y?.price && _md.symbols?.US2Y?.price ? (_md.symbols.US10Y.price - _md.symbols.US2Y.price).toFixed(2) : null, m2: null, dxy: _md.symbols?.DXY?.price?.toFixed(2) ?? (_md as any)?.dxy ?? null } : null;
+  const macro = _md ? { fedRate: _md.fedRate, t10y: _md.symbols?.US10Y?.price?.toFixed(2), t2y: _md.symbols?.US2Y?.price?.toFixed(2), cpi: (_md as any)?.cpi ? (_md as any).cpi + '%' : null, unemp: (_md as any)?.unemp ? (_md as any).unemp + '%' : null, yieldSpread: _md.symbols?.US10Y?.price && _md.symbols?.US2Y?.price ? (_md.symbols.US10Y.price - _md.symbols.US2Y.price).toFixed(2) : null, m2: null, dxy: _md.symbols?.DXY?.price?.toFixed(2) ?? null } : null;
   const commod = _md?.symbols ? { oil: _md.symbols.OIL?.price, oilChg: _md.symbols.OIL?.change, gold: _md.symbols.GOLD?.price, goldChg: _md.symbols.GOLD?.change, natgas: _md.symbols.NATGAS?.price, natgasChg: _md.symbols.NATGAS?.change } : null;
   const fx = _md?.symbols ? { EUR: _md.symbols.EURUSD?.price ? 1/_md.symbols.EURUSD.price : null, GBP: _md.symbols.GBPUSD?.price ? 1/_md.symbols.GBPUSD.price : null, JPY: _md.symbols.USDJPY?.price, CHF: _md.symbols.USDCHF?.price } : null;
   const fg = _md?.fearGreed ? { current: { value: _md.fearGreed.value, label: _md.fearGreed.label }, history: _md.fearGreed.history } : null;
@@ -374,7 +409,6 @@ export default function HomeClient(){
   const indices = _md?.symbols ? { sp500: { val: _md.symbols.SPX?.price, chg: _md.symbols.SPX?.change, spark: _md.symbols.SPX?.sparkline }, djia: { val: _md.symbols.DJI?.price, chg: _md.symbols.DJI?.change }, nasdaq: { val: _md.symbols.NDX?.price, chg: _md.symbols.NDX?.change }, vix: { val: _md.symbols.VIX?.price, chg: _md.symbols.VIX?.change, spark: _md.symbols.VIX?.sparkline } } : null;
   const sp = (key: string) => _md?.symbols?.[key]?.sparkline?.length ? _md.symbols[key].sparkline : fakeSparkline(100, 10);
   const[time,setTime]=useState('');
-  const[sidebarOpen,setSidebarOpen]=useState(false);
   const[selectedTopic,setSelectedTopic]=useState<string|null>(null);
   useEffect(()=>{const iv=setInterval(()=>setTime(new Date().toLocaleTimeString('en-US',{hour12:false})),1000);setTime(new Date().toLocaleTimeString('en-US',{hour12:false}));return()=>clearInterval(iv);},[]);
 
@@ -395,7 +429,9 @@ export default function HomeClient(){
   ];
 
   return <div style={{background:'var(--bg)',color:'#fff',minHeight:'100vh',width:'100%',overflowX:'hidden',position:'relative'}}>
-    <style>{`
+    {/* dangerouslySetInnerHTML: SSR escapes ">" combinators in style text children,
+        which mismatches the client at hydration and forces a full client re-render. */}
+    <style dangerouslySetInnerHTML={{__html:`
       @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
       @keyframes rippleOut{0%{transform:scale(0);opacity:1}100%{transform:scale(1.5);opacity:0}}
       @keyframes breathe{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:0.8;transform:scale(1.1)}}
@@ -425,73 +461,10 @@ export default function HomeClient(){
         .hp-section{padding-left:12px;padding-right:12px}
         .hp-grid-stats{grid-template-columns:repeat(2,1fr);gap:8px}
       }
-    `}</style>
+    `}}/>
 
     {/* ══ TICKER BAR ══ */}
     <HomeTicker items={marqueeItems} />
-
-    {/* ══ MENU BUTTON (top-left) ══ */}
-    <button aria-label="Toggle navigation menu" aria-expanded={sidebarOpen} onClick={()=>setSidebarOpen(!sidebarOpen)} style={{position:'fixed',top:44,left:20,zIndex:55,background:'rgba(15,15,35,0.85)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(184,134,11,0.15)',borderRadius:8,padding:'10px 12px',cursor:'pointer',transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',boxShadow:'0 4px 20px rgba(0,0,0,0.4)'}}
-      onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.4)';e.currentTarget.style.boxShadow='0 4px 24px rgba(184,134,11,0.12)';}}
-      onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(184,134,11,0.15)';e.currentTarget.style.boxShadow='0 4px 20px rgba(0,0,0,0.4)';}}>
-      <div style={{width:18,height:2,background:'var(--gold-light)',marginBottom:4,borderRadius:1,transition:'all 0.3s',transform:sidebarOpen?'rotate(45deg) translateY(6px)':'none'}}/>
-      <div style={{width:18,height:2,background:'var(--gold-light)',marginBottom:4,borderRadius:1,transition:'all 0.3s',opacity:sidebarOpen?0:1}}/>
-      <div style={{width:18,height:2,background:'var(--gold-light)',borderRadius:1,transition:'all 0.3s',transform:sidebarOpen?'rotate(-45deg) translateY(-6px)':'none'}}/>
-    </button>
-
-    {/* ══ SIDE PANEL (overlay) ══ */}
-    <AnimatePresence>
-      {sidebarOpen && <>
-        <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setSidebarOpen(false)}
-          style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',zIndex:45,backdropFilter:'blur(6px)'}}/>
-        <motion.div initial={{x:-300,opacity:0}} animate={{x:0,opacity:1}} exit={{x:-300,opacity:0}} transition={{duration:0.3,ease:'easeOut'}}
-          style={{position:'fixed',top:0,left:0,bottom:0,width:280,background:'rgba(15,15,35,0.96)',backdropFilter:'blur(24px)',WebkitBackdropFilter:'blur(24px)',borderRight:'1px solid rgba(184,134,11,0.1)',zIndex:46,overflowY:'auto',padding:'24px 0'}}>
-          <div style={{padding:'80px 20px 20px',borderBottom:'1px solid rgba(255,255,255,0.06)',marginBottom:16}}>
-            <Link href="/" onClick={()=>setSidebarOpen(false)} style={{textDecoration:'none',display:'flex',alignItems:'center',gap:8}}>
-              <span style={{fontFamily:'var(--font-display)',fontSize:'1.1rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
-              <span style={{fontFamily:'var(--font-sans)',fontSize:'0.8rem',fontWeight:400,color:'rgba(255,255,255,0.5)'}}>Capital Insights</span>
-            </Link>
-          </div>
-          <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:700,padding:'0 12px 8px'}}>NAVIGATE</div>
-            {[{l:'Markets',h:'/markets'},{l:'Articles',h:'/research'},{l:'Newsletter',h:'/newsletter'},{l:'About',h:'/about'}].map(n=>
-              <Link key={n.l} href={n.h} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',fontWeight:500,color:'rgba(255,255,255,0.5)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
-                onMouseEnter={e=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
-                onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.5)';e.currentTarget.style.background='transparent';}}>{n.l}</Link>
-            )}
-          </div>
-          <div style={{height:1,background:'rgba(255,255,255,0.05)',margin:'16px 20px'}}/>
-          <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:700,padding:'0 12px 8px'}}>VERTICALS</div>
-            {[{l:'Crypto & Digital Assets',h:'/markets/crypto',c:'#B8860B'},{l:'Macro & Central Banks',h:'/markets/macro',c:'#3B6CB4'},{l:'Commodities & Energy',h:'/markets/commodities',c:'#8B5E3C'},{l:'FX & Currencies',h:'/markets/fx',c:'#2D8F5E'},{l:'Geopolitics & Policy',h:'/markets/geopolitics',c:'#8B2252'}].map(v=>
-              <Link key={v.l} href={v.h} onClick={()=>setSidebarOpen(false)} style={{display:'flex',alignItems:'center',gap:10,padding:'11px 12px',fontFamily:'var(--font-sans)',fontSize:'0.92rem',color:'rgba(255,255,255,0.5)',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2,fontWeight:500}}
-                onMouseEnter={e=>{e.currentTarget.style.color=v.c;e.currentTarget.style.background='rgba(255,255,255,0.03)';}}
-                onMouseLeave={e=>{e.currentTarget.style.color='rgba(255,255,255,0.5)';e.currentTarget.style.background='transparent';}}>
-                <div style={{width:6,height:6,borderRadius:'50%',background:v.c,flexShrink:0}}/>{v.l}
-              </Link>
-            )}
-          </div>
-          <div style={{height:1,background:'rgba(255,255,255,0.05)',margin:'16px 20px'}}/>
-          <div style={{padding:'0 8px'}}>
-            <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.2em',color:'var(--gold-light)',fontWeight:700,padding:'0 12px 8px'}}>LATEST ARTICLES</div>
-            {articles.slice(0,4).map((a:any)=>
-              <Link key={a.slug} href={`/research/${a.slug}`} onClick={()=>setSidebarOpen(false)} style={{display:'block',padding:'10px 12px',textDecoration:'none',borderRadius:4,transition:'all 0.2s',marginBottom:2}}
-                onMouseEnter={e=>{e.currentTarget.style.background='rgba(184,134,11,0.06)';}}
-                onMouseLeave={e=>{e.currentTarget.style.background='transparent';}}>
-                <div style={{fontFamily:'var(--font-serif)',fontSize:'0.88rem',color:'rgba(255,255,255,0.7)',lineHeight:1.3,marginBottom:3}}>{a.title}</div>
-                <div style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',color:'rgba(255,255,255,0.2)'}}>{a.date} · {a.readTime}</div>
-              </Link>
-            )}
-          </div>
-          <div style={{padding:'12px 20px 0'}}>
-            <a href="https://x.com/s2dinfo" target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.3)',textDecoration:'none',transition:'color 0.2s'}} onMouseEnter={(e:any)=>{e.currentTarget.style.color='var(--gold-light)';}} onMouseLeave={(e:any)=>{e.currentTarget.style.color='rgba(255,255,255,0.3)';}}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              @s2dinfo
-            </a>
-          </div>
-        </motion.div>
-      </>}
-    </AnimatePresence>
 
     {/* ══ HERO — Premium Entrance ══ */}
     <div style={{position:'relative',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:'72px 24px 48px'}}>
@@ -526,7 +499,7 @@ export default function HomeClient(){
 
         {/* Subtitle */}
         <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.7,duration:0.6,ease:[0.16,1,0.3,1]}} style={{fontFamily:'var(--font-sans)',fontSize:'1rem',color:'rgba(255,255,255,0.5)',maxWidth:520,margin:'0 auto 40px',lineHeight:1.8,fontWeight:300}}>
-          Six verticals. One picture. Real-time data across equities, crypto, macro, commodities, FX, and geopolitics.
+          Five verticals. One picture. Real-time data across crypto, macro, commodities, FX, and geopolitics.
         </motion.p>
 
       </div>
@@ -555,8 +528,6 @@ export default function HomeClient(){
             <h3 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.3rem,3vw,1.8rem)',fontWeight:500,color:'#fff',lineHeight:1.25,marginBottom:12}}>{featured.title}</h3>
             <p style={{fontSize:'0.9rem',color:'rgba(255,255,255,0.45)',lineHeight:1.7,maxWidth:640,fontWeight:300}}>{featured.excerpt}</p>
             <div style={{display:'flex',alignItems:'center',gap:12,marginTop:20,fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.3)',flexWrap:'wrap'}}>
-              <span>BTC ${btc?.usd?.toLocaleString('en-US',{maximumFractionDigits:0})||'-'}</span>
-              <span style={{color:(btc?.usd_24h_change??0)>0?'var(--green)':'var(--red)'}}>{(btc?.usd_24h_change??0)>0?'+':''}{btc?.usd_24h_change?.toFixed(1)}%</span>
               <span style={{marginLeft:'auto',color:'var(--gold-light)',fontWeight:500}}>{featured.date} · {featured.readTime} →</span>
             </div>
           </div>
@@ -630,16 +601,18 @@ export default function HomeClient(){
       </div>
 
       <div className="hp-grid-2col">
-        <DataCard title="MACRO & CENTRAL BANKS" color="#6B9BD2" rows={[{l:'Fed Rate',v:(macro?.fedRate||'-')+'%',c:'#6B9BD2'},{l:'10Y Yield',v:(macro?.t10y||'-')+'%',c:'#6B9BD2'},{l:'CPI',v:macro?.cpi||'-',c:'#D4A843'},{l:'Unemployment',v:macro?.unemp||'-',c:'#E06B6B'},{l:'Dollar (DXY)',v:macro?.dxy||'-',c:'#4CAF7D'}]}/>
+        <DataCard title="MACRO & CENTRAL BANKS" color="#6B9BD2" rows={[{l:'Fed Rate',v:(macro?.fedRate||'-')+'%',c:'#6B9BD2'},{l:'10Y Yield',v:(macro?.t10y||'-')+'%',c:'#6B9BD2'},{l:'CPI (YoY)',v:macro?.cpi||'-',c:'#D4A843'},{l:'Unemployment',v:macro?.unemp||'-',c:'#E06B6B'},{l:'Dollar (DXY)',v:macro?.dxy||'-',c:'#4CAF7D'}]}/>
         <DataCard title="FX RATES" color="#4CAF7D" rows={fx?[{l:'EUR/USD',v:fx.EUR?(1/fx.EUR).toFixed(4):'-',c:'#4CAF7D'},{l:'GBP/USD',v:fx.GBP?(1/fx.GBP).toFixed(4):'-',c:'#4CAF7D'},{l:'USD/JPY',v:fx.JPY?fx.JPY.toFixed(2):'-',c:'#4CAF7D'},{l:'USD/CHF',v:fx.CHF?fx.CHF.toFixed(4):'-',c:'#4CAF7D'}]:[]}/>
         <div style={{background:'rgba(17,25,40,0.5)',backdropFilter:'blur(8px)',border:'1px solid rgba(255,255,255,0.06)',padding:'18px 14px',textAlign:'center',borderRadius:8}}>
           <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',color:'var(--gold-light)',display:'block',marginBottom:10,fontWeight:600}}>FEAR & GREED INDEX</span>
-          <FearGreedGauge value={fgVal} label={fgLabel}/>
+          {fg ? <FearGreedGauge value={fgVal} label={fgLabel}/> : <span style={{fontFamily:'var(--font-mono)',fontSize:'1rem',color:'rgba(255,255,255,0.25)',display:'block',padding:'40px 0'}}>—</span>}
         </div>
         <div style={{background:'rgba(17,25,40,0.5)',backdropFilter:'blur(8px)',border:'1px solid rgba(255,255,255,0.06)',padding:'16px 14px',textAlign:'center',borderRadius:8}}>
           <span style={{fontFamily:'var(--font-mono)',fontSize:'0.5rem',letterSpacing:'0.12em',color:'var(--gold-light)',display:'block',marginBottom:8,fontWeight:600}}>BTC DOMINANCE</span>
-          <div style={{width:90,margin:'0 auto'}}><ResponsiveContainer width="100%" height={90}><PieChart><Pie data={domData.map((d,i)=>({...d,value:i===0?(global?.btcDom||56.2):i===1?(global?.ethDom||10.1):100-(global?.btcDom||56.2)-(global?.ethDom||10.1)}))} cx="50%" cy="50%" innerRadius={28} outerRadius={40} dataKey="value" strokeWidth={0}>{domData.map((d,i)=><Cell key={i} fill={d.color}/>)}</Pie></PieChart></ResponsiveContainer></div>
-          <span style={{fontFamily:'var(--font-mono)',fontSize:'1rem',fontWeight:600,color:'var(--gold-light)'}}><AnimatedCounter value={global?.btcDom||56.2} suffix="%" decimals={1} className=""/></span>
+          {global?.btcDom ? <>
+            <div style={{width:90,margin:'0 auto'}}><ResponsiveContainer width="100%" height={90}><PieChart><Pie data={domData.map((d,i)=>({...d,value:i===0?global.btcDom:i===1?(global.ethDom||0):100-global.btcDom-(global.ethDom||0)}))} cx="50%" cy="50%" innerRadius={28} outerRadius={40} dataKey="value" strokeWidth={0}>{domData.map((d,i)=><Cell key={i} fill={d.color}/>)}</Pie></PieChart></ResponsiveContainer></div>
+            <span style={{fontFamily:'var(--font-mono)',fontSize:'1rem',fontWeight:600,color:'var(--gold-light)'}}><AnimatedCounter value={global.btcDom} suffix="%" decimals={1} className=""/></span>
+          </> : <span style={{fontFamily:'var(--font-mono)',fontSize:'1rem',color:'rgba(255,255,255,0.25)',display:'block',padding:'34px 0'}}>—</span>}
         </div>
       </div>
     </div></Section>
@@ -692,28 +665,15 @@ export default function HomeClient(){
             <h2 style={{fontFamily:'var(--font-serif)',fontSize:'clamp(1.5rem,3vw,2.2rem)',fontWeight:400,color:'#fff',marginBottom:14}}>
               Stay <span style={{fontFamily:'var(--font-serif)',fontWeight:400,fontStyle:'italic',color:'var(--gold-light)'}}>Informed</span>
             </h2>
-            <p style={{fontFamily:'var(--font-sans)',fontSize:'0.9rem',color:'rgba(255,255,255,0.4)',maxWidth:440,margin:'0 auto 28px',lineHeight:1.8,fontWeight:300}}>Investor briefings directly to your inbox. Choose your topics. No spam, only substance.</p>
-            <Link href="/newsletter" style={{display:'inline-block',fontFamily:'var(--font-sans)',fontSize:'0.72rem',fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase' as const,padding:'14px 40px',background:'linear-gradient(135deg,var(--gold),var(--gold-dark))',color:'#fff',borderRadius:4,textDecoration:'none',boxShadow:'0 4px 28px rgba(184,134,11,0.25)',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}>Subscribe to Newsletter</Link>
+            <p style={{fontFamily:'var(--font-sans)',fontSize:'0.9rem',color:'rgba(255,255,255,0.4)',maxWidth:440,margin:'0 auto 28px',lineHeight:1.8,fontWeight:300}}>Investor briefings directly to your inbox. No spam, only substance.</p>
+            <NewsletterInlineForm/>
+            <Link href="/newsletter" style={{display:'inline-block',marginTop:14,fontFamily:'var(--font-mono)',fontSize:'0.6rem',letterSpacing:'0.08em',color:'rgba(255,255,255,0.35)',textDecoration:'none'}}>Choose your topics →</Link>
           </div>
         </div>
       </div>
     </div></Section>
 
     {/* ══ FOOTER ══ */}
-    <footer className="hp-section" style={{paddingTop:32,paddingBottom:24,borderTop:'1px solid rgba(255,255,255,0.04)'}}>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:16}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          <span style={{fontFamily:'var(--font-display)',fontSize:'0.95rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
-          <span style={{fontFamily:'var(--font-sans)',fontSize:'0.8rem',fontWeight:400,color:'rgba(255,255,255,0.4)'}}>Capital Insights</span>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:16}}>
-          <a href="https://x.com/s2dinfo" target="_blank" rel="noopener noreferrer" style={{display:'flex',alignItems:'center',gap:6,fontFamily:'var(--font-mono)',fontSize:'0.6rem',color:'rgba(255,255,255,0.35)',textDecoration:'none',padding:'6px 14px',border:'1px solid rgba(255,255,255,0.08)',borderRadius:6,transition:'all 0.3s'}} onMouseEnter={(e:any)=>{e.currentTarget.style.color='var(--gold-light)';e.currentTarget.style.borderColor='rgba(184,134,11,0.25)';}} onMouseLeave={(e:any)=>{e.currentTarget.style.color='rgba(255,255,255,0.35)';e.currentTarget.style.borderColor='rgba(255,255,255,0.08)';}}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            @s2dinfo
-          </a>
-          <span style={{fontFamily:'var(--font-mono)',fontSize:'0.55rem',color:'rgba(255,255,255,0.15)'}}>© {new Date().getFullYear()} S2D Capital Insights</span>
-        </div>
-      </div>
-    </footer>
+    <Footer/>
   </div>;
 }

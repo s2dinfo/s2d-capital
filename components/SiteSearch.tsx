@@ -8,7 +8,13 @@ export default function SiteSearch() {
   const [results, setResults] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const [db, setDb] = useState<any>(null);
+  const [touch, setTouch] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // ⌘K means nothing on a phone
+  useEffect(() => {
+    setTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
 
   // Initialize search index
   useEffect(() => {
@@ -69,10 +75,11 @@ export default function SiteSearch() {
     return (
       <button
         onClick={() => { setOpen(true); setTimeout(() => inputRef.current?.focus(), 100); }}
+        aria-label="Search"
         style={{
-          position: 'fixed', bottom: 70, right: 20, zIndex: 50,
+          position: 'fixed', bottom: 'calc(16px + env(safe-area-inset-bottom))', right: 16, zIndex: 50,
           background: 'rgba(15,15,35,0.9)', border: '1px solid rgba(184,134,11,0.3)',
-          borderRadius: 8, padding: '10px 14px', cursor: 'pointer',
+          borderRadius: 8, padding: touch ? '10px 12px' : '10px 14px', cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: 8,
           fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
           color: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(12px)',
@@ -82,8 +89,7 @@ export default function SiteSearch() {
         onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(184,134,11,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Search
-        <span style={{ fontSize: '0.5rem', opacity: 0.5, marginLeft: 4 }}>⌘K</span>
+        {!touch && <>Search<span style={{ fontSize: '0.5rem', opacity: 0.5, marginLeft: 4 }}>⌘K</span></>}
       </button>
     );
   }

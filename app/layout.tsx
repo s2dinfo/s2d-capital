@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'S2D Capital Insights',
-    description: 'Financial Intelligence across six verticals.',
+    description: 'Financial Intelligence across five verticals.',
     images: ['/og-image.png'],
   },
   category: 'finance',

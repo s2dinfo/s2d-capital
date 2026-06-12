@@ -11,7 +11,7 @@ export default function AboutClient() {
       <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 400, color: '#ffffff', marginBottom: 24, lineHeight: 1.2 }}>S2D Capital <em style={{ fontStyle: 'italic', color: '#D4B85C' }}>Insights</em></h1>
 
       <div style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.85 }}>
-        <p style={{ marginBottom: 16 }}>S2D Capital Insights is an independent financial intelligence platform. We deliver institutional-grade research and live market data across six interconnected verticals: Crypto, Macro, Commodities, FX, Geopolitics, and Market Structure.</p>
+        <p style={{ marginBottom: 16 }}>S2D Capital Insights is an independent financial intelligence platform. We deliver institutional-grade research and live market data across five interconnected verticals: Crypto, Macro, Commodities, FX, and Geopolitics.</p>
 
         <p style={{ marginBottom: 16 }}>Our mission is to connect the dots that others miss. A central bank decision moves currencies, which reprices commodities, which shifts capital flows into digital assets. We track these cascading effects in real time and distill them into actionable intelligence.</p>
 

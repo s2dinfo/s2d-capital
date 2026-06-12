@@ -74,13 +74,16 @@ export default function Watchlist({ data }: WatchlistProps) {
   const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount; first-time visitors get a seeded
+  // watchlist instead of an empty pitch.
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) setSelected(parsed.slice(0, MAX_ITEMS));
+      } else {
+        setSelected(['BTC', 'SPX', 'GOLD', 'VIX']);
       }
     } catch {}
     setMounted(true);

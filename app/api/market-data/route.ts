@@ -42,9 +42,11 @@ async function fetchYahoo(symbol: string) {
     if (!result) return null;
     const meta = result.meta;
     const price = meta.regularMarketPrice ?? 0;
-    const prevClose = meta.chartPreviousClose ?? meta.previousClose ?? price;
-    const change = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
     const closes = result.indicators?.quote?.[0]?.close?.filter((v: any) => v != null) ?? [];
+    // Daily change. meta.chartPreviousClose is the close before the chart RANGE
+    // (a month ago here), which made 24/7 assets show monthly moves as daily.
+    const prevClose = meta.previousClose ?? (closes.length >= 2 ? closes[closes.length - 2] : null) ?? meta.chartPreviousClose ?? price;
+    const change = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
     return { price, change, prevClose, sparkline: closes.slice(-30) };
   } catch {
     return null;
@@ -105,6 +107,27 @@ async function fetchFredSeries(seriesId: string): Promise<string | null> {
   }
 }
 
+// CPIAUCSL is an index level (~334), not a rate. Fetch 13 months and return YoY %.
+async function fetchCpiYoY(): Promise<string | null> {
+  try {
+    const FR = process.env.FRED_API_KEY || "";
+    if (!FR) return null;
+    const res = await fetch(
+      `https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL&api_key=${FR}&file_type=json&sort_order=desc&limit=14`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!res.ok) return null;
+    const obs = (await res.json()).observations?.filter((o: any) => o.value !== ".");
+    if (!obs || obs.length < 13) return null;
+    const latest = parseFloat(obs[0].value);
+    const yearAgo = parseFloat(obs[12].value);
+    if (!latest || !yearAgo) return null;
+    return (((latest - yearAgo) / yearAgo) * 100).toFixed(1);
+  } catch {
+    return null;
+  }
+}
+
 export async function GET() {
   // Return cache if fresh
   if (cache && Date.now() - cache.ts < CACHE_TTL) {
@@ -120,7 +143,7 @@ export async function GET() {
     fetchFearGreed(),
     fetchCryptoGlobal(),
     fetchFredSeries("FEDFUNDS"),
-    fetchFredSeries("CPIAUCSL"),
+    fetchCpiYoY(),
     fetchFredSeries("UNRATE"),
     fetchFredSeries("DTWEXBGS"),
   ]);

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface FixedEvent {
   date: string;
@@ -10,6 +10,8 @@ interface FixedEvent {
   forecast: string;
   explain: string;
 }
+
+const COLLAPSED_COUNT = 8;
 
 const EVENTS: FixedEvent[] = [
   // CPI
@@ -97,8 +99,16 @@ function daysUntil(d: string): number {
 export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?: boolean } = {}) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [open, setOpen] = useState(defaultOpen);
-  const events = getUpcoming(60);
-  if (events.length === 0) return null;
+  const [showAll, setShowAll] = useState(false);
+  // The page is statically prerendered, so anything derived from "today"
+  // (event filtering, TODAY/4d labels) must wait for the client clock or the
+  // build-time HTML mismatches at hydration.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  const allEvents = getUpcoming(60);
+  if (allEvents.length === 0) return null;
+  const events = showAll ? allEvents : allEvents.slice(0, COLLAPSED_COUNT);
 
   return (
     <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 6, overflow: 'hidden', marginBottom: 16 }}>
@@ -113,7 +123,7 @@ export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?:
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', letterSpacing: '0.15em', color: '#3B6CB4', fontWeight: 600, textTransform: 'uppercase' }}>
           Economic Calendar
           <span style={{ marginLeft: 8, color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>
-            {events.length} upcoming
+            {allEvents.length} upcoming
           </span>
           <span style={{ marginLeft: 8, fontSize: '0.6rem', color: 'rgba(255,255,255,0.25)', transition: 'transform 0.2s', display: 'inline-block', transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}>&#x25BE;</span>
         </span>
@@ -125,12 +135,10 @@ export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?:
       <div className="ecal-header" style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.01)' }}>
         <div style={{ width: 90, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>DATE</div>
         <div style={{ flex: 1, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>EVENT</div>
-        <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>PREVIOUS</div>
-        <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>FORECAST</div>
         <div style={{ width: 40, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>IN</div>
         <div style={{ width: 44, flexShrink: 0 }}/>
       </div>
-      <style>{`@media(max-width:640px){.ecal-hide-mobile{display:none!important}.ecal-header{display:none!important}}`}</style>
+      <style>{`@media(max-width:640px){.ecal-header{display:none!important}}`}</style>
 
       {events.map((e, i) => {
         const days = daysUntil(e.date);
@@ -154,14 +162,8 @@ export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?:
               </div>
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
                 <span style={{ flexShrink: 0 }}>{e.flag}</span>
-                <span style={{ fontSize: '0.78rem', color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.event}</span>
+                <span style={{ fontSize: '0.78rem', color: '#fff', fontWeight: 500, lineHeight: 1.35 }}>{e.event}</span>
                 {impactBadge}
-              </div>
-              <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: 'rgba(255,255,255,0.45)' }}>
-                {e.previous}
-              </div>
-              <div className="ecal-hide-mobile" style={{ width: 65, textAlign: 'center', flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: e.forecast !== '—' ? '#D4B85C' : 'rgba(255,255,255,0.25)', fontWeight: e.forecast !== '—' ? 600 : 400 }}>
-                {e.forecast}
               </div>
               <div style={{ width: 40, textAlign: 'right', flexShrink: 0 }}>
                 {countdownBadge}
@@ -196,6 +198,21 @@ export default function EconomicCalendar({ defaultOpen = true }: { defaultOpen?:
           </div>
         );
       })}
+      {allEvents.length > COLLAPSED_COUNT && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          style={{
+            width: '100%', padding: '10px 16px', background: 'rgba(255,255,255,0.015)',
+            border: 'none', borderTop: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer',
+            fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.1em',
+            color: 'rgba(255,255,255,0.4)', fontWeight: 600, transition: 'color 0.2s',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#D4B85C'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+        >
+          {showAll ? '▴ SHOW FEWER' : `▾ SHOW ALL ${allEvents.length} EVENTS`}
+        </button>
+      )}
       </>}
     </div>
   );

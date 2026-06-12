@@ -14,8 +14,12 @@ export default function FearGreedGauge({ value = 50, label = "Neutral" }: Props)
   const rotation = useTransform(spring, [0, 100], [-135, 135]);
   const displayVal = useTransform(spring, (v: number) => Math.round(v));
 
+  // In-view only delays the animation. If the observer never fires, the
+  // timeout applies the real value anyway — a gauge stuck at 0 is wrong data.
   useEffect(() => {
-    if (isInView) spring.set(value);
+    if (isInView) { spring.set(value); return; }
+    const t = setTimeout(() => spring.set(value), 2000);
+    return () => clearTimeout(t);
   }, [isInView, value, spring]);
 
   const color =

@@ -85,7 +85,7 @@ export default function NewsletterClient() {
         <p className="eyebrow" style={{ marginBottom: 16 }}>What you get</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {[
-            { title: 'The Week in Markets', desc: 'Key moves across all six verticals. What happened, why it matters, and what to watch next.' },
+            { title: 'The Week in Markets', desc: 'Key moves across all five verticals. What happened, why it matters, and what to watch next.' },
             { title: 'Cross-Market Analysis', desc: 'How a Fed decision moved the dollar, which repriced gold, which shifted crypto flows. We connect the dots.' },
             { title: 'Research Highlights', desc: 'Early access to our long-form research — from sanctions architecture to energy policy to crypto regulation.' },
           ].map((item) => (

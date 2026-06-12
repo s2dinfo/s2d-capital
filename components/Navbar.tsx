@@ -8,17 +8,12 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  const isHome = pathname === "/";
-
   const links = [
     { label: "Articles", href: "/research" },
     { label: "Markets", href: "/markets" },
     { label: "Newsletter", href: "/newsletter" },
     { label: "About", href: "/about" },
   ];
-
-  // Don't render navbar on homepage (it has its own hamburger menu)
-  if (isHome) return null;
 
   return (
     <>

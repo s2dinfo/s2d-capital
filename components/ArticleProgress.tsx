@@ -89,7 +89,7 @@ export default function ArticleProgress({ sections }: ArticleProgressProps) {
         style={{
           position: "fixed",
           right: "24px",
-          top: "20px",
+          top: "76px",
           width: "36px",
           height: "36px",
           borderRadius: "8px",
@@ -124,7 +124,7 @@ export default function ArticleProgress({ sections }: ArticleProgressProps) {
           style={{
             position: "fixed",
             right: "24px",
-            top: "66px",
+            top: "122px",
             maxWidth: "200px",
             background: "rgba(15,15,35,0.92)",
             backdropFilter: "blur(14px)",
