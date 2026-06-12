@@ -8,6 +8,7 @@ export interface JourneyStop {
   place: string;
   location: [number, number]; // [lat, lng]
   active?: boolean;
+  index?: number; // chapter index for click navigation
 }
 
 export interface JourneyArc {
@@ -15,20 +16,30 @@ export interface JourneyArc {
   to: [number, number];
 }
 
+export interface JourneyChokepointMarker {
+  label: string;
+  location: [number, number];
+}
+
 const GOLD_LIGHT = '#D4B85C';
+const RED = '#E07070';
 
 export default function JourneyGlobeGL({
   stops,
   arcs,
+  chokepoints = [],
   focus,
   activeCountry,
   zoomedOut = false,
+  onStopClick,
 }: {
   stops: JourneyStop[];
   arcs: JourneyArc[];
+  chokepoints?: JourneyChokepointMarker[];
   focus: [number, number];
   activeCountry: string | null;
   zoomedOut?: boolean;
+  onStopClick?: (index: number) => void;
 }) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -69,6 +80,22 @@ export default function JourneyGlobeGL({
 
   const activeStop = stops.find((s) => s.active);
 
+  // gold ring on the active stop + red rings on active chokepoints
+  const ringsData = useMemo(() => {
+    const rings: any[] = [];
+    if (activeStop) rings.push({ lat: activeStop.location[0], lng: activeStop.location[1], danger: false });
+    for (const c of chokepoints) rings.push({ lat: c.location[0], lng: c.location[1], danger: true });
+    return rings;
+  }, [activeStop, chokepoints]);
+
+  // stop labels + red chokepoint labels
+  const labelsData = useMemo(() => {
+    return [
+      ...stops.map((s) => ({ lat: s.location[0], lng: s.location[1], text: s.place, active: !!s.active, danger: false, index: s.index })),
+      ...chokepoints.map((c) => ({ lat: c.location[0], lng: c.location[1], text: '⚠ ' + c.label, active: false, danger: true, index: null })),
+    ];
+  }, [stops, chokepoints]);
+
   // brand-navy sphere instead of the default texture
   const globeMaterial = useMemo(
     () => new MeshPhongMaterial({ color: new Color('#0E1626'), emissive: new Color('#050A14'), shininess: 6 }),
@@ -107,22 +134,32 @@ export default function JourneyGlobeGL({
           arcDashLength={0.35}
           arcDashGap={1.3}
           arcDashAnimateTime={3200}
-          ringsData={activeStop ? [activeStop] : []}
-          ringLat={(s: any) => s.location[0]}
-          ringLng={(s: any) => s.location[1]}
-          ringMaxRadius={3.2}
+          ringsData={ringsData}
+          ringLat={(r: any) => r.lat}
+          ringLng={(r: any) => r.lng}
+          ringMaxRadius={(r: any) => (r.danger ? 2.4 : 3.2)}
           ringPropagationSpeed={1.6}
           ringRepeatPeriod={900}
-          ringColor={() => (t: number) => `rgba(212,184,92,${Math.max(0, 0.8 * (1 - t))})`}
-          labelsData={stops}
-          labelLat={(s: any) => s.location[0]}
-          labelLng={(s: any) => s.location[1]}
-          labelText={(s: any) => s.place}
-          labelSize={(s: any) => (s.active ? 1.35 : 0.95)}
-          labelDotRadius={(s: any) => (s.active ? 0.55 : 0.35)}
-          labelColor={(s: any) => (s.active ? GOLD_LIGHT : 'rgba(255,255,255,0.6)')}
+          ringColor={(r: any) => (t: number) =>
+            r.danger
+              ? `rgba(224,112,112,${Math.max(0, 0.7 * (1 - t))})`
+              : `rgba(212,184,92,${Math.max(0, 0.8 * (1 - t))})`}
+          labelsData={labelsData}
+          labelLat={(l: any) => l.lat}
+          labelLng={(l: any) => l.lng}
+          labelText={(l: any) => l.text}
+          labelSize={(l: any) => (l.active ? 1.35 : l.danger ? 0.85 : 0.95)}
+          labelDotRadius={(l: any) => (l.active ? 0.55 : l.danger ? 0.28 : 0.35)}
+          labelColor={(l: any) => (l.active ? GOLD_LIGHT : l.danger ? RED : 'rgba(255,255,255,0.6)')}
           labelAltitude={0.012}
           labelResolution={2}
+          onLabelClick={(l: any) => {
+            if (l.index != null && onStopClick) onStopClick(l.index);
+          }}
+          onLabelHover={(l: any) => {
+            const el = containerRef.current?.querySelector('canvas');
+            if (el) (el as HTMLCanvasElement).style.cursor = l && l.index != null ? 'pointer' : 'grab';
+          }}
           rendererConfig={{ antialias: true, alpha: true }}
           onGlobeReady={() => {
             const g = globeRef.current;

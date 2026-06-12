@@ -1,5 +1,6 @@
 "use client";
 import BackButton from "@/components/BackButton";
+import Link from "next/link";
 
 import ArticleProgress from "@/components/ArticleProgress";
 import RelatedArticles from "@/components/RelatedArticles";
@@ -94,6 +95,15 @@ export default function RussiaOilArticle() {
           <span>|</span>
           <span>March 2026</span>
         </div>
+        <Link href="/journey/russia-oil" style={{
+          display: "inline-flex", alignItems: "center", gap: 8, marginTop: 22,
+          fontFamily: "var(--font-mono)", fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.15em",
+          color: "var(--gold-light, #D4B85C)", textDecoration: "none",
+          padding: "10px 22px", border: "1px solid rgba(184,134,11,0.4)", borderRadius: 4,
+          background: "rgba(184,134,11,0.08)",
+        }}>
+          ◉ EXPERIENCE AS INTERACTIVE JOURNEY →
+        </Link>
 
         {/* KPI grid */}
         <div

@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     description: 'Financial Intelligence. Crypto. Macro. Commodities. FX. Geopolitics. Market Structure.',
     url: 'https://s2d.info',
     siteName: 'S2D Capital Insights',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    // images come from per-route opengraph-image.tsx (generated, branded)
     locale: 'en_US',
     type: 'website',
   },
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'S2D Capital Insights',
     description: 'Financial Intelligence across five verticals.',
-    images: ['/og-image.png'],
+    // falls back to the route's og:image
   },
   category: 'finance',
 };
