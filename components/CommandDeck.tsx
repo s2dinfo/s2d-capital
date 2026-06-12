@@ -75,6 +75,7 @@ function chgColor(c?: number | null) {
 
 export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
   const [sel, setSel] = useState(0);
+  const [spot, setSpot] = useState<[number, number] | null>(null);
   const lens = LENSES[sel];
 
   return (
@@ -92,7 +93,7 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
       {/* Lens chips */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 26 }}>
         {LENSES.map((l, i) => (
-          <button key={l.key} onClick={() => setSel(i)}
+          <button key={l.key} onClick={() => { setSel(i); setSpot(null); }}
             style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 6, cursor: 'pointer',
               background: i === sel ? `${l.color}1f` : 'rgba(17,25,40,0.6)',
@@ -113,7 +114,7 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
           <JourneyGlobe
             markers={lens.spots.map((sp, i) => ({ location: sp.loc, size: i === 0 ? 0.09 : 0.05 }))}
             arcs={lens.spots.slice(1).map((sp) => ({ from: lens.spots[0].loc, to: sp.loc }))}
-            focus={lens.loc}
+            focus={spot ?? lens.loc}
           />
         </div>
 
@@ -124,8 +125,17 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.56rem', letterSpacing: '0.18em', color: lens.color, fontWeight: 700, marginBottom: 8 }}>
               {lens.locLabel}
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.35)', marginBottom: 14, lineHeight: 1.9 }}>
-              ON THE MAP — {lens.spots.map((sp) => sp.name).join('  ·  ')}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'baseline', marginBottom: 14 }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)' }}>FLY TO:</span>
+              {lens.spots.map((sp) => {
+                const isHere = (spot ?? lens.loc).join() === sp.loc.join();
+                return (
+                  <button key={sp.name} onClick={() => setSpot(sp.loc)}
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: '0.52rem', letterSpacing: '0.08em', padding: '4px 9px', borderRadius: 3, cursor: 'pointer', background: isHere ? `${lens.color}22` : 'rgba(255,255,255,0.04)', border: `1px solid ${isHere ? lens.color : 'rgba(255,255,255,0.1)'}`, color: isHere ? lens.color : 'rgba(255,255,255,0.5)', transition: 'all 0.2s', fontWeight: isHere ? 700 : 400 }}>
+                    {sp.name}
+                  </button>
+                );
+              })}
             </div>
             {lens.rows(md).map((r) => (
               <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>

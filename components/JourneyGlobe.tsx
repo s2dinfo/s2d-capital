@@ -33,8 +33,10 @@ export default function JourneyGlobe({
   const globeInst = useRef<ReturnType<typeof createGlobe> | null>(null);
   const pointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  const spinRef = useRef(0);
   useEffect(() => {
     focusRef.current = locationToAngles(focus[0], focus[1]);
+    spinRef.current = 0; // re-center on the new focus, then resume drifting
   }, [focus]);
 
   // markers/arcs update in place — no WebGL re-creation flash on lens change
@@ -93,7 +95,8 @@ export default function JourneyGlobe({
     let raf = 0;
     const loop = () => {
       const [fPhiBase, fThetaBase] = focusRef.current;
-      const fPhi = fPhiBase + pointerRef.current.x * 0.1;
+      if (!reduced) spinRef.current += 0.00045; // the world keeps turning, slowly
+      const fPhi = fPhiBase + spinRef.current + pointerRef.current.x * 0.1;
       const fTheta = fThetaBase - pointerRef.current.y * 0.07;
       if (reduced) {
         phi = fPhiBase;
