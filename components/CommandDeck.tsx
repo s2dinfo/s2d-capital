@@ -3,7 +3,18 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bitcoin, Landmark, Fuel, ArrowLeftRight, Globe2 } from 'lucide-react';
-import JourneyGlobe from '@/components/JourneyGlobe';
+import dynamic from 'next/dynamic';
+
+// same engine as the expeditions — country shapes, glowing city labels,
+// lightning arcs. Lazy + client-only so the homepage still paints instantly.
+const JourneyGlobeGL = dynamic(() => import('@/components/JourneyGlobeGL'), {
+  ssr: false,
+  loading: () => (
+    <div aria-label="Loading globe" style={{ width: '100%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '72%', aspectRatio: '1', borderRadius: '50%', border: '1px solid rgba(184,134,11,0.2)', background: 'radial-gradient(circle, rgba(14,22,38,0.9), rgba(10,14,26,0.4))' }} />
+    </div>
+  ),
+});
 import { JOURNEYS } from '@/lib/journeys';
 import type { MarketDataResponse } from '@/hooks/useMarketData';
 
@@ -111,10 +122,12 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
       <div className="cd-grid">
         {/* Globe flies to the selected lens */}
         <div className="cd-globe">
-          <JourneyGlobe
-            markers={lens.spots.map((sp, i) => ({ location: sp.loc, size: i === 0 ? 0.09 : 0.05 }))}
+          <JourneyGlobeGL
+            stops={lens.spots.map((sp, i) => ({ place: sp.name, location: sp.loc, active: (spot ?? lens.loc).join() === sp.loc.join(), index: i }))}
             arcs={lens.spots.slice(1).map((sp) => ({ from: lens.spots[0].loc, to: sp.loc }))}
             focus={spot ?? lens.loc}
+            activeCountry={null}
+            onStopClick={(i) => setSpot(lens.spots[i].loc)}
           />
         </div>
 
@@ -151,10 +164,16 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
               </div>
             ))}
             <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
-              <Link href={lens.href} style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: lens.color, color: '#fff', textDecoration: 'none' }}>
+              <Link href={lens.href}
+                style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: lens.color, color: '#fff', textDecoration: 'none', transition: 'all 0.25s', boxShadow: 'none' }}
+                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = `0 0 26px ${lens.color}aa`; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.filter = 'brightness(1.2)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.filter = 'none'; }}>
                 OPEN MARKETS
               </Link>
-              <Link href="/research" style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: 'transparent', border: `1px solid ${lens.color}66`, color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>
+              <Link href="/research"
+                style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: 'transparent', border: `1px solid ${lens.color}66`, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'all 0.25s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = `${lens.color}2e`; e.currentTarget.style.borderColor = lens.color; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = `${lens.color}66`; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                 READ RESEARCH
               </Link>
             </div>

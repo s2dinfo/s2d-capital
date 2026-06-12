@@ -167,7 +167,10 @@ export default function JourneyGlobeGL({
             const controls = g.controls();
             controls.enableZoom = false; // never hijack page scroll
             controls.enablePan = false;
-            controls.autoRotate = false;
+            // the world keeps turning, slowly (unless the user prefers not)
+            const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            controls.autoRotate = !reduced;
+            controls.autoRotateSpeed = 0.35;
             g.pointOfView({ lat: focus[0], lng: focus[1], altitude: zoomedOut ? 3.6 : 1.8 }, 0);
             setReady(true);
           }}
