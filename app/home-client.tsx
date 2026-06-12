@@ -15,156 +15,7 @@ import EconomicCalendar from '@/components/EconomicCalendar';
 import AnimatedCounter from '@/components/AnimatedCounter';
 import GlowCard from '@/components/GlowCard';
 import Footer from '@/components/Footer';
-import { Bitcoin, Landmark, Fuel, ArrowLeftRight, Globe2 } from 'lucide-react';
-
-/* ── Topics config ── */
-const TOPICS = [
-  {key:'crypto',Icon:Bitcoin,label:'Crypto',sub:'ETFs, DeFi, Regulation',color:'#B8860B',dataHref:'/markets/crypto',articleHref:'/research'},
-  {key:'macro',Icon:Landmark,label:'Macro',sub:'Fed, ECB, Rates',color:'#3B6CB4',dataHref:'/markets/macro',articleHref:'/research'},
-  {key:'commodities',Icon:Fuel,label:'Commodities',sub:'Gold, Oil, Nat Gas',color:'#8B5E3C',dataHref:'/markets/commodities',articleHref:'/research'},
-  {key:'fx',Icon:ArrowLeftRight,label:'FX',sub:'EUR/USD, DXY',color:'#2D8F5E',dataHref:'/markets/fx',articleHref:'/research'},
-  {key:'geopolitics',Icon:Globe2,label:'Geopolitics',sub:'Tariffs, Sanctions',color:'#8B2252',dataHref:'/markets/geopolitics',articleHref:'/research'},
-];
-
-/* ── Orbital Topic Node ── */
-function OrbitNode({t,index,total,selected,onSelect,radius,containerSize,small}:{t:typeof TOPICS[0];index:number;total:number;selected:string|null;onSelect:(k:string)=>void;radius:number;containerSize:number;small:boolean}) {
-  const NODE_SIZE = small ? 66 : 88;
-  const NODE_SIZE_ACTIVE = small ? 72 : 96;
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-  const cx = containerSize / 2 + Math.cos(angle) * radius;
-  const cy = containerSize / 2 + Math.sin(angle) * radius;
-  const isSelected = selected === t.key;
-  const [h, setH] = useState(false);
-  const [btnHover, setBtnHover] = useState<'data'|'articles'|null>(null);
-  const size = isSelected ? NODE_SIZE_ACTIVE : NODE_SIZE;
-
-  return (
-    <motion.div
-      initial={{opacity:0,scale:0}}
-      animate={{opacity:1,scale:1}}
-      transition={{delay:1.1 + index*0.1,duration:0.5,ease:[0.16,1,0.3,1]}}
-      onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-      onClick={()=>onSelect(isSelected?'':t.key)}
-      style={{
-        position:'absolute',
-        /* Position so the circle center sits exactly on the orbit point */
-        left: cx - size/2,
-        top: cy - size/2,
-        width: size,
-        cursor:'pointer',zIndex:isSelected?10:2,
-        display:'flex',flexDirection:'column',alignItems:'center',
-        transition:'left 0.3s, top 0.3s, width 0.3s',
-      }}
-    >
-      {/* Glow ring — positioned relative to circle */}
-      {isSelected && <motion.div layoutId="orbitGlow" style={{position:'absolute',top:-10,left:-10,width:size+20,height:size+20,borderRadius:'50%',border:`2px solid ${t.color}66`,boxShadow:`0 0 30px ${t.color}33`,pointerEvents:'none'}} transition={{type:'spring',stiffness:300,damping:25}}/>}
-
-      {/* Node circle — fixed size, always centered */}
-      <div style={{
-        width:size,height:size,borderRadius:'50%',flexShrink:0,
-        background:isSelected?`radial-gradient(circle,${t.color}30,rgba(17,25,40,0.9))`:`radial-gradient(circle,rgba(17,25,40,0.9),rgba(17,25,40,0.7))`,
-        backdropFilter:'blur(12px)',
-        border:`1.5px solid ${isSelected?t.color:h?t.color+'66':'rgba(255,255,255,0.1)'}`,
-        display:'flex',alignItems:'center',justifyContent:'center',
-        transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-        boxShadow:isSelected?`0 0 40px ${t.color}30`:h?`0 4px 24px rgba(0,0,0,0.4)`:'none',
-        transform:h&&!isSelected?'scale(1.08)':'scale(1)',
-      }}>
-        <t.Icon size={isSelected?(small?26:36):(small?21:29)} strokeWidth={1.5} color={isSelected?t.color:h?t.color:'rgba(255,255,255,0.65)'} style={{transition:'all 0.3s',filter:isSelected?`drop-shadow(0 0 10px ${t.color}60)`:'none'}}/>
-      </div>
-
-      {/* Label — flows below circle, centered */}
-      <div style={{marginTop:8,whiteSpace:'nowrap',textAlign:'center'}}>
-        <div style={{fontFamily:'var(--font-mono)',fontSize:small?'0.55rem':'0.65rem',fontWeight:600,color:isSelected?t.color:'rgba(255,255,255,0.6)',letterSpacing:'0.06em',transition:'color 0.2s'}}>{t.label}</div>
-        {isSelected && !small && <motion.div initial={{opacity:0,y:-4}} animate={{opacity:1,y:0}} style={{fontFamily:'var(--font-mono)',fontSize:'0.52rem',color:'rgba(255,255,255,0.35)',marginTop:3}}>{t.sub}</motion.div>}
-      </div>
-
-      {/* Expanded buttons — desktop only, mobile shows them below orbit */}
-      {!small && <AnimatePresence>
-        {isSelected && (
-          <motion.div initial={{opacity:0,scale:0.8,y:-4}} animate={{opacity:1,scale:1,y:0}} exit={{opacity:0,scale:0.8}} transition={{type:'spring',stiffness:400,damping:25}} style={{display:'flex',gap:8,marginTop:10,justifyContent:'center'}}>
-            <Link href={t.dataHref} onClick={e=>e.stopPropagation()}
-              onMouseEnter={()=>setBtnHover('data')} onMouseLeave={()=>setBtnHover(null)}
-              style={{
-                fontFamily:'var(--font-sans)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
-                background:btnHover==='data'?t.color:btnHover==='articles'?'transparent':t.color,
-                color:btnHover==='data'?'#fff':btnHover==='articles'?'rgba(255,255,255,0.5)':'#fff',
-                border:`1.5px solid ${t.color}`,
-                boxShadow:btnHover==='data'||btnHover===null?`0 4px 16px ${t.color}44`:'none',
-                transition:'all 0.25s cubic-bezier(0.4,0,0.2,1)',
-                transform:btnHover==='data'?'translateY(-1px)':'translateY(0)',
-              }}>Markets</Link>
-            <Link href={t.articleHref} onClick={e=>e.stopPropagation()}
-              onMouseEnter={()=>setBtnHover('articles')} onMouseLeave={()=>setBtnHover(null)}
-              style={{
-                fontFamily:'var(--font-sans)',fontSize:'0.62rem',fontWeight:600,padding:'8px 18px',borderRadius:5,textDecoration:'none',whiteSpace:'nowrap',letterSpacing:'0.04em',
-                background:btnHover==='articles'?t.color:'transparent',
-                color:btnHover==='articles'?'#fff':btnHover==='data'?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.65)',
-                border:`1.5px solid ${btnHover==='articles'?t.color:t.color+'66'}`,
-                boxShadow:btnHover==='articles'?`0 4px 16px ${t.color}44`:'none',
-                transition:'all 0.25s cubic-bezier(0.4,0,0.2,1)',
-                transform:btnHover==='articles'?'translateY(-1px)':'translateY(0)',
-              }}>Articles</Link>
-          </motion.div>
-        )}
-      </AnimatePresence>}
-    </motion.div>
-  );
-}
-
-/* ── Orbital Selector ── */
-function OrbitSelector({selected,onSelect}:{selected:string|null;onSelect:(k:string)=>void}) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(()=>{
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener('resize', check);
-    return ()=>window.removeEventListener('resize', check);
-  },[]);
-
-  const radius = isMobile ? 100 : 200;
-  const containerSize = radius * 2 + (isMobile ? 140 : 200);
-
-  return (
-    <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.6}} style={{position:'relative',width:containerSize,height:containerSize,margin:'0 auto',maxWidth:'100vw'}}>
-      {/* Center hub */}
-      {(() => { const hubSize = isMobile ? 48 : 60; return (
-      <motion.div initial={{opacity:0,scale:0}} animate={{opacity:1,scale:1}} transition={{delay:1,duration:0.6,ease:[0.16,1,0.3,1]}} style={{position:'absolute',left:containerSize/2-hubSize/2,top:containerSize/2-hubSize/2,width:hubSize,height:hubSize,zIndex:3}}>
-        <div style={{width:hubSize,height:hubSize,borderRadius:'50%',background:'radial-gradient(circle,rgba(184,134,11,0.25),rgba(17,25,40,0.85))',border:'1.5px solid rgba(184,134,11,0.35)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 50px rgba(184,134,11,0.2)'}}>
-          <span style={{fontFamily:'var(--font-display)',fontSize:isMobile?'0.6rem':'0.75rem',fontWeight:700,color:'var(--gold-light)',letterSpacing:'-0.02em'}}>S2D</span>
-        </div>
-      </motion.div>); })()}
-
-      {/* Connecting lines + orbit ring (SVG) */}
-      <svg style={{position:'absolute',inset:0,width:containerSize,height:containerSize,pointerEvents:'none',zIndex:1}} viewBox={`0 0 ${containerSize} ${containerSize}`}>
-        {TOPICS.map((_,i) => {
-          const angle = (i / TOPICS.length) * 2 * Math.PI - Math.PI / 2;
-          const lx = containerSize/2 + radius * Math.cos(angle);
-          const ly = containerSize/2 + radius * Math.sin(angle);
-          return <line key={i} x1={containerSize/2} y1={containerSize/2} x2={lx} y2={ly} stroke={selected===TOPICS[i].key?TOPICS[i].color+'44':"rgba(184,134,11,0.08)"} strokeWidth={selected===TOPICS[i].key?1.5:1} strokeDasharray="4,4" style={{transition:'stroke 0.3s'}}/>;
-        })}
-        <circle cx={containerSize/2} cy={containerSize/2} r={radius} fill="none" stroke="rgba(184,134,11,0.06)" strokeWidth={1} strokeDasharray="2,6"/>
-      </svg>
-
-      {/* Topic nodes */}
-      {TOPICS.map((t,i)=>(
-        <OrbitNode key={t.key} t={t} index={i} total={TOPICS.length} selected={selected} onSelect={onSelect} radius={radius} containerSize={containerSize} small={isMobile}/>
-      ))}
-
-      {/* Mobile: buttons below the orbit */}
-      {isMobile && (() => {
-        const sel = TOPICS.find(t=>t.key===selected);
-        if (!sel) return null;
-        return (
-          <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} key={sel.key} style={{position:'absolute',bottom:-16,left:0,right:0,display:'flex',gap:10,justifyContent:'center'}}>
-            <Link href={sel.dataHref} style={{fontFamily:'var(--font-sans)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:sel.color,color:'#fff',textDecoration:'none',border:`1.5px solid ${sel.color}`,boxShadow:`0 4px 16px ${sel.color}44`}}>Markets</Link>
-            <Link href={sel.articleHref} style={{fontFamily:'var(--font-sans)',fontSize:'0.7rem',fontWeight:600,padding:'10px 22px',borderRadius:6,background:'transparent',color:'rgba(255,255,255,0.65)',textDecoration:'none',border:`1.5px solid ${sel.color}66`}}>Articles</Link>
-          </motion.div>
-        );
-      })()}
-    </motion.div>
-  );
-}
+import CommandDeck, { ExpeditionsStrip } from '@/components/CommandDeck';
 
 /* ── Helpers ── */
 function Mini({data,color,h=44}:{data:number[];color:string;h?:number}) {
@@ -409,7 +260,6 @@ export default function HomeClient(){
   const indices = _md?.symbols ? { sp500: { val: _md.symbols.SPX?.price, chg: _md.symbols.SPX?.change, spark: _md.symbols.SPX?.sparkline }, djia: { val: _md.symbols.DJI?.price, chg: _md.symbols.DJI?.change }, nasdaq: { val: _md.symbols.NDX?.price, chg: _md.symbols.NDX?.change }, vix: { val: _md.symbols.VIX?.price, chg: _md.symbols.VIX?.change, spark: _md.symbols.VIX?.sparkline } } : null;
   const sp = (key: string) => _md?.symbols?.[key]?.sparkline?.length ? _md.symbols[key].sparkline : fakeSparkline(100, 10);
   const[time,setTime]=useState('');
-  const[selectedTopic,setSelectedTopic]=useState<string|null>(null);
   useEffect(()=>{const iv=setInterval(()=>setTime(new Date().toLocaleTimeString('en-US',{hour12:false})),1000);setTime(new Date().toLocaleTimeString('en-US',{hour12:false}));return()=>clearInterval(iv);},[]);
 
   const fgVal=fg?.current?.value??50;const fgLabel=fg?.current?.label??'Neutral';
@@ -504,12 +354,18 @@ export default function HomeClient(){
 
       </div>
 
-      {/* ── ORBITAL TOPIC SELECTOR ── */}
-      <div style={{position:'relative',zIndex:2,width:'100%',display:'flex',flexDirection:'column',alignItems:'center'}}>
-        <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1,duration:0.5}} style={{fontFamily:'var(--font-mono)',fontSize:'0.7rem',letterSpacing:'0.2em',color:'rgba(255,255,255,0.4)',textAlign:'center',marginBottom:16,fontWeight:500}}>WHAT INTERESTS YOU?</motion.p>
-        <OrbitSelector selected={selectedTopic} onSelect={setSelectedTopic}/>
-      </div>
+      {/* ── COMMAND DECK — globe-driven vertical selector ── */}
+      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1,duration:0.7}} style={{position:'relative',zIndex:2,width:'100%'}}>
+        <CommandDeck md={_md}/>
+      </motion.div>
     </div>
+
+    <div className="gold-line"/>
+
+    {/* ══ EXPEDITIONS ══ */}
+    <Section><div style={{paddingTop:40,paddingBottom:40}}>
+      <ExpeditionsStrip/>
+    </div></Section>
 
     <div className="gold-line"/>
 

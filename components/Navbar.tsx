@@ -11,6 +11,7 @@ export default function Navbar() {
   const links = [
     { label: "Articles", href: "/research" },
     { label: "Markets", href: "/markets" },
+    { label: "Journeys", href: "/journey" },
     { label: "Newsletter", href: "/newsletter" },
     { label: "About", href: "/about" },
   ];
