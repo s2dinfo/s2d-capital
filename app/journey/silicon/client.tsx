@@ -1,9 +1,19 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import JourneyGlobe from '@/components/JourneyGlobe';
 import Footer from '@/components/Footer';
+
+// three.js-based globe is heavy — load it only on this route, client-only
+const JourneyGlobeGL = dynamic(() => import('@/components/JourneyGlobeGL'), {
+  ssr: false,
+  loading: () => (
+    <div style={{ width: '100%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '70%', aspectRatio: '1', borderRadius: '50%', border: '1px solid rgba(184,134,11,0.2)', background: 'radial-gradient(circle, rgba(14,22,38,0.9), rgba(10,14,26,0.4))', animation: 'pulse 2s ease-in-out infinite' }} />
+    </div>
+  ),
+});
 
 const PUBLISH_DATE = '2026-05-13';
 
@@ -11,6 +21,7 @@ interface Chapter {
   num: string;
   place: string;
   country: string;
+  geoName: string | null; // Natural Earth country name for globe highlight
   stage: string;
   location: [number, number];
   title: string;
@@ -21,49 +32,49 @@ interface Chapter {
 
 const CHAPTERS: Chapter[] = [
   {
-    num: '01', place: 'SANTA CLARA', country: 'USA', stage: 'DESIGN', location: [37.35, -121.95],
+    num: '01', place: 'SANTA CLARA', country: 'USA', geoName: 'United States of America', stage: 'DESIGN', location: [37.35, -121.95],
     title: 'Where Chips Are Imagined', accent: 'Imagined',
     body: 'NVIDIA and AMD design the most complex objects humans have ever made — processors with tens of billions of transistors — yet they manufacture nothing. The fabless model concentrated America’s edge in pure design and pushed everything physical across the Pacific. Every chapter that follows exists because of that trade.',
     ticker: { label: 'NVIDIA', symbol: 'NVDA', currency: '$' },
   },
   {
-    num: '02', place: 'VELDHOVEN', country: 'NETHERLANDS', stage: 'LITHOGRAPHY', location: [51.42, 5.4],
+    num: '02', place: 'VELDHOVEN', country: 'NETHERLANDS', geoName: 'Netherlands', stage: 'LITHOGRAPHY', location: [51.42, 5.4],
     title: 'The Machine That Prints Reality', accent: 'Prints Reality',
     body: 'One company in a Dutch town builds the only machines on Earth that can print the most advanced chips. Inside each EUV system a tin droplet is hit by a laser 50,000 times per second, making plasma glow at 13.5 nanometres. A single High-NA tool costs roughly $380M. No EUV, no NVIDIA — this is the narrowest chokepoint in the entire supply chain.',
     ticker: { label: 'ASML', symbol: 'ASML', currency: '$' },
   },
   {
-    num: '03', place: 'TOKYO', country: 'JAPAN', stage: 'PHOTORESIST', location: [35.68, 139.69],
+    num: '03', place: 'TOKYO', country: 'JAPAN', geoName: 'Japan', stage: 'PHOTORESIST', location: [35.68, 139.69],
     title: 'The Invisible Chemistry', accent: 'Chemistry',
     body: 'Lithography is nothing without the light-sensitive chemicals it exposes. Japan dominates advanced photoresists and specialty materials — JSR, Tokyo Ohka, Shin-Etsu — a quiet oligopoly refined over decades. When a single resist plant has an accident, the ripple reaches every fab on the planet within weeks.',
     ticker: { label: 'SHIN-ETSU', symbol: '4063.T', currency: '¥' },
   },
   {
-    num: '04', place: 'SEOUL', country: 'SOUTH KOREA', stage: 'MEMORY', location: [37.56, 126.97],
+    num: '04', place: 'SEOUL', country: 'SOUTH KOREA', geoName: 'South Korea', stage: 'MEMORY', location: [37.56, 126.97],
     title: 'The Memory Duopoly', accent: 'Duopoly',
     body: 'AI accelerators are only as fast as the memory feeding them. Samsung and SK Hynix control the high-bandwidth memory that sits millimetres from every AI GPU — and HBM capacity has been effectively sold out since the boom began. Korea turned commodity DRAM into a strategic chokepoint of its own.',
     ticker: { label: 'SK HYNIX', symbol: '000660.KS', currency: '₩' },
   },
   {
-    num: '05', place: 'HSINCHU', country: 'TAIWAN', stage: 'FABRICATION', location: [24.81, 120.97],
+    num: '05', place: 'HSINCHU', country: 'TAIWAN', geoName: 'Taiwan', stage: 'FABRICATION', location: [24.81, 120.97],
     title: 'The Foundry at the Center of the World', accent: 'Center of the World',
     body: 'TSMC manufactures roughly 60% of the world’s foundry output and nearly all of its leading-edge chips. Everything funnels here: Californian designs, Dutch machines, Japanese chemistry, Korean memory. One science park in Taiwan is the single point of failure for the digital economy — the “silicon shield.”',
     ticker: { label: 'TSMC', symbol: 'TSM', currency: '$' },
   },
   {
-    num: '06', place: 'PENANG', country: 'MALAYSIA', stage: 'PACKAGING', location: [5.41, 100.33],
+    num: '06', place: 'PENANG', country: 'MALAYSIA', geoName: 'Malaysia', stage: 'PACKAGING', location: [5.41, 100.33],
     title: 'The Quiet Middle', accent: 'Quiet Middle',
     body: 'A finished wafer is not a product. Chips are cut, stacked, bonded and tested across Southeast Asia — and advanced packaging has quietly become the new bottleneck, because gluing chiplets together now matters as much as shrinking them. The unglamorous middle of the chain is where delays are born.',
     ticker: { label: 'AMKOR', symbol: 'AMKR', currency: '$' },
   },
   {
-    num: '07', place: 'ASHBURN', country: 'USA', stage: 'DEPLOYMENT', location: [39.04, -77.49],
+    num: '07', place: 'ASHBURN', country: 'USA', geoName: 'United States of America', stage: 'DEPLOYMENT', location: [39.04, -77.49],
     title: 'Where Silicon Goes to Work', accent: 'Work',
     body: 'The journey ends where it began — in America, in windowless halls along Data Center Alley. Hyperscalers are committing over a trillion dollars of cumulative AI capex through 2027, and the binding constraint is no longer chips but megawatts. Power, not silicon, is becoming the new scarcity.',
     ticker: { label: 'MICROSOFT', symbol: 'MSFT', currency: '$' },
   },
   {
-    num: '08', place: 'ORBIT', country: 'LOW EARTH ORBIT', stage: 'WHAT’S NEXT', location: [0, -150],
+    num: '08', place: 'ORBIT', country: 'LOW EARTH ORBIT', geoName: null, stage: 'WHAT’S NEXT', location: [0, -150],
     title: 'The Next Frontier Is Up', accent: 'Up',
     body: 'If power is the constraint, the next data centers may not be built on Earth at all. SpaceX, NVIDIA and Google are exploring solar-powered compute in orbit — chips above the atmosphere, fed by uninterrupted sunlight. The supply chain that spans the planet is starting to leave it.',
     ticker: { label: 'ALPHABET', symbol: 'GOOGL', currency: '$' },
@@ -186,10 +197,12 @@ export default function SiliconJourneyClient() {
       <div className="jy-split">
         <div className="jy-globe">
           <div className="jy-globe-inner">
-            <JourneyGlobe
-              markers={CHAPTERS.filter((c) => c.num !== '08').map((c) => ({ location: c.location, size: 0.05 }))}
+            <JourneyGlobeGL
+              stops={CHAPTERS.filter((c) => c.num !== '08').map((c) => ({ place: c.place, location: c.location, active: c.num === ch.num }))}
               arcs={CHAPTERS.slice(0, 6).map((c, i) => ({ from: c.location, to: CHAPTERS[i + 1].location }))}
               focus={ch.location}
+              activeCountry={ch.geoName}
+              zoomedOut={ch.num === '08'}
             />
           </div>
           <div style={{ position: 'absolute', top: 22, left: 0, right: 0, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
