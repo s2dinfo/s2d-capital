@@ -6,13 +6,19 @@ interface ArticleProgressProps {
   sections: { id: string; title: string; number: string }[];
 }
 
+const GOLD = "#B8860B";
+const GOLD_LIGHT = "#D4B85C";
+
+// Journey-style chapter rail: the article's sections become numbered stops
+// with done/active/upcoming states, like the globe journey timeline.
 export default function ArticleProgress({ sections }: ArticleProgressProps) {
   const [progress, setProgress] = useState(0);
   const [activeSection, setActiveSection] = useState<string>("");
-  const [open, setOpen] = useState(false);
+  const [railVisible, setRailVisible] = useState(false);
   const lastScrollUpdate = useRef(0);
+  const railRef = useRef<HTMLDivElement>(null);
 
-  // Throttled scroll listener for reading progress
+  // Throttled scroll listener for reading progress + rail visibility
   useEffect(() => {
     const handleScroll = () => {
       const now = Date.now();
@@ -23,6 +29,7 @@ export default function ArticleProgress({ sections }: ArticleProgressProps) {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const pct = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
       setProgress(pct);
+      setRailVisible(scrollTop > 480);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -42,7 +49,7 @@ export default function ArticleProgress({ sections }: ArticleProgressProps) {
           }
         }
       },
-      { rootMargin: "-20% 0px -60% 0px", threshold: 0 }
+      { rootMargin: "-25% 0px -55% 0px", threshold: 0 }
     );
 
     for (const section of sections) {
@@ -53,147 +60,94 @@ export default function ArticleProgress({ sections }: ArticleProgressProps) {
     return () => observer.disconnect();
   }, [sections]);
 
+  // Keep the active chapter visible inside the rail
+  useEffect(() => {
+    if (!railRef.current || !activeSection) return;
+    const btn = railRef.current.querySelector(`[data-sec="${activeSection}"]`);
+    btn?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [activeSection]);
+
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 90; // clear the rail
+    window.scrollTo({ top: y, behavior: "smooth" });
   }, []);
 
-  const abbreviate = (title: string) =>
-    title.length > 22 ? title.slice(0, 20) + "\u2026" : title;
+  const activeIdx = sections.findIndex((s) => s.id === activeSection);
+  const short = (t: string) => (t.length > 22 ? t.slice(0, 20).trimEnd() + "…" : t);
 
   return (
     <>
       {/* Reading progress bar */}
       <div
         style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: `${progress}%`,
-          height: "3px",
-          background:
-            "linear-gradient(90deg, var(--gold, #B8860B), var(--gold-light, #D4B85C))",
-          zIndex: 999,
-          transition: "width 0.15s linear",
-          pointerEvents: "none",
+          position: "fixed", top: 0, left: 0,
+          width: `${progress}%`, height: "3px",
+          background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`,
+          zIndex: 999, transition: "width 0.15s linear", pointerEvents: "none",
         }}
         aria-hidden="true"
       />
 
-      {/* TOC toggle button — desktop only */}
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="article-progress-toggle"
+      {/* Chapter rail — appears once the reader is into the article */}
+      <nav
+        ref={railRef}
+        aria-label="Article chapters"
         style={{
-          position: "fixed",
-          right: "24px",
-          top: "76px",
-          width: "36px",
-          height: "36px",
-          borderRadius: "8px",
-          background: open
-            ? "rgba(184,134,11,0.25)"
-            : "rgba(15,15,35,0.85)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          border: `1px solid ${open ? "rgba(184,134,11,0.4)" : "rgba(255,255,255,0.1)"}`,
-          color: open ? "var(--gold, #B8860B)" : "rgba(255,255,255,0.5)",
-          cursor: "pointer",
-          zIndex: 1000,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "var(--font-mono)",
-          fontSize: open ? "1rem" : "0.8rem",
-          fontWeight: 700,
-          transition: "all 0.25s ease",
+          position: "fixed", top: 3, left: 0, right: 0, zIndex: 90,
+          display: "flex", gap: 4, alignItems: "stretch",
+          padding: "0 16px",
+          overflowX: "auto", scrollbarWidth: "none",
+          background: "rgba(11,15,28,0.92)",
+          backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
+          borderBottom: "1px solid rgba(184,134,11,0.14)",
+          transform: railVisible ? "translateY(0)" : "translateY(-110%)",
+          opacity: railVisible ? 1 : 0,
+          transition: "transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s",
         }}
-        aria-label={open ? "Close table of contents" : "Open table of contents"}
       >
-        {open ? "\u00D7" : "\u00A7"}
-      </button>
-
-      {/* Floating Table of Contents — desktop only, toggled */}
-      {open && (
-        <nav
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
-          }}
-          style={{
-            position: "fixed",
-            right: "24px",
-            top: "122px",
-            maxWidth: "200px",
-            background: "rgba(15,15,35,0.92)",
-            backdropFilter: "blur(14px)",
-            WebkitBackdropFilter: "blur(14px)",
-            border: "1px solid rgba(184,134,11,0.2)",
-            borderRadius: "10px",
-            padding: "14px 16px",
-            zIndex: 999,
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-          }}
-          className="article-progress-toc"
-          aria-label="Table of contents"
-        >
-          {sections.map((s) => {
-            const isActive = activeSection === s.id;
+        <div style={{ display: "flex", gap: 4, margin: "0 auto" }}>
+          {sections.map((s, i) => {
+            const state = i === activeIdx ? "active" : activeIdx > -1 && i < activeIdx ? "done" : "todo";
             return (
               <button
                 key={s.id}
-                onClick={() => {
-                  scrollTo(s.id);
-                  setOpen(false);
-                }}
+                data-sec={s.id}
+                onClick={() => scrollTo(s.id)}
+                title={s.title}
                 style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  padding: 0,
-                  fontFamily: "var(--font-mono)",
-                  fontSize: "0.58rem",
-                  lineHeight: 1.45,
-                  color: isActive
-                    ? "var(--gold, #B8860B)"
-                    : "rgba(255,255,255,0.35)",
-                  transition: "color 0.25s ease",
-                  display: "flex",
-                  gap: "6px",
-                  alignItems: "baseline",
+                  display: "flex", alignItems: "center", gap: 7,
+                  padding: "12px 12px", background: "none", border: "none",
+                  borderBottom: state === "active" ? `2px solid ${GOLD_LIGHT}` : "2px solid transparent",
+                  cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
+                  transition: "all 0.25s",
                 }}
               >
                 <span
                   style={{
-                    opacity: isActive ? 1 : 0.6,
-                    fontWeight: isActive ? 700 : 400,
-                    minWidth: "18px",
-                    transition: "opacity 0.25s ease, font-weight 0.25s ease",
+                    width: state === "active" ? 9 : 7, height: state === "active" ? 9 : 7,
+                    borderRadius: "50%", flexShrink: 0,
+                    background: state === "todo" ? "rgba(255,255,255,0.18)" : state === "active" ? GOLD_LIGHT : `${GOLD}B3`,
+                    boxShadow: state === "active" ? `0 0 10px ${GOLD_LIGHT}99` : "none",
+                    transition: "all 0.25s",
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)", fontSize: "0.56rem", letterSpacing: "0.07em",
+                    fontWeight: state === "active" ? 700 : 400,
+                    color: state === "active" ? GOLD_LIGHT : `rgba(255,255,255,${state === "done" ? 0.55 : 0.32})`,
+                    transition: "color 0.25s",
                   }}
                 >
-                  {s.number}
+                  {s.number.padStart(2, "0")} {short(s.title).toUpperCase()}
                 </span>
-                <span>{abbreviate(s.title)}</span>
               </button>
             );
           })}
-        </nav>
-      )}
-
-      {/* Hide TOC and toggle on mobile */}
-      <style>{`
-        @media (max-width: 1024px) {
-          .article-progress-toc,
-          .article-progress-toggle {
-            display: none !important;
-          }
-        }
-      `}</style>
+        </div>
+      </nav>
     </>
   );
 }
