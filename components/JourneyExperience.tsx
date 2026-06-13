@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -89,56 +89,75 @@ export default function JourneyExperience({ config }: { config: JourneyConfig })
   const CHAPTERS = config.chapters;
   const ch = CHAPTERS[active];
   const last = CHAPTERS.length - 1;
+  const stepRefs = useRef<(HTMLElement | null)[]>([]);
 
-  const go = useCallback((dir: number) => {
-    setActive((a) => Math.min(CHAPTERS.length - 1, Math.max(0, a + dir)));
+  // Scroll is the primary driver: whichever chapter section is crossing the
+  // viewport centre becomes active and the globe flies to it.
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.idx));
+        });
+      },
+      { rootMargin: '-48% 0px -48% 0px', threshold: 0 }
+    );
+    stepRefs.current.forEach((el) => el && obs.observe(el));
+    return () => obs.disconnect();
+  }, [CHAPTERS.length]);
+
+  const scrollToChapter = useCallback((i: number) => {
+    const idx = Math.min(CHAPTERS.length - 1, Math.max(0, i));
+    stepRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [CHAPTERS.length]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') go(1);
-      if (e.key === 'ArrowLeft') go(-1);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); scrollToChapter(active + 1); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); scrollToChapter(active - 1); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [go]);
+  }, [active, scrollToChapter]);
 
-  const titleHead = ch.title.slice(0, ch.title.length - ch.accent.length);
   const isOrbit = !!config.orbitFinale && active === last;
   const groundStops = CHAPTERS.filter((c) => c.geoName !== null || !config.orbitFinale);
   const activeChokepoints = config.chokepoints.filter((c) => c.activeChapters.includes(ch.num));
+  const progress = CHAPTERS.length > 1 ? active / last : 0;
 
   return (
     <div style={{ background: '#0D1322', color: '#fff', minHeight: '100vh' }}>
       {/* dangerouslySetInnerHTML: SSR escapes ">" in style text children (see home-client) */}
       <style dangerouslySetInnerHTML={{ __html: `
-        .jy-split{display:flex;min-height:640px}
-        .jy-globe{flex:1.15;position:relative;background:#0A0E1A;display:flex;align-items:center;justify-content:center;overflow:hidden}
-        .jy-panel{flex:1;border-left:1px solid rgba(184,134,11,0.12);background:#111928;padding:56px 48px;display:flex;flex-direction:column;gap:20px;justify-content:center}
-        .jy-globe-inner{width:min(86%,620px)}
+        .jy-grid{display:grid;grid-template-columns:1.15fr 1fr}
+        .jy-stage{position:sticky;top:60px;height:calc(100vh - 60px);display:flex;align-items:center;justify-content:center;background:#0A0E1A;overflow:hidden;border-right:1px solid rgba(184,134,11,0.12)}
+        .jy-globe-inner{width:min(82%,560px)}
+        .jy-steps{display:flex;flex-direction:column}
+        .jy-step{min-height:100vh;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:64px 52px}
         .jy-timeline{display:flex;justify-content:space-between;gap:8px;padding:22px 40px 26px;border-top:1px solid rgba(184,134,11,0.12);background:#0B0F1C;overflow-x:auto}
         @media(max-width:900px){
-          .jy-split{flex-direction:column;min-height:0}
-          .jy-globe{min-height:340px;padding:16px 0}
-          .jy-globe-inner{width:min(88%,360px)}
-          .jy-panel{border-left:none;border-top:1px solid rgba(184,134,11,0.12);padding:32px 20px}
+          .jy-grid{grid-template-columns:1fr}
+          .jy-stage{top:60px;height:46vh;border-right:none;border-bottom:1px solid rgba(184,134,11,0.12);z-index:50}
+          .jy-globe-inner{width:min(64%,280px)}
+          .jy-step{min-height:62vh;padding:32px 22px}
           .jy-timeline{padding:18px 16px 22px}
         }
       `}} />
 
-      {/* Header strip */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, padding: '14px 40px', borderBottom: '1px solid rgba(184,134,11,0.1)' }}>
+      {/* Header strip + scroll progress */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, padding: '14px 40px', borderBottom: '1px solid rgba(184,134,11,0.1)', position: 'relative' }}>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.2em', color: GOLD_LIGHT, fontWeight: 600 }}>
           INTERACTIVE BRIEFING · {config.name}
         </span>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)' }}>
           CHAPTER {ch.num} / {String(CHAPTERS.length).padStart(2, '0')}
         </span>
+        <div style={{ position: 'absolute', left: 0, bottom: -1, height: 2, width: `${progress * 100}%`, background: `linear-gradient(90deg, ${GOLD}, ${GOLD_LIGHT})`, transition: 'width 0.5s cubic-bezier(0.4,0,0.2,1)', boxShadow: `0 0 10px ${GOLD_LIGHT}88` }} />
       </div>
 
-      {/* Main split */}
-      <div className="jy-split">
-        <div className="jy-globe">
+      {/* Scrollytelling: sticky globe + scrolling chapter steps */}
+      <div className="jy-grid">
+        <div className="jy-stage">
           <div className="jy-globe-inner">
             <JourneyGlobeGL
               stops={groundStops.map((c) => ({ place: c.place, location: c.location, active: c.num === ch.num, index: CHAPTERS.indexOf(c) }))}
@@ -147,7 +166,7 @@ export default function JourneyExperience({ config }: { config: JourneyConfig })
               focus={ch.location}
               activeCountry={ch.geoName}
               zoomedOut={isOrbit}
-              onStopClick={(i) => setActive(i)}
+              onStopClick={(i) => scrollToChapter(i)}
             />
           </div>
           <div style={{ position: 'absolute', top: 22, left: 0, right: 0, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
@@ -166,53 +185,62 @@ export default function JourneyExperience({ config }: { config: JourneyConfig })
             </div>
           )}
           <span style={{ position: 'absolute', left: 28, bottom: 20, fontFamily: 'var(--font-mono)', fontSize: '0.52rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)' }}>
-            ← → OR TAP A STOP TO TRAVEL
+            SCROLL TO TRAVEL THE ROUTE ↓
           </span>
         </div>
 
-        <div className="jy-panel">
-          <AnimatePresence mode="wait">
-            <motion.div key={ch.num} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.35 }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.2em', color: GOLD_LIGHT, fontWeight: 600 }}>
-                CHAPTER {ch.num} — {ch.place}, {ch.country}
-              </span>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.9rem,3.4vw,2.7rem)', fontWeight: 500, lineHeight: 1.12, margin: 0, color: '#fff' }}>
-                {titleHead}
-                <span style={{ fontStyle: 'italic', color: GOLD_LIGHT }}>{ch.accent}</span>
-              </h1>
-              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.85, color: 'rgba(255,255,255,0.6)', margin: 0 }}>
-                {ch.body}
-              </p>
-              {ch.stat && (
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '12px 18px', background: 'rgba(184,134,11,0.06)', borderLeft: `2px solid ${GOLD}`, borderRadius: '0 6px 6px 0' }}>
-                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: GOLD_LIGHT, fontStyle: 'italic' }}>{ch.stat.v}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.45)' }}>{ch.stat.l}</span>
-                </div>
-              )}
-              <TickerChip chapter={ch} publishDate={config.publishDate} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 4 }}>
-                <button onClick={() => go(-1)} disabled={active === 0}
-                  style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', padding: '11px 18px', borderRadius: 4, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', cursor: active === 0 ? 'default' : 'pointer', opacity: active === 0 ? 0.35 : 1 }}>
-                  ← {active > 0 ? `${CHAPTERS[active - 1].num} ${CHAPTERS[active - 1].place}` : 'START'}
-                </button>
-                {active < last ? (
-                  <button onClick={() => go(1)}
-                    style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', padding: '11px 18px', borderRadius: 4, background: `linear-gradient(135deg, ${GOLD}, #8B6914)`, border: 'none', color: '#fff', cursor: 'pointer', boxShadow: '0 4px 20px rgba(184,134,11,0.25)' }}>
-                    {CHAPTERS[active + 1].num} {CHAPTERS[active + 1].place} →
-                  </button>
-                ) : (
-                  <Link href={`/research/${config.articleSlug}`}
-                    style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', padding: '11px 18px', borderRadius: 4, background: `linear-gradient(135deg, ${GOLD}, #8B6914)`, color: '#fff', textDecoration: 'none', boxShadow: '0 4px 20px rgba(184,134,11,0.25)' }}>
-                    READ THE FULL REPORT →
-                  </Link>
+        <div className="jy-steps">
+          {CHAPTERS.map((c, i) => {
+            const titleHead = c.title.slice(0, c.title.length - c.accent.length);
+            const isActive = i === active;
+            return (
+              <section
+                key={c.num}
+                data-idx={i}
+                ref={(el) => { stepRefs.current[i] = el; }}
+                className="jy-step"
+                style={{ opacity: isActive ? 1 : 0.4, transition: 'opacity 0.5s ease' }}
+              >
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.2em', color: GOLD_LIGHT, fontWeight: 600 }}>
+                  CHAPTER {c.num} — {c.place}, {c.country}
+                </span>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.9rem,3.4vw,2.7rem)', fontWeight: 500, lineHeight: 1.12, margin: 0, color: '#fff' }}>
+                  {titleHead}
+                  <span style={{ fontStyle: 'italic', color: GOLD_LIGHT }}>{c.accent}</span>
+                </h2>
+                <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.85, color: 'rgba(255,255,255,0.6)', margin: 0 }}>
+                  {c.body}
+                </p>
+                {c.stat && (
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '12px 18px', background: 'rgba(184,134,11,0.06)', borderLeft: `2px solid ${GOLD}`, borderRadius: '0 6px 6px 0' }}>
+                    <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: GOLD_LIGHT, fontStyle: 'italic' }}>{c.stat.v}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.45)' }}>{c.stat.l}</span>
+                  </div>
                 )}
-              </div>
-              <Link href={`/research/${config.articleSlug}`} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.56rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>
-                Read this chapter in depth in the full article →
-              </Link>
-            </motion.div>
-          </AnimatePresence>
+                <TickerChip chapter={c} publishDate={config.publishDate} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 4 }}>
+                  <button onClick={() => scrollToChapter(i - 1)} disabled={i === 0}
+                    style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', padding: '11px 18px', borderRadius: 4, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)', cursor: i === 0 ? 'default' : 'pointer', opacity: i === 0 ? 0.35 : 1 }}>
+                    ← {i > 0 ? `${CHAPTERS[i - 1].num} ${CHAPTERS[i - 1].place}` : 'START'}
+                  </button>
+                  {i < last ? (
+                    <button onClick={() => scrollToChapter(i + 1)}
+                      style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', padding: '11px 18px', borderRadius: 4, background: `linear-gradient(135deg, ${GOLD}, #8B6914)`, border: 'none', color: '#fff', cursor: 'pointer', boxShadow: '0 4px 20px rgba(184,134,11,0.25)' }}>
+                      {CHAPTERS[i + 1].num} {CHAPTERS[i + 1].place} →
+                    </button>
+                  ) : (
+                    <Link href={`/research/${config.articleSlug}`}
+                      style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', padding: '11px 18px', borderRadius: 4, background: `linear-gradient(135deg, ${GOLD}, #8B6914)`, color: '#fff', textDecoration: 'none', boxShadow: '0 4px 20px rgba(184,134,11,0.25)' }}>
+                      READ THE FULL REPORT →
+                    </Link>
+                  )}
+                </div>
+                <Link href={`/research/${config.articleSlug}`} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.56rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.32)', textDecoration: 'none' }}>
+                  Read this chapter in depth in the full article →
+                </Link>
+              </section>
+            );
+          })}
         </div>
       </div>
 
@@ -221,7 +249,7 @@ export default function JourneyExperience({ config }: { config: JourneyConfig })
         {CHAPTERS.map((c, i) => {
           const state = i === active ? 'active' : i < active ? 'done' : 'todo';
           return (
-            <button key={c.num} onClick={() => setActive(i)}
+            <button key={c.num} onClick={() => scrollToChapter(i)}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', minWidth: 86, flexShrink: 0 }}>
               <span style={{
                 width: state === 'active' ? 12 : 8, height: state === 'active' ? 12 : 8, borderRadius: '50%',

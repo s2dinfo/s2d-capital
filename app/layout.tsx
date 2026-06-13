@@ -97,13 +97,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body style={{ overflowX: 'hidden', width: '100%', maxWidth: '100%' }}>
+      <body style={{ overflowX: 'clip', width: '100%', maxWidth: '100%' }}>
         <CursorGlow />
         <a href="#main-content" className="skip-to-content">Skip to content</a>
         <Navbar />
         <Analytics />
         <SiteSearch />
-        <main id="main-content" style={{ overflowX: 'hidden' }}>{children}</main>
+        <main id="main-content" style={{ overflowX: 'clip' }}>{children}</main>
         <VercelAnalytics />
       </body>
     </html>
