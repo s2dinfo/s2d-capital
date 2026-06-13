@@ -1,7 +1,7 @@
 'use client';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import Globe, { GlobeMethods } from 'react-globe.gl';
-import { MeshPhongMaterial, Color } from 'three';
+import { MeshPhongMaterial, Color, DirectionalLight } from 'three';
 import * as topojson from 'topojson-client';
 
 export interface JourneyStop {
@@ -34,6 +34,47 @@ export interface GlobeDataLayer {
   max: number;
 }
 
+// A located, severity-coloured marker (e.g. an active conflict). intensity
+// (0..1) scales how big/urgent the pulse reads.
+export interface GlobeHotspot {
+  label: string;
+  location: [number, number];
+  color: string;
+  intensity?: number;
+}
+
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+  const n = parseInt(full, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+// Light the globe from the real sun: a warm directional light placed at the
+// current subsolar point (where the sun is overhead now) gives a live
+// day/night terminator across the navy sphere. The globe spins through it.
+function applyDayNight(g: any) {
+  try {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+    const decl = -23.44 * Math.cos((2 * Math.PI / 365) * (dayOfYear + 10)); // solar declination °
+    const subLng = -15 * (now.getUTCHours() + now.getUTCMinutes() / 60 - 12); // sun overhead at local noon
+    const c = g.getCoords(decl, subLng, 3);
+    const scene = g.scene();
+    let placed = false;
+    scene.traverse((o: any) => {
+      if (o.isDirectionalLight) { o.position.set(c.x, c.y, c.z); o.intensity = 1.7; o.color = new Color('#fff1d4'); placed = true; }
+      else if (o.isAmbientLight) { o.intensity = 0.5; o.color = new Color('#46587d'); }
+    });
+    if (!placed) {
+      const sun = new DirectionalLight(0xfff1d4, 1.7);
+      sun.position.set(c.x, c.y, c.z);
+      scene.add(sun);
+    }
+  } catch { /* lighting is non-critical */ }
+}
+
 // cool navy-blue (cheap) -> brand gold -> warm red (expensive)
 const HEAT_STOPS = [
   [30, 58, 95],
@@ -56,18 +97,22 @@ function JourneyGlobeGL({
   stops,
   arcs,
   chokepoints = [],
+  hotspots = [],
   focus,
   activeCountry,
   dataLayer = null,
+  arcEnergy = 0.5,
   zoomedOut = false,
   onStopClick,
 }: {
   stops: JourneyStop[];
   arcs: JourneyArc[];
   chokepoints?: JourneyChokepointMarker[];
+  hotspots?: GlobeHotspot[];
   focus: [number, number];
   activeCountry: string | null;
   dataLayer?: GlobeDataLayer | null;
+  arcEnergy?: number;
   zoomedOut?: boolean;
   onStopClick?: (index: number) => void;
 }) {
@@ -124,21 +169,24 @@ function JourneyGlobeGL({
     return Math.max(0, Math.min(1, (v - dataLayer.min) / (dataLayer.max - dataLayer.min)));
   };
 
-  // gold ring on the active stop + red rings on active chokepoints
+  // gold ring on the active stop + red rings on chokepoints + severity-
+  // coloured rings on hotspots (pulse radius scales with intensity)
   const ringsData = useMemo(() => {
     const rings: any[] = [];
     if (activeStop) rings.push({ lat: activeStop.location[0], lng: activeStop.location[1], danger: false });
     for (const c of chokepoints) rings.push({ lat: c.location[0], lng: c.location[1], danger: true });
+    for (const h of hotspots) rings.push({ lat: h.location[0], lng: h.location[1], hot: true, rgb: hexToRgb(h.color), intensity: h.intensity ?? 0.6 });
     return rings;
-  }, [activeStop, chokepoints]);
+  }, [activeStop, chokepoints, hotspots]);
 
-  // stop labels + red chokepoint labels
+  // stop labels + red chokepoint labels + coloured hotspot labels
   const labelsData = useMemo(() => {
     return [
       ...stops.map((s) => ({ lat: s.location[0], lng: s.location[1], text: s.place, active: !!s.active, danger: false, index: s.index })),
       ...chokepoints.map((c) => ({ lat: c.location[0], lng: c.location[1], text: '⚠ ' + c.label, active: false, danger: true, index: null })),
+      ...hotspots.map((h) => ({ lat: h.location[0], lng: h.location[1], text: h.label, active: false, danger: false, hot: true, color: h.color, index: null })),
     ];
-  }, [stops, chokepoints]);
+  }, [stops, chokepoints, hotspots]);
 
   // brand-navy sphere instead of the default texture
   const globeMaterial = useMemo(
@@ -185,29 +233,35 @@ function JourneyGlobeGL({
           arcStartLng={(a: any) => a.from[1]}
           arcEndLat={(a: any) => a.to[0]}
           arcEndLng={(a: any) => a.to[1]}
-          arcColor={() => ['rgba(212,184,92,0.25)', '#E8CC74', 'rgba(212,184,92,0.25)']}
-          arcStroke={0.6}
+          arcColor={() => {
+            const a = (0.15 + arcEnergy * 0.3).toFixed(2);
+            const mid = arcEnergy > 0.66 ? '#FFE6A0' : '#E8CC74';
+            return [`rgba(212,184,92,${a})`, mid, `rgba(212,184,92,${a})`];
+          }}
+          arcStroke={0.45 + arcEnergy * 0.55}
           arcDashLength={0.35}
           arcDashGap={0.9}
-          arcDashAnimateTime={2600}
+          arcDashAnimateTime={Math.round(3200 - arcEnergy * 2000)}
           ringsData={ringsData}
           ringLat={(r: any) => r.lat}
           ringLng={(r: any) => r.lng}
-          ringMaxRadius={(r: any) => (r.danger ? 2.4 : 3.2)}
-          ringPropagationSpeed={1.6}
-          ringRepeatPeriod={900}
-          ringColor={(r: any) => (t: number) =>
-            r.danger
+          ringMaxRadius={(r: any) => (r.hot ? 1.8 + (r.intensity ?? 0.6) * 3.2 : r.danger ? 2.4 : 3.2)}
+          ringPropagationSpeed={(r: any) => (r.hot ? 1.4 + (r.intensity ?? 0.6) * 1.4 : 1.6)}
+          ringRepeatPeriod={(r: any) => (r.hot ? 1100 - (r.intensity ?? 0.6) * 500 : 900)}
+          ringColor={(r: any) => (t: number) => {
+            if (r.hot) { const [R, G, B] = r.rgb; return `rgba(${R},${G},${B},${Math.max(0, 0.8 * (1 - t))})`; }
+            return r.danger
               ? `rgba(224,112,112,${Math.max(0, 0.7 * (1 - t))})`
-              : `rgba(212,184,92,${Math.max(0, 0.8 * (1 - t))})`}
+              : `rgba(212,184,92,${Math.max(0, 0.8 * (1 - t))})`;
+          }}
           labelsData={labelsData}
           labelLat={(l: any) => l.lat}
           labelLng={(l: any) => l.lng}
           labelText={(l: any) => l.text}
-          labelSize={(l: any) => (l.active ? 1.5 : l.danger ? 0.95 : 1.1) + (labelKey(l) === hoverLabel ? 0.35 : 0)}
-          labelDotRadius={(l: any) => (l.active ? 0.55 : l.danger ? 0.28 : 0.35)}
+          labelSize={(l: any) => (l.active ? 1.5 : l.danger ? 0.95 : l.hot ? 1.0 : 1.1) + (labelKey(l) === hoverLabel ? 0.35 : 0)}
+          labelDotRadius={(l: any) => (l.active ? 0.55 : l.hot ? 0.45 : l.danger ? 0.28 : 0.35)}
           labelColor={(l: any) =>
-            labelKey(l) === hoverLabel ? GOLD_LIGHT : l.active ? GOLD_LIGHT : l.danger ? RED : 'rgba(255,255,255,0.6)'
+            labelKey(l) === hoverLabel ? GOLD_LIGHT : l.active ? GOLD_LIGHT : l.color ? l.color : l.danger ? RED : 'rgba(255,255,255,0.6)'
           }
           labelAltitude={0.012}
           labelResolution={2}
@@ -230,6 +284,7 @@ function JourneyGlobeGL({
             const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             controls.autoRotate = !reduced;
             controls.autoRotateSpeed = 0.35;
+            applyDayNight(g);
             g.pointOfView({ lat: focus[0], lng: focus[1], altitude: zoomedOut ? 3.6 : 1.8 }, 0);
             setReady(true);
           }}

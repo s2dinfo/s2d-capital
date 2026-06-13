@@ -36,6 +36,19 @@ const POLICY_RATES: Record<string, number> = {
 };
 const MACRO_LAYER = { values: POLICY_RATES, min: 0, max: 12 };
 
+// Current major flashpoints — red = active war, orange = rising tension.
+// intensity scales the pulse. Curated (these are the live conflicts); the
+// globe layer is generic enough to later take a geocoded live feed.
+const GEO_HOTSPOTS: { label: string; location: [number, number]; color: string; intensity: number }[] = [
+  { label: 'UKRAINE FRONT', location: [50.45, 30.52], color: '#C0392B', intensity: 1.0 },
+  { label: 'GAZA', location: [31.5, 34.47], color: '#C0392B', intensity: 0.9 },
+  { label: 'KASHMIR · LoC', location: [34.1, 74.4], color: '#C0392B', intensity: 0.8 },
+  { label: 'TAIWAN STRAIT', location: [24.5, 119.5], color: '#E88A3C', intensity: 0.85 },
+  { label: 'SOUTH CHINA SEA', location: [12.5, 115.0], color: '#C0392B', intensity: 0.75 },
+  { label: 'RED SEA', location: [14.5, 42.5], color: '#E88A3C', intensity: 0.7 },
+  { label: 'SUDAN', location: [15.5, 32.55], color: '#E88A3C', intensity: 0.7 },
+];
+
 // Each vertical is a place on Earth the globe flies to
 const LENSES = [
   {
@@ -124,6 +137,18 @@ function CommandDeck({ md }: { md: MarketDataResponse | null }) {
   );
   const handleStopClick = useCallback((i: number) => setSpot(lens.spots[i].loc), [lens]);
 
+  // "energy" of this lens = average absolute live move across its rows. Drives
+  // arc speed/brightness so the globe quickens when the market does. Quantized
+  // to 0.2 steps so tiny tick-to-tick noise doesn't restart the arc animation.
+  const arcEnergy = useMemo(() => {
+    const chgs = lens.rows(md)
+      .map((r) => ('chg' in r && typeof r.chg === 'number' ? Math.abs(r.chg) : null))
+      .filter((x): x is number => x != null);
+    if (!chgs.length) return 0.45;
+    const avg = chgs.reduce((a, b) => a + b, 0) / chgs.length;
+    return Math.round(Math.max(0.15, Math.min(1, avg / 3)) * 5) / 5;
+  }, [lens, md]);
+
   return (
     <div style={{ width: '100%', maxWidth: 1160, margin: '0 auto' }}>
       <style dangerouslySetInnerHTML={{ __html: `
@@ -164,6 +189,8 @@ function CommandDeck({ md }: { md: MarketDataResponse | null }) {
             focus={focusPt}
             activeCountry={null}
             dataLayer={lens.key === 'macro' ? MACRO_LAYER : null}
+            hotspots={lens.key === 'geopolitics' ? GEO_HOTSPOTS : undefined}
+            arcEnergy={arcEnergy}
             onStopClick={handleStopClick}
           />
           {lens.key === 'macro' && (
@@ -177,6 +204,17 @@ function CommandDeck({ md }: { md: MarketDataResponse | null }) {
                 <span>CHEAP MONEY → EXPENSIVE</span>
                 <span>12%+</span>
               </div>
+            </div>
+          )}
+          {lens.key === 'geopolitics' && (
+            <div style={{ marginTop: 14, display: 'flex', gap: 18, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.45)' }}>LIVE CONFLICT WATCH</span>
+              {[{ c: '#C0392B', t: 'ACTIVE WAR' }, { c: '#E88A3C', t: 'RISING TENSION' }].map((x) => (
+                <span key={x.t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.5)' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: x.c, boxShadow: `0 0 8px ${x.c}` }} />
+                  {x.t}
+                </span>
+              ))}
             </div>
           )}
         </div>
