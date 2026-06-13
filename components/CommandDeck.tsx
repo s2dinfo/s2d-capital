@@ -20,6 +20,22 @@ import type { MarketDataResponse } from '@/hooks/useMarketData';
 
 const GOLD_LIGHT = '#D4B85C';
 
+// Central-bank policy rates (%), representative levels, keyed to the exact
+// Natural Earth country names used by the globe topology. The Eurozone shares
+// the ECB rate, so it fans out across all member states. Values above the
+// legend max simply clamp to the hottest colour.
+const ECB_RATE = 3.0;
+const EUROZONE = ['Germany', 'France', 'Italy', 'Spain', 'Netherlands', 'Belgium', 'Austria', 'Portugal', 'Ireland', 'Finland', 'Greece', 'Slovakia', 'Slovenia', 'Luxembourg', 'Latvia', 'Lithuania', 'Estonia', 'Cyprus', 'Croatia'];
+const POLICY_RATES: Record<string, number> = {
+  'United States of America': 4.5, 'United Kingdom': 4.5, 'Japan': 0.5, 'Switzerland': 1.0,
+  'Canada': 3.0, 'Australia': 4.1, 'China': 3.1, 'India': 6.5, 'South Korea': 3.0,
+  'Brazil': 12.0, 'Mexico': 10.0, 'Russia': 16.0, 'Turkey': 45.0, 'South Africa': 7.75,
+  'Indonesia': 6.0, 'Saudi Arabia': 5.0, 'Sweden': 2.5, 'Norway': 4.5, 'Denmark': 2.6,
+  'Poland': 5.75, 'Czechia': 4.0, 'Hungary': 6.5,
+  ...Object.fromEntries(EUROZONE.map((c) => [c, ECB_RATE])),
+};
+const MACRO_LAYER = { values: POLICY_RATES, min: 0, max: 12 };
+
 // Each vertical is a place on Earth the globe flies to
 const LENSES = [
   {
@@ -147,8 +163,22 @@ function CommandDeck({ md }: { md: MarketDataResponse | null }) {
             arcs={globeArcs}
             focus={focusPt}
             activeCountry={null}
+            dataLayer={lens.key === 'macro' ? MACRO_LAYER : null}
             onStopClick={handleStopClick}
           />
+          {lens.key === 'macro' && (
+            <div style={{ marginTop: 14, padding: '0 6px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.5rem', letterSpacing: '0.18em', color: 'rgba(255,255,255,0.45)', textAlign: 'center', marginBottom: 6 }}>
+                CENTRAL BANK POLICY RATE
+              </div>
+              <div style={{ height: 8, borderRadius: 4, background: 'linear-gradient(90deg, rgb(30,58,95), rgb(201,162,39), rgb(224,83,58))' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: '0.48rem', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.35)', marginTop: 5 }}>
+                <span>0%</span>
+                <span>CHEAP MONEY → EXPENSIVE</span>
+                <span>12%+</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Live data panel for the selected lens */}

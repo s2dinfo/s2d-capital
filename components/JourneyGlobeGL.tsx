@@ -26,12 +26,39 @@ const RED = '#E07070';
 
 const labelKey = (l: any) => `${l.lat},${l.lng}`;
 
+// A choropleth layer: paint + extrude each country by a numeric value
+// (country name -> value), interpolated across [min, max].
+export interface GlobeDataLayer {
+  values: Record<string, number>;
+  min: number;
+  max: number;
+}
+
+// cool navy-blue (cheap) -> brand gold -> warm red (expensive)
+const HEAT_STOPS = [
+  [30, 58, 95],
+  [201, 162, 39],
+  [224, 83, 58],
+];
+function heatColor(t: number, alpha = 0.82) {
+  const x = Math.max(0, Math.min(1, t)) * (HEAT_STOPS.length - 1);
+  const i = Math.min(HEAT_STOPS.length - 2, Math.floor(x));
+  const f = x - i;
+  const [ar, ag, ab] = HEAT_STOPS[i];
+  const [br, bg, bb] = HEAT_STOPS[i + 1];
+  const r = Math.round(ar + (br - ar) * f);
+  const g = Math.round(ag + (bg - ag) * f);
+  const b = Math.round(ab + (bb - ab) * f);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 function JourneyGlobeGL({
   stops,
   arcs,
   chokepoints = [],
   focus,
   activeCountry,
+  dataLayer = null,
   zoomedOut = false,
   onStopClick,
 }: {
@@ -40,6 +67,7 @@ function JourneyGlobeGL({
   chokepoints?: JourneyChokepointMarker[];
   focus: [number, number];
   activeCountry: string | null;
+  dataLayer?: GlobeDataLayer | null;
   zoomedOut?: boolean;
   onStopClick?: (index: number) => void;
 }) {
@@ -87,6 +115,15 @@ function JourneyGlobeGL({
   const activeStop = stops.find((s) => s.active);
   const litCountry = hoverCountry ?? activeCountry;
 
+  // normalized [0,1] position of a country's value within the data layer, or
+  // null if this country has no datum (or there's no layer at all)
+  const layerT = (name: string): number | null => {
+    if (!dataLayer) return null;
+    const v = dataLayer.values[name];
+    if (v == null) return null;
+    return Math.max(0, Math.min(1, (v - dataLayer.min) / (dataLayer.max - dataLayer.min)));
+  };
+
   // gold ring on the active stop + red rings on active chokepoints
   const ringsData = useMemo(() => {
     const rings: any[] = [];
@@ -122,14 +159,25 @@ function JourneyGlobeGL({
           atmosphereColor="#42528a"
           atmosphereAltitude={0.16}
           polygonsData={countries}
-          polygonCapColor={(f: any) =>
-            f.properties.name === litCountry ? 'rgba(212,184,92,0.22)' : 'rgba(26,36,64,0.65)'
-          }
-          polygonSideColor={() => 'rgba(0,0,0,0)'}
-          polygonStrokeColor={(f: any) =>
-            f.properties.name === litCountry ? 'rgba(232,204,116,0.95)' : 'rgba(110,130,180,0.30)'
-          }
-          polygonAltitude={(f: any) => (f.properties.name === litCountry ? 0.012 : 0.005)}
+          polygonCapColor={(f: any) => {
+            const name = f.properties.name;
+            if (name === litCountry) return 'rgba(212,184,92,0.32)';
+            const t = layerT(name);
+            if (t != null) return heatColor(t);
+            return dataLayer ? 'rgba(26,36,64,0.5)' : 'rgba(26,36,64,0.65)';
+          }}
+          polygonSideColor={() => (dataLayer ? 'rgba(212,184,92,0.10)' : 'rgba(0,0,0,0)')}
+          polygonStrokeColor={(f: any) => {
+            const name = f.properties.name;
+            if (name === litCountry) return 'rgba(232,204,116,0.95)';
+            return layerT(name) != null ? 'rgba(232,204,116,0.45)' : 'rgba(110,130,180,0.30)';
+          }}
+          polygonAltitude={(f: any) => {
+            const name = f.properties.name;
+            const t = layerT(name);
+            if (t != null) return 0.012 + t * 0.10 + (name === litCountry ? 0.02 : 0);
+            return name === litCountry ? 0.012 : 0.005;
+          }}
           polygonsTransitionDuration={300}
           onPolygonHover={(f: any) => setHoverCountry(f ? f.properties.name : null)}
           arcsData={arcs}
