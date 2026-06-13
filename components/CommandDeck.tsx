@@ -15,6 +15,7 @@ const JourneyGlobeGL = dynamic(() => import('@/components/JourneyGlobeGL'), {
     </div>
   ),
 });
+import AnimatedNumber from '@/components/AnimatedNumber';
 import { JOURNEYS } from '@/lib/journeys';
 import type { MarketDataResponse } from '@/hooks/useMarketData';
 
@@ -191,6 +192,7 @@ function CommandDeck({ md }: { md: MarketDataResponse | null }) {
             dataLayer={lens.key === 'macro' ? MACRO_LAYER : null}
             hotspots={lens.key === 'geopolitics' ? GEO_HOTSPOTS : undefined}
             arcEnergy={arcEnergy}
+            accent={lens.color}
             onStopClick={handleStopClick}
           />
           {lens.key === 'macro' && (
@@ -242,7 +244,7 @@ function CommandDeck({ md }: { md: MarketDataResponse | null }) {
               <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', fontWeight: 300 }}>{r.l}</span>
                 <span style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.88rem', fontWeight: 600, color: '#fff' }}>{r.v}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.88rem', fontWeight: 600, color: '#fff' }}><AnimatedNumber value={r.v} /></span>
                   {'chg' in r && r.chg != null && (
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', fontWeight: 600, color: chgColor(r.chg) }}>
                       {r.chg >= 0 ? '+' : ''}{r.chg.toFixed(1)}%

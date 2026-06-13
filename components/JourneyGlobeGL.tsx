@@ -49,6 +49,16 @@ function hexToRgb(hex: string): [number, number, number] {
   const n = parseInt(full, 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
+// mix a hex toward white (amt 0..1) — keeps a lens accent bright enough to read
+function mix(hex: string, amt: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  const m = (c: number) => Math.round(c + (255 - c) * amt);
+  return `rgb(${m(r)},${m(g)},${m(b)})`;
+}
+function rgba(hex: string, a: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${r},${g},${b},${a})`;
+}
 
 // Light the globe from the real sun: a warm directional light placed at the
 // current subsolar point (where the sun is overhead now) gives a live
@@ -63,12 +73,14 @@ function applyDayNight(g: any) {
     const c = g.getCoords(decl, subLng, 3);
     const scene = g.scene();
     let placed = false;
+    // gentle terminator: high ambient keeps the whole globe readable (it's a
+    // hero, never a dark ball), the directional sun just warms the day side
     scene.traverse((o: any) => {
-      if (o.isDirectionalLight) { o.position.set(c.x, c.y, c.z); o.intensity = 1.7; o.color = new Color('#fff1d4'); placed = true; }
-      else if (o.isAmbientLight) { o.intensity = 0.5; o.color = new Color('#46587d'); }
+      if (o.isDirectionalLight) { o.position.set(c.x, c.y, c.z); o.intensity = 0.85; o.color = new Color('#ffe9c2'); placed = true; }
+      else if (o.isAmbientLight) { o.intensity = 0.95; o.color = new Color('#6076a0'); }
     });
     if (!placed) {
-      const sun = new DirectionalLight(0xfff1d4, 1.7);
+      const sun = new DirectionalLight(0xffe9c2, 0.85);
       sun.position.set(c.x, c.y, c.z);
       scene.add(sun);
     }
@@ -102,6 +114,7 @@ function JourneyGlobeGL({
   activeCountry,
   dataLayer = null,
   arcEnergy = 0.5,
+  accent = GOLD_LIGHT,
   zoomedOut = false,
   onStopClick,
 }: {
@@ -113,6 +126,7 @@ function JourneyGlobeGL({
   activeCountry: string | null;
   dataLayer?: GlobeDataLayer | null;
   arcEnergy?: number;
+  accent?: string;
   zoomedOut?: boolean;
   onStopClick?: (index: number) => void;
 }) {
@@ -159,6 +173,7 @@ function JourneyGlobeGL({
 
   const activeStop = stops.find((s) => s.active);
   const litCountry = hoverCountry ?? activeCountry;
+  const accentBright = mix(accent, 0.5); // readable lens accent for active label / arc core
 
   // normalized [0,1] position of a country's value within the data layer, or
   // null if this country has no datum (or there's no layer at all)
@@ -234,11 +249,10 @@ function JourneyGlobeGL({
           arcEndLat={(a: any) => a.to[0]}
           arcEndLng={(a: any) => a.to[1]}
           arcColor={() => {
-            const a = (0.15 + arcEnergy * 0.3).toFixed(2);
-            const mid = arcEnergy > 0.66 ? '#FFE6A0' : '#E8CC74';
-            return [`rgba(212,184,92,${a})`, mid, `rgba(212,184,92,${a})`];
+            const tail = rgba(accent, 0.3 + arcEnergy * 0.25);
+            return [tail, accentBright, tail];
           }}
-          arcStroke={0.45 + arcEnergy * 0.55}
+          arcStroke={0.55 + arcEnergy * 0.5}
           arcDashLength={0.35}
           arcDashGap={0.9}
           arcDashAnimateTime={Math.round(3200 - arcEnergy * 2000)}
@@ -250,18 +264,17 @@ function JourneyGlobeGL({
           ringRepeatPeriod={(r: any) => (r.hot ? 1100 - (r.intensity ?? 0.6) * 500 : 900)}
           ringColor={(r: any) => (t: number) => {
             if (r.hot) { const [R, G, B] = r.rgb; return `rgba(${R},${G},${B},${Math.max(0, 0.8 * (1 - t))})`; }
-            return r.danger
-              ? `rgba(224,112,112,${Math.max(0, 0.7 * (1 - t))})`
-              : `rgba(212,184,92,${Math.max(0, 0.8 * (1 - t))})`;
+            if (r.danger) return `rgba(224,112,112,${Math.max(0, 0.7 * (1 - t))})`;
+            return rgba(accent, Math.max(0, 0.85 * (1 - t)));
           }}
           labelsData={labelsData}
           labelLat={(l: any) => l.lat}
           labelLng={(l: any) => l.lng}
           labelText={(l: any) => l.text}
-          labelSize={(l: any) => (l.active ? 1.5 : l.danger ? 0.95 : l.hot ? 1.0 : 1.1) + (labelKey(l) === hoverLabel ? 0.35 : 0)}
-          labelDotRadius={(l: any) => (l.active ? 0.55 : l.hot ? 0.45 : l.danger ? 0.28 : 0.35)}
+          labelSize={(l: any) => (l.active ? 1.6 : l.danger ? 1.05 : l.hot ? 1.1 : 1.25) + (labelKey(l) === hoverLabel ? 0.35 : 0)}
+          labelDotRadius={(l: any) => (l.active ? 0.6 : l.hot ? 0.48 : l.danger ? 0.3 : 0.4)}
           labelColor={(l: any) =>
-            labelKey(l) === hoverLabel ? GOLD_LIGHT : l.active ? GOLD_LIGHT : l.color ? l.color : l.danger ? RED : 'rgba(255,255,255,0.6)'
+            labelKey(l) === hoverLabel ? GOLD_LIGHT : l.active ? accentBright : l.color ? l.color : l.danger ? RED : 'rgba(255,255,255,0.92)'
           }
           labelAltitude={0.012}
           labelResolution={2}
