@@ -278,7 +278,7 @@ function JourneyGlobeGL({
           labelColor={(l: any) =>
             labelKey(l) === hoverLabel ? GOLD_LIGHT : l.active ? accentBright : l.color ? l.color : l.danger ? RED : 'rgba(255,255,255,0.92)'
           }
-          labelAltitude={0.012}
+          labelAltitude={dataLayer ? 0.09 : 0.012}
           labelResolution={2}
           onLabelClick={(l: any) => {
             if (l.index != null && onStopClick) onStopClick(l.index);
