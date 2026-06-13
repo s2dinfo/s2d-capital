@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bitcoin, Landmark, Fuel, ArrowLeftRight, Globe2 } from 'lucide-react';
@@ -84,10 +84,29 @@ function chgColor(c?: number | null) {
   return c >= 0 ? 'var(--green, #34d399)' : 'var(--red, #f87171)';
 }
 
-export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
+function CommandDeck({ md }: { md: MarketDataResponse | null }) {
   const [sel, setSel] = useState(0);
   const [spot, setSpot] = useState<[number, number] | null>(null);
+  // single source of truth for the two CTA buttons — entering one always
+  // clears the other, so a fast move from OPEN MARKETS to READ RESEARCH can't
+  // leave the first one stuck in its hover colour.
+  const [hoverBtn, setHoverBtn] = useState<'open' | 'research' | null>(null);
   const lens = LENSES[sel];
+
+  // Stable references for the globe layers. The homepage re-renders every
+  // second (live clock), so without memoizing these the label + arc layers
+  // were regenerated on every tick — labels flickered and the arc "comet"
+  // reset to the start before it could ever reach its destination.
+  const focusPt = useMemo<[number, number]>(() => spot ?? lens.loc, [spot, lens]);
+  const globeStops = useMemo(
+    () => lens.spots.map((sp, i) => ({ place: sp.name, location: sp.loc, active: focusPt.join() === sp.loc.join(), index: i })),
+    [lens, focusPt]
+  );
+  const globeArcs = useMemo(
+    () => lens.spots.slice(1).map((sp) => ({ from: lens.spots[0].loc, to: sp.loc })),
+    [lens]
+  );
+  const handleStopClick = useCallback((i: number) => setSpot(lens.spots[i].loc), [lens]);
 
   return (
     <div style={{ width: '100%', maxWidth: 1160, margin: '0 auto' }}>
@@ -124,11 +143,11 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
         <div className="cd-globe">
           <JourneyGlobeGL
             key={lens.key}
-            stops={lens.spots.map((sp, i) => ({ place: sp.name, location: sp.loc, active: (spot ?? lens.loc).join() === sp.loc.join(), index: i }))}
-            arcs={lens.spots.slice(1).map((sp) => ({ from: lens.spots[0].loc, to: sp.loc }))}
-            focus={spot ?? lens.loc}
+            stops={globeStops}
+            arcs={globeArcs}
+            focus={focusPt}
             activeCountry={null}
-            onStopClick={(i) => setSpot(lens.spots[i].loc)}
+            onStopClick={handleStopClick}
           />
         </div>
 
@@ -166,15 +185,25 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
             ))}
             <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
               <Link href={lens.href}
-                style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: lens.color, color: '#fff', textDecoration: 'none', transition: 'all 0.25s', boxShadow: 'none' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#D4B85C'; e.currentTarget.style.color = '#0D1322'; e.currentTarget.style.boxShadow = '0 6px 30px rgba(212,184,92,0.5)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = lens.color; e.currentTarget.style.color = '#fff'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                onMouseEnter={() => setHoverBtn('open')}
+                onMouseLeave={() => setHoverBtn((b) => (b === 'open' ? null : b))}
+                style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, textDecoration: 'none', transition: 'all 0.25s',
+                  background: hoverBtn === 'open' ? '#D4B85C' : 'transparent',
+                  border: `1px solid ${hoverBtn === 'open' ? '#D4B85C' : lens.color + '66'}`,
+                  color: hoverBtn === 'open' ? '#0D1322' : 'rgba(255,255,255,0.7)',
+                  boxShadow: hoverBtn === 'open' ? '0 6px 30px rgba(212,184,92,0.5)' : 'none',
+                  transform: hoverBtn === 'open' ? 'translateY(-2px)' : 'translateY(0)' }}>
                 OPEN MARKETS
               </Link>
               <Link href="/research"
-                style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, background: 'transparent', border: `1px solid ${lens.color}66`, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'all 0.25s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = lens.color; e.currentTarget.style.borderColor = lens.color; e.currentTarget.style.color = '#fff'; e.currentTarget.style.boxShadow = `0 6px 30px ${lens.color}77`; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = `${lens.color}66`; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                onMouseEnter={() => setHoverBtn('research')}
+                onMouseLeave={() => setHoverBtn((b) => (b === 'research' ? null : b))}
+                style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em', padding: '11px 0', borderRadius: 4, textDecoration: 'none', transition: 'all 0.25s',
+                  background: hoverBtn === 'research' ? lens.color : 'transparent',
+                  border: `1px solid ${hoverBtn === 'research' ? lens.color : lens.color + '66'}`,
+                  color: hoverBtn === 'research' ? '#fff' : 'rgba(255,255,255,0.7)',
+                  boxShadow: hoverBtn === 'research' ? `0 6px 30px ${lens.color}77` : 'none',
+                  transform: hoverBtn === 'research' ? 'translateY(-2px)' : 'translateY(0)' }}>
                 READ RESEARCH
               </Link>
             </div>
@@ -184,6 +213,10 @@ export default function CommandDeck({ md }: { md: MarketDataResponse | null }) {
     </div>
   );
 }
+
+// memo so the homepage's 1-second clock tick (and any other parent re-render
+// that doesn't change `md`) never reaches the globe.
+export default memo(CommandDeck);
 
 /* ── Expeditions strip — sell the experience, not the metadata ── */
 const TAGLINES: Record<string, string> = {

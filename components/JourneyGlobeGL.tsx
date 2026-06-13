@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import Globe, { GlobeMethods } from 'react-globe.gl';
 import { MeshPhongMaterial, Color } from 'three';
 import * as topojson from 'topojson-client';
@@ -24,7 +24,9 @@ export interface JourneyChokepointMarker {
 const GOLD_LIGHT = '#D4B85C';
 const RED = '#E07070';
 
-export default function JourneyGlobeGL({
+const labelKey = (l: any) => `${l.lat},${l.lng}`;
+
+function JourneyGlobeGL({
   stops,
   arcs,
   chokepoints = [],
@@ -46,6 +48,10 @@ export default function JourneyGlobeGL({
   const [size, setSize] = useState(0);
   const [countries, setCountries] = useState<any[]>([]);
   const [ready, setReady] = useState(false);
+  // which country / city the cursor is currently over (one at a time, so the
+  // place you leave always clears as the new one lights up)
+  const [hoverCountry, setHoverCountry] = useState<string | null>(null);
+  const [hoverLabel, setHoverLabel] = useState<string | null>(null);
 
   // Country polygons from the bundled Natural Earth topology
   useEffect(() => {
@@ -79,6 +85,7 @@ export default function JourneyGlobeGL({
   }, [focus, zoomedOut, ready]);
 
   const activeStop = stops.find((s) => s.active);
+  const litCountry = hoverCountry ?? activeCountry;
 
   // gold ring on the active stop + red rings on active chokepoints
   const ringsData = useMemo(() => {
@@ -116,14 +123,15 @@ export default function JourneyGlobeGL({
           atmosphereAltitude={0.16}
           polygonsData={countries}
           polygonCapColor={(f: any) =>
-            f.properties.name === activeCountry ? 'rgba(212,184,92,0.16)' : 'rgba(26,36,64,0.65)'
+            f.properties.name === litCountry ? 'rgba(212,184,92,0.22)' : 'rgba(26,36,64,0.65)'
           }
           polygonSideColor={() => 'rgba(0,0,0,0)'}
           polygonStrokeColor={(f: any) =>
-            f.properties.name === activeCountry ? 'rgba(232,204,116,0.95)' : 'rgba(110,130,180,0.30)'
+            f.properties.name === litCountry ? 'rgba(232,204,116,0.95)' : 'rgba(110,130,180,0.30)'
           }
-          polygonAltitude={(f: any) => (f.properties.name === activeCountry ? 0.012 : 0.005)}
-          polygonsTransitionDuration={600}
+          polygonAltitude={(f: any) => (f.properties.name === litCountry ? 0.012 : 0.005)}
+          polygonsTransitionDuration={300}
+          onPolygonHover={(f: any) => setHoverCountry(f ? f.properties.name : null)}
           arcsData={arcs}
           arcStartLat={(a: any) => a.from[0]}
           arcStartLng={(a: any) => a.from[1]}
@@ -148,15 +156,18 @@ export default function JourneyGlobeGL({
           labelLat={(l: any) => l.lat}
           labelLng={(l: any) => l.lng}
           labelText={(l: any) => l.text}
-          labelSize={(l: any) => (l.active ? 1.5 : l.danger ? 0.95 : 1.1)}
+          labelSize={(l: any) => (l.active ? 1.5 : l.danger ? 0.95 : 1.1) + (labelKey(l) === hoverLabel ? 0.35 : 0)}
           labelDotRadius={(l: any) => (l.active ? 0.55 : l.danger ? 0.28 : 0.35)}
-          labelColor={(l: any) => (l.active ? GOLD_LIGHT : l.danger ? RED : 'rgba(255,255,255,0.6)')}
+          labelColor={(l: any) =>
+            labelKey(l) === hoverLabel ? GOLD_LIGHT : l.active ? GOLD_LIGHT : l.danger ? RED : 'rgba(255,255,255,0.6)'
+          }
           labelAltitude={0.012}
           labelResolution={2}
           onLabelClick={(l: any) => {
             if (l.index != null && onStopClick) onStopClick(l.index);
           }}
           onLabelHover={(l: any) => {
+            setHoverLabel(l ? labelKey(l) : null);
             const el = containerRef.current?.querySelector('canvas');
             if (el) (el as HTMLCanvasElement).style.cursor = l && l.index != null ? 'pointer' : 'grab';
           }}
@@ -179,3 +190,8 @@ export default function JourneyGlobeGL({
     </div>
   );
 }
+
+// memo so a parent re-render with unchanged props (e.g. the 60s market-data
+// refresh) can't reset the arc / label layers. The globe only re-renders when
+// stops / arcs / focus actually change, or on its own internal hover state.
+export default memo(JourneyGlobeGL);
