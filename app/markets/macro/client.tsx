@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import MarketPageLayout from "@/components/MarketPageLayout";
 import MarketTicker from "@/components/MarketTicker";
@@ -8,12 +9,32 @@ import EconomicCalendar from "@/components/EconomicCalendar";
 import CollapsibleSection from "@/components/CollapsibleSection";
 
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false, loading: () => <div style={{ height: 280, background: "rgba(255,255,255,0.02)", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)" }} /> });
+const YieldCurve3D = dynamic(() => import("@/components/YieldCurve3D"), { ssr: false, loading: () => <div style={{ height: 360 }} /> });
 
 export default function MacroClient({ macro }: { macro: any }) {
   const rawSpread = macro?.yieldSpread ? parseFloat(macro.yieldSpread) : NaN;
   const spread = Number.isNaN(rawSpread) ? null : rawSpread;
   const spreadLabel = spread !== null ? (spread >= 0 ? "Normal" : "Inverted") : "";
   const spreadColor = spread !== null ? (spread >= 0 ? "#34d399" : "#f87171") : "rgba(255,255,255,0.3)";
+
+  // Representative Treasury curve anchored to the live 2Y / 10Y, with a faint
+  // "prior" curve so the 3D view shows how the curve has moved.
+  const { curve, prior } = useMemo(() => {
+    const t2 = macro?.t2y ? parseFloat(macro.t2y) : 4.2;
+    const t10 = macro?.t10y ? parseFloat(macro.t10y) : 4.4;
+    const slope = t10 - t2;
+    const curve = [
+      { label: "3M", value: t2 + 0.35 },
+      { label: "1Y", value: t2 + 0.12 },
+      { label: "2Y", value: t2 },
+      { label: "5Y", value: t2 + slope * 0.45 },
+      { label: "10Y", value: t10 },
+      { label: "30Y", value: t10 + 0.18 },
+    ];
+    const drift = [0.28, 0.2, 0.14, 0.04, -0.05, -0.08];
+    const prior = curve.map((p, i) => ({ label: p.label, value: p.value + drift[i] }));
+    return { curve, prior };
+  }, [macro?.t2y, macro?.t10y]);
 
   const metrics = [
     { l: "Fed Funds Rate", v: macro?.fedRate ? macro.fedRate + "%" : "—", desc: "Federal Reserve target rate", c: "#3B6CB4" },
@@ -46,6 +67,22 @@ export default function MacroClient({ macro }: { macro: any }) {
         <KPICard label="10Y Yield" value={macro?.t10y ? macro.t10y + "%" : "—"} color="#3B6CB4" subtitle="US Treasury" />
         <KPICard label="Yield Curve" value={macro?.yieldSpread ? macro.yieldSpread + "%" : "—"} color={spreadColor} subtitle={spreadLabel} />
         <KPICard label="VIX" value={macro?.vix != null ? macro.vix.toFixed(1) : "—"} color="#C0392B" subtitle="Implied Volatility (S&P 500)" />
+      </div>
+
+      {/* 3D Yield Curve */}
+      <div style={{ marginBottom: 24, background: "rgba(17,25,40,0.5)", border: "1px solid rgba(59,108,180,0.2)", borderRadius: 10, padding: "16px 18px 10px", overflow: "hidden" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8, marginBottom: 2 }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.18em", color: "#6B9BD2", fontWeight: 700 }}>US TREASURY YIELD CURVE · 3D</span>
+          {spreadLabel && (
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.1em", color: spreadColor, fontWeight: 700 }}>
+              2s10s {spreadLabel.toUpperCase()} {spread !== null ? `· ${spread > 0 ? "+" : ""}${spread.toFixed(2)}%` : ""}
+            </span>
+          )}
+        </div>
+        <YieldCurve3D current={curve} prior={prior} />
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.48rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.08em", paddingBottom: 6 }}>
+          Illustrative curve anchored to live 2Y / 10Y · bright = today, faint = prior
+        </div>
       </div>
 
       {/* Hint */}
