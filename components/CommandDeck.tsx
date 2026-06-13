@@ -193,6 +193,7 @@ function CommandDeck({ md }: { md: MarketDataResponse | null }) {
             hotspots={lens.key === 'geopolitics' ? GEO_HOTSPOTS : undefined}
             arcEnergy={arcEnergy}
             accent={lens.color}
+            arcStyle={lens.key === 'fx' ? 'stream' : 'comet'}
             onStopClick={handleStopClick}
           />
           {lens.key === 'macro' && (

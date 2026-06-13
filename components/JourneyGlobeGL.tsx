@@ -115,6 +115,7 @@ function JourneyGlobeGL({
   dataLayer = null,
   arcEnergy = 0.5,
   accent = GOLD_LIGHT,
+  arcStyle = 'comet',
   zoomedOut = false,
   onStopClick,
 }: {
@@ -127,6 +128,7 @@ function JourneyGlobeGL({
   dataLayer?: GlobeDataLayer | null;
   arcEnergy?: number;
   accent?: string;
+  arcStyle?: 'comet' | 'stream';
   zoomedOut?: boolean;
   onStopClick?: (index: number) => void;
 }) {
@@ -252,10 +254,10 @@ function JourneyGlobeGL({
             const tail = rgba(accent, 0.3 + arcEnergy * 0.25);
             return [tail, accentBright, tail];
           }}
-          arcStroke={0.55 + arcEnergy * 0.5}
-          arcDashLength={0.35}
-          arcDashGap={0.9}
-          arcDashAnimateTime={Math.round(3200 - arcEnergy * 2000)}
+          arcStroke={arcStyle === 'stream' ? 0.5 : 0.55 + arcEnergy * 0.5}
+          arcDashLength={arcStyle === 'stream' ? 0.04 : 0.35}
+          arcDashGap={arcStyle === 'stream' ? 0.055 : 0.9}
+          arcDashAnimateTime={arcStyle === 'stream' ? 1500 : Math.round(3200 - arcEnergy * 2000)}
           ringsData={ringsData}
           ringLat={(r: any) => r.lat}
           ringLng={(r: any) => r.lng}
