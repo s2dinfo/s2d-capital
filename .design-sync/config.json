@@ -1,0 +1,15 @@
+{
+  "projectId": "89969f51-bd5a-4da1-b48b-511c68499d34",
+  "shape": "package",
+  "pkg": "s2d-capital-insights",
+  "globalName": "S2DCapital",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": "styles/globals.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "componentSrcMap": {
+    "KPICard": "components/KPICard.tsx",
+    "AnimatedNumber": "components/AnimatedNumber.tsx",
+    "AuroraShader": "components/AuroraShader.tsx",
+    "CursorGlow": "components/CursorGlow.tsx"
+  }
+}

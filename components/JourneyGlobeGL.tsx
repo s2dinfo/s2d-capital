@@ -117,6 +117,11 @@ function JourneyGlobeGL({
   accent = GOLD_LIGHT,
   arcStyle = 'comet',
   zoomedOut = false,
+  globeImageUrl,
+  bumpImageUrl,
+  showCountries = true,
+  enableZoom = false,
+  fill = false,
   onStopClick,
 }: {
   stops: JourneyStop[];
@@ -130,11 +135,17 @@ function JourneyGlobeGL({
   accent?: string;
   arcStyle?: 'comet' | 'stream';
   zoomedOut?: boolean;
+  globeImageUrl?: string;
+  bumpImageUrl?: string;
+  showCountries?: boolean;
+  enableZoom?: boolean;
+  fill?: boolean;
   onStopClick?: (index: number) => void;
 }) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(0);
+  const [vh, setVh] = useState(0);
   const [countries, setCountries] = useState<any[]>([]);
   const [ready, setReady] = useState(false);
   // which country / city the cursor is currently over (one at a time, so the
@@ -157,9 +168,10 @@ function JourneyGlobeGL({
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => setSize(el.offsetWidth));
+    const ro = new ResizeObserver(() => { setSize(el.offsetWidth); setVh(el.offsetHeight); });
     ro.observe(el);
     setSize(el.offsetWidth);
+    setVh(el.offsetHeight);
     return () => ro.disconnect();
   }, []);
 
@@ -212,18 +224,18 @@ function JourneyGlobeGL({
   );
 
   return (
-    <div ref={containerRef} style={{ width: '100%', aspectRatio: '1', position: 'relative' }}>
+    <div ref={containerRef} style={fill ? { width: '100%', height: '100%', position: 'relative' } : { width: '100%', aspectRatio: '1', position: 'relative' }}>
       {size > 0 && (
         <Globe
           ref={globeRef}
           width={size}
-          height={size}
+          height={fill ? vh : size}
           backgroundColor="rgba(0,0,0,0)"
-          globeMaterial={globeMaterial}
+          {...(globeImageUrl ? { globeImageUrl, bumpImageUrl } : { globeMaterial })}
           showAtmosphere
           atmosphereColor="#42528a"
           atmosphereAltitude={0.16}
-          polygonsData={countries}
+          polygonsData={showCountries ? countries : []}
           polygonCapColor={(f: any) => {
             const name = f.properties.name;
             if (name === litCountry) return 'rgba(212,184,92,0.32)';
@@ -293,7 +305,8 @@ function JourneyGlobeGL({
             const g = globeRef.current;
             if (!g) return;
             const controls = g.controls();
-            controls.enableZoom = false; // never hijack page scroll
+            controls.enableZoom = enableZoom; // opt-in per page (others keep page scroll)
+            if (enableZoom) { controls.minDistance = 160; controls.maxDistance = 600; }
             controls.enablePan = false;
             // the world keeps turning, slowly (unless the user prefers not)
             const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

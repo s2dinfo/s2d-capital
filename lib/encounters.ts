@@ -1,0 +1,132 @@
+// ── Encounter scripts: the data behind each "meet a real figure" scene. ──
+// Adding a new figure to the world = writing one of these objects. No code.
+// Every fact is real and public; dialogue is dramatized from public statements.
+
+export type Line = { who: 'narration' | 'speaker'; text: string };
+
+export type EncounterOption = { id: string; label: string; sub: string };
+
+export type EncounterScript = {
+  id: string;        // matches a globe node's `place`
+  locationTag: string;
+  name: string;
+  role: string;
+  tag: string;       // short speaker label, e.g. 'JENSEN'
+  portrait?: string; // URL to a STYLISED character image (e.g. '/characters/jensen.png'); placeholder shows until set
+  // an extra opening line that reacts to the choice made at the PREVIOUS stop
+  priorReactions?: Record<string, string>;
+  intro: Line[];
+  decision: { prompt: string; options: EncounterOption[] };
+  outcomes: Record<string, { verdict: string; text: string }>;
+  outro: Line[];
+  done: { verdict: string; text: string };
+  article?: string;
+  next?: { node: string; label: string }; // continue the quest to another node
+};
+
+export const ENCOUNTERS: Record<string, EncounterScript> = {
+  Nvidia: {
+    id: 'Nvidia',
+    locationTag: 'NVIDIA HQ · SANTA CLARA',
+    name: 'Jensen Huang',
+    role: 'Founder & CEO, Nvidia',
+    tag: 'JENSEN',
+    portrait: '/characters/jensen.mp4',
+    intro: [
+      { who: 'narration', text: 'Santa Clara, California. Inside Nvidia, a man in a black leather jacket looks up from a silicon wafer.' },
+      { who: 'speaker', text: 'Everyone thinks Nvidia makes chips. We don’t make a single one.' },
+      { who: 'speaker', text: 'We design them. TSMC builds them — in Taiwan, on machines from one company in the Netherlands. We are a link in a chain we don’t control.' },
+      { who: 'speaker', text: 'Which brings me to the decision that built this company. I have limited wafer slots at TSMC. Not enough for everything the market wants. So — where do they go?' },
+    ],
+    decision: {
+      prompt: 'You’re me for a moment. Allocate the wafers.',
+      options: [
+        { id: 'gaming', label: 'Gaming GPUs', sub: 'Proven demand. Safe revenue this quarter.' },
+        { id: 'ai', label: 'AI data-center GPUs', sub: 'The bet on a future nobody’s sure of yet.' },
+      ],
+    },
+    outcomes: {
+      gaming: { verdict: 'A safe quarter.', text: 'You book the revenue gamers always deliver. But the AI buyers waiting on data-center GPUs don’t wait — they go elsewhere. You protected this quarter and handed away the decade. Safe was the trap.' },
+      ai: { verdict: 'That’s the call Nvidia actually made.', text: 'Data-center went from a side bet to the vast majority of Nvidia’s revenue. It became one of the most valuable companies on earth. The catch: it all still rides on TSMC — 110 miles from mainland China.' },
+    },
+    outro: [
+      { who: 'speaker', text: 'Now you understand my half of it. The most important chips on earth — designed by a company that can’t build them.' },
+      { who: 'speaker', text: 'So go and meet the company that does. Go to Taiwan.' },
+    ],
+    done: { verdict: 'You made Nvidia’s call.', text: 'You felt the bet that built a trillion-dollar company. But it only matters if someone can actually build the chips. Follow the chain.' },
+    article: '/research/silicon-the-strategic-commodity',
+    next: { node: 'TSMC', label: 'Follow the chips to Taiwan →' },
+  },
+
+  TSMC: {
+    id: 'TSMC',
+    locationTag: 'TSMC · HSINCHU, TAIWAN',
+    name: 'C.C. Wei',
+    role: 'Chairman & CEO, TSMC',
+    tag: 'C.C. WEI',
+    portrait: '/characters/cc-wei.mp4',
+    priorReactions: {
+      ai: 'So — you bet everything on AI chips. Bold. Now you must understand the company that actually has to build them.',
+      gaming: 'You played it safe at Nvidia. Understandable. But the real game is here, in the fabs — let me show you.',
+    },
+    intro: [
+      { who: 'narration', text: 'Hsinchu, Taiwan. The chief executive of the company that builds almost every advanced chip on earth meets your eye — calm, direct, an engineer to the core.' },
+      { who: 'speaker', text: 'Nvidia designs. We build. Nearly every advanced chip on earth is made here, by us, on this island.' },
+      { who: 'speaker', text: 'The Americans are nervous. They want me to build fabs in Arizona — to spread the risk away from Taiwan. But a fab there costs far more to run than one here.' },
+      { who: 'speaker', text: 'And there is something they don’t say aloud: as long as the world’s chips are made in Taiwan, the world will defend Taiwan. We call it the silicon shield.' },
+    ],
+    decision: {
+      prompt: 'You run TSMC. Where do you build the next great fab?',
+      options: [
+        { id: 'taiwan', label: 'Keep it in Taiwan', sub: 'Cheaper, faster — and the silicon shield stays strong.' },
+        { id: 'spread', label: 'Spread to Arizona & Japan', sub: 'Costlier, slower — but the world stops betting on one island.' },
+      ],
+    },
+    outcomes: {
+      taiwan: { verdict: 'The shield holds — for now.', text: 'You keep costs low and concentration high. The world keeps protecting Taiwan because it has no choice. But you’ve placed the entire AI economy on one fault line, 110 miles from China. One blockade freezes everything.' },
+      spread: { verdict: 'That’s the path TSMC is actually walking.', text: 'Arizona and Japan fabs are rising — at a reported ~50% higher cost. You de-risk geography but bleed margin, and you quietly weaken the very shield that kept Taiwan safe. There is no free choice here.' },
+    },
+    outro: [
+      { who: 'speaker', text: 'Now you see it. Everyone wants these chips. Almost no one on earth can make them.' },
+      { who: 'speaker', text: 'And the few who can sit in the most dangerous place on the map.' },
+    ],
+    done: { verdict: 'You’ve walked the spine of the AI era.', text: 'Designer → maker → an island the whole world is holding its breath over. Two choices, two continents, one fragile chain — and you made both calls.' },
+    article: '/research/silicon-the-strategic-commodity',
+    next: { node: 'ASML', label: 'Trace it back to the machine →' },
+  },
+
+  ASML: {
+    id: 'ASML',
+    locationTag: 'ASML · VELDHOVEN, NETHERLANDS',
+    name: 'Christophe Fouquet',
+    role: 'CEO, ASML',
+    tag: 'FOUQUET',
+    portrait: '/characters/fouquet.mp4',
+    priorReactions: {
+      taiwan: 'So Taiwan keeps everything. Then you’d better pray nothing happens to it — because the machines that make those chips possible all come from here.',
+      spread: 'Spreading the fabs — sensible. But every new fab, wherever you build it, still needs a machine only we can make. Let me show you the real bottleneck.',
+    },
+    intro: [
+      { who: 'narration', text: 'Veldhoven, a quiet Dutch town. Inside a vast cleanroom stands a machine the size of a bus, worth more than €200 million.' },
+      { who: 'speaker', text: 'This is EUV lithography. It prints features smaller than a virus, using light from exploding tin droplets focused by the flattest mirrors ever made. We are the only company on earth that builds it.' },
+      { who: 'speaker', text: 'Which makes me a target. Washington wants me to cut China off from our most advanced machines. China is one of my biggest customers.' },
+    ],
+    decision: {
+      prompt: 'You run ASML. The US demands you stop selling advanced machines to China.',
+      options: [
+        { id: 'sell', label: 'Keep selling to China', sub: 'Protect revenue and your independence as a Dutch company.' },
+        { id: 'comply', label: 'Comply with export controls', sub: 'Align with the US-led bloc — and lose a vast market.' },
+      ],
+    },
+    outcomes: {
+      sell: { verdict: 'You keep the revenue — and the heat.', text: 'China stays a top customer, but you’re now the front line of a tech cold war. And every advanced machine you ship helps China build the very capability meant to replace you.' },
+      comply: { verdict: 'That’s the path that actually unfolded.', text: 'The Dutch government, pressed by Washington, restricted ASML’s most advanced exports to China. You align with the West — and hand China a national mission to build its own EUV from scratch. The bottleneck becomes a battleground.' },
+    },
+    outro: [
+      { who: 'speaker', text: 'One company. One machine. Without it, there are no advanced chips — no AI, anywhere on earth.' },
+      { who: 'speaker', text: 'That is the most concentrated point of power in the modern economy. And it sits right here, in a Dutch field.' },
+    ],
+    done: { verdict: 'You’ve walked the entire triangle.', text: 'Design (Nvidia) → fabrication (TSMC) → the machine (ASML). Three companies, three continents, one chain — and now you’ve made every call that holds it together.' },
+    article: '/research/silicon-the-strategic-commodity',
+  },
+};

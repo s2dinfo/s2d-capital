@@ -16,6 +16,7 @@ import AnimatedCounter from '@/components/AnimatedCounter';
 import GlowCard from '@/components/GlowCard';
 import Footer from '@/components/Footer';
 import CommandDeck, { ExpeditionsStrip } from '@/components/CommandDeck';
+import AuroraShader from '@/components/AuroraShader';
 
 /* ── Helpers ── */
 function Mini({data,color,h=44}:{data:number[];color:string;h?:number}) {
@@ -321,6 +322,8 @@ export default function HomeClient(){
 
       {/* Background layer — clipped so glows don't bleed */}
       <div style={{position:'absolute',inset:0,overflow:'hidden',pointerEvents:'none'}}>
+        {/* Living WebGL aurora — deepest layer; degrades to the CSS mesh below where WebGL is unavailable */}
+        <div style={{position:'absolute',inset:0,opacity:0.55}}><AuroraShader/></div>
         <div className="hero-mesh-1" style={{width:800,height:800,top:'-25%',left:'-15%',background:'radial-gradient(circle,rgba(184,134,11,0.18) 0%,rgba(184,134,11,0.05) 40%,transparent 70%)'}}/>
         <div className="hero-mesh-2" style={{width:600,height:600,bottom:'-20%',right:'-10%',background:'radial-gradient(circle,rgba(59,108,180,0.12) 0%,rgba(59,108,180,0.04) 40%,transparent 70%)'}}/>
         <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(184,134,11,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(184,134,11,0.03) 1px,transparent 1px)',backgroundSize:'80px 80px',animation:'heroGrid 10s ease-in-out infinite'}}/>

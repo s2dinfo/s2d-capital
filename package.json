@@ -16,6 +16,7 @@
     "@number-flow/react": "^0.6.0",
     "@orama/orama": "^3.1.18",
     "@vercel/analytics": "^2.0.1",
+    "cesium": "^1.142.0",
     "cobe": "^2.0.1",
     "echarts": "^6.0.0",
     "echarts-for-react": "^3.0.6",
