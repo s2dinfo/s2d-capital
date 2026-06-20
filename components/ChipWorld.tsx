@@ -59,12 +59,22 @@ const NODES: Node[] = [
     body: "Nvidia designs the GPUs the AI boom runs on — but manufactures nothing physical. It sends blueprints to TSMC, which prints them with ASML's machines. Three companies on three continents, one chip. The whole AI economy rides this single triangle.",
     href: '/research/silicon-the-strategic-commodity',
   },
+  {
+    place: 'Copper',
+    location: [-24.27, -69.07],
+    eyebrow: 'Atacama Desert · Chile',
+    stat: '2×',
+    statLabel: 'the copper we must mine by ~2040',
+    title: 'The metal the AI era is built on',
+    body: 'Chips get the headlines, but AI runs on copper — the datacenters, the grid, the wiring that feeds it all. The richest ore is gone, the biggest mines sit in the driest desert on earth, and you cannot conjure a new copper mine in under a decade. Copper, not silicon, may be the real bottleneck.',
+  },
 ];
 
 const CHOKEPOINTS = [{ label: 'Taiwan Strait', location: [24.5, 119.5] as [number, number] }];
 const ARCS = [
   { from: NODES[0].location, to: NODES[1].location },
   { from: NODES[1].location, to: NODES[2].location },
+  { from: NODES[3].location, to: NODES[2].location }, // copper (Chile) → the AI infrastructure
 ];
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).

@@ -14,6 +14,7 @@ export type EncounterScript = {
   tag: string;       // short speaker label, e.g. 'JENSEN'
   portrait?: string; // URL to a STYLISED character image (e.g. '/characters/jensen.png'); placeholder shows until set
   voiceId?: string;  // ElevenLabs voice id — `npm run gen:voices` pre-renders this character's lines
+  imagePrompt?: string; // subject for the visuals pipeline (Grok / Flux) — how this character's face was made
   // an extra opening line that reacts to the choice made at the PREVIOUS stop
   priorReactions?: Record<string, string>;
   intro: Line[];
@@ -132,6 +133,39 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     ],
     done: { verdict: 'You’ve walked the entire triangle.', text: 'Design (Nvidia) → fabrication (TSMC) → the machine (ASML). Three companies, three continents, one chain — and now you’ve made every call that holds it together.' },
     article: '/research/silicon-the-strategic-commodity',
+  },
+
+  Copper: {
+    id: 'Copper',
+    locationTag: 'ESCONDIDA · ATACAMA DESERT, CHILE',
+    name: 'Andrés Vidal',
+    role: 'Veteran Mine Director',
+    tag: 'ANDRÉS',
+    portrait: '/characters/copper-grok.mp4',
+    voiceId: 'nPczCjzI2devNBz1zQrb', // Brian — deep, resonant
+    imagePrompt: 'a veteran Chilean copper-mine director in his early 60s, weathered tanned face, short grey hair, trimmed grey stubble, slight confident smile, wearing a high-visibility orange jacket over a dark work shirt, an open-pit copper mine softly blurred behind him',
+    intro: [
+      { who: 'narration', text: 'The Atacama Desert, Chile — the driest place on earth. At the rim of a pit two miles wide, a man who has spent thirty years pulling copper from the rock turns to face you.' },
+      { who: 'speaker', text: 'Everyone obsesses over chips. But a chip is useless without power and wiring — and that means copper. One AI datacenter swallows thousands of tonnes of it. An electric car needs four times what a normal one does. The grid that feeds it all? Copper, copper, copper.' },
+      { who: 'speaker', text: 'Here is my problem. The world wants more copper than ever — and the easy copper is gone. Every year the rock gives up less. We dig more, crush more, burn more diesel, drink more water, for thinner and thinner ore. And here, in the desert, water is everything.' },
+      { who: 'speaker', text: 'So I face the choice every great mine on earth now faces.' },
+    ],
+    decision: {
+      prompt: 'You run the mine. The world is begging for copper. How do you answer?',
+      options: [
+        { id: 'ramp', label: 'Ramp hard, now', sub: 'Mine the lower grades, fast. Feed the boom — and strain the water and the towns around you.' },
+        { id: 'restraint', label: 'Hold the line', sub: 'Mine carefully and sustainably. Protect the desert — and let the shortfall bite.' },
+      ],
+    },
+    outcomes: {
+      ramp: { verdict: 'You feed the machine.', text: 'Copper flows; the datacenters and the car lines keep humming. But you draw down aquifers in the driest desert on earth, the towns around you fight you in court, and your own costs climb as the ore keeps thinning. You bought the world a few years — and a reckoning.' },
+      restraint: { verdict: 'The honest answer — and the painful one.', text: 'You protect the desert and your people. But the copper the world needs simply isn’t there. Prices spike, the green transition and the AI buildout both slow, and the shortfall becomes everyone’s problem. There was never a clean choice — only who pays.' },
+    },
+    outro: [
+      { who: 'speaker', text: 'Now you understand the part no one puts on a slide. The AI revolution is not just silicon. It is dug out of the ground, in places like this, by people like us — and the ground is not infinite.' },
+      { who: 'speaker', text: 'They call copper the metal of electrification. I call it the real bottleneck. You can design a chip in a year. You cannot conjure a copper mine in less than a decade.' },
+    ],
+    done: { verdict: 'You’ve found the hidden floor of the AI era.', text: 'Beneath the chips and the datacenters lies the physical world — copper, water, rock, and the people who move them. No copper, no grid. No grid, no AI. That is the story under the story.' },
   },
 };
 

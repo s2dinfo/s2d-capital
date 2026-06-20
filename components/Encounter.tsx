@@ -76,7 +76,7 @@ export default function Encounter({
       let fellBack = false;
       const fallback = () => { if (fellBack) return; fellBack = true; speakTTS(); };
       audio.addEventListener('error', fallback, { once: true });
-      audio.play().catch(fallback);
+      audio.play().catch((e: any) => { if (e?.name !== 'AbortError') fallback(); }); // ignore play-interrupted races; only fall back on real failures
       return () => stopVoice();
     }
     const t = setTimeout(speakTTS, 80);
