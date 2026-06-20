@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { EncounterScript, Line } from '@/lib/encounters';
+import { lineAudioId, type EncounterScript, type Line } from '@/lib/encounters';
 
 // ── The encounter engine: drives any EncounterScript. Meet a figure, hear their
 // real (public) problem, make the decision they faced, see the consequence,
@@ -29,6 +29,7 @@ export default function Encounter({
   const [imgError, setImgError] = useState(false);
   const [sound, setSound] = useState(true);
   const uttRef = useRef<SpeechSynthesisUtterance | null>(null); // keep a ref so Chrome doesn't GC the utterance mid-speech
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Prepend the figure's reaction to what you decided at the previous stop.
   const intro: Line[] = useMemo(() => {
@@ -51,21 +52,37 @@ export default function Encounter({
     : stage === 'done'
     ? `${script.done.verdict}. ${script.done.text}`
     : '';
+  // Stop whatever is currently playing (audio clip and/or browser TTS).
+  const stopVoice = () => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    try { window.speechSynthesis?.cancel(); } catch {}
+  };
   useEffect(() => {
-    const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
-    if (!synth) return;
-    synth.cancel();
+    stopVoice();
     if (!sound || !speakText) return;
-    const u = new SpeechSynthesisUtterance(speakText);
-    u.rate = 0.98;
-    // Delay so Chrome's cancel() settles before speak() (a known race), and so
-    // React's dev double-invoke can't cancel a just-started utterance. Cleanup
-    // only clears the timer — the NEXT line's cancel() stops the previous one.
-    const id = setTimeout(() => { uttRef.current = u; synth.speak(u); }, 90);
-    return () => clearTimeout(id);
+    const speakTTS = () => {
+      const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
+      if (!synth) return;
+      const u = new SpeechSynthesisUtterance(speakText);
+      u.rate = 0.98;
+      uttRef.current = u;
+      synth.speak(u);
+    };
+    // Play the pre-rendered ElevenLabs clip; fall back to browser TTS if it's
+    // missing (line not generated yet) or playback is blocked.
+    if (script.voiceId) {
+      const audio = new Audio(`/audio/${lineAudioId(script.voiceId, speakText)}.mp3`);
+      audioRef.current = audio;
+      let fellBack = false;
+      const fallback = () => { if (fellBack) return; fellBack = true; speakTTS(); };
+      audio.addEventListener('error', fallback, { once: true });
+      audio.play().catch(fallback);
+      return () => stopVoice();
+    }
+    const t = setTimeout(speakTTS, 80);
+    return () => { clearTimeout(t); stopVoice(); };
   }, [speakText, sound]);
-  // Stop any speech when the encounter closes/unmounts.
-  useEffect(() => () => { try { window.speechSynthesis?.cancel(); } catch {} }, []);
+  useEffect(() => () => stopVoice(), []);
 
   return (
     <motion.div className="enc-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
@@ -78,7 +95,7 @@ export default function Encounter({
         onClick={(e) => e.stopPropagation()}
       >
         <button className="enc-sound" onClick={() => setSound((s) => !s)} aria-label="Toggle voice">{sound ? '🔊' : '🔇'}</button>
-        <button className="enc-close" onClick={() => { try { window.speechSynthesis?.cancel(); } catch {} onClose(); }} aria-label="Leave">×</button>
+        <button className="enc-close" onClick={() => { stopVoice(); onClose(); }} aria-label="Leave">×</button>
 
         <div className="enc-row">
         {/* Character portrait — drop a stylised image at script.portrait */}

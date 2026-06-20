@@ -13,6 +13,7 @@ export type EncounterScript = {
   role: string;
   tag: string;       // short speaker label, e.g. 'JENSEN'
   portrait?: string; // URL to a STYLISED character image (e.g. '/characters/jensen.png'); placeholder shows until set
+  voiceId?: string;  // ElevenLabs voice id — `npm run gen:voices` pre-renders this character's lines
   // an extra opening line that reacts to the choice made at the PREVIOUS stop
   priorReactions?: Record<string, string>;
   intro: Line[];
@@ -32,6 +33,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     role: 'Founder & CEO, Nvidia',
     tag: 'JENSEN',
     portrait: '/characters/jensen.mp4',
+    voiceId: 'cjVigY5qzO86Huf0OWal', // Eric — smooth, confident
     intro: [
       { who: 'narration', text: 'Santa Clara, California. Inside Nvidia, a man in a black leather jacket looks up from a silicon wafer.' },
       { who: 'speaker', text: 'Everyone thinks Nvidia makes chips. We don’t make a single one.' },
@@ -65,6 +67,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     role: 'Chairman & CEO, TSMC',
     tag: 'C.C. WEI',
     portrait: '/characters/cc-wei.mp4',
+    voiceId: 'pqHfZKP75CvOlQylNhV4', // Bill — wise, mature, older
     priorReactions: {
       ai: 'So — you bet everything on AI chips. Bold. Now you must understand the company that actually has to build them.',
       gaming: 'You played it safe at Nvidia. Understandable. But the real game is here, in the fabs — let me show you.',
@@ -102,6 +105,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     role: 'CEO, ASML',
     tag: 'FOUQUET',
     portrait: '/characters/fouquet.mp4',
+    voiceId: 'onwK4e9ZLuTAKqWW03F9', // Daniel — steady broadcaster
     priorReactions: {
       taiwan: 'So Taiwan keeps everything. Then you’d better pray nothing happens to it — because the machines that make those chips possible all come from here.',
       spread: 'Spreading the fabs — sensible. But every new fab, wherever you build it, still needs a machine only we can make. Let me show you the real bottleneck.',
@@ -130,3 +134,33 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     article: '/research/silicon-the-strategic-commodity',
   },
 };
+
+// ── Voice helpers (shared by the app player and scripts/gen-voices.ts) ──
+
+// Deterministic id for a spoken line → its audio is /audio/<id>.mp3.
+// cyrb53 hash; MUST stay byte-identical between generator and player.
+export function lineAudioId(voiceId: string, text: string): string {
+  const s = voiceId + '|' + text;
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+
+// Every spoken string in an encounter, EXACTLY as the app renders it (so hashes
+// line up). The generator uses this to know what audio to produce.
+export function collectSpeakable(s: EncounterScript): string[] {
+  const out: string[] = [];
+  for (const l of s.intro) out.push(l.text);
+  if (s.priorReactions) for (const k of Object.keys(s.priorReactions)) out.push(s.priorReactions[k]);
+  out.push(s.decision.prompt);
+  for (const k of Object.keys(s.outcomes)) out.push(`${s.outcomes[k].verdict}. ${s.outcomes[k].text}`);
+  out.push(`${s.done.verdict}. ${s.done.text}`);
+  for (const l of s.outro) out.push(l.text);
+  return out;
+}
