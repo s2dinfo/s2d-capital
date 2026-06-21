@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -108,6 +108,17 @@ export default function ChipWorld() {
 
   const stops = NODES.map((n, i) => ({ place: n.place, location: n.location, active: i === active, index: i }));
   const focus: [number, number] = node ? node.location : [38, 60];
+
+  // Climactic close: the moment all calls are made, surface "the world you built"
+  // once — the "was it worth it?" beat that bookends the Chapter-One opening.
+  const climaxShown = useRef(false);
+  useEffect(() => {
+    if (callsMade === NODES.length && !climaxShown.current && !encounterNode) {
+      climaxShown.current = true;
+      const t = setTimeout(() => setReportOpen(true), 900);
+      return () => clearTimeout(t);
+    }
+  }, [callsMade, encounterNode]);
 
   // "Begin the journey" — fly the camera to Nvidia, then Jensen is waiting (guided
   // first decision). The world opens to free roam once you return.

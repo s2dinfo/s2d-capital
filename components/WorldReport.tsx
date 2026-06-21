@@ -148,6 +148,9 @@ export default function WorldReport({ choices, open, onClose }: { choices: Choic
             {r.made < r.total && (
               <p className="wr-hint">{r.total - r.made} more {r.total - r.made === 1 ? 'call' : 'calls'} to make. Visit the nodes you haven’t yet.</p>
             )}
+            {r.made === r.total && (
+              <p className="wr-complete">The chain is complete — wafer to wire. This is the world your calls built. <span>Was it worth it?</span></p>
+            )}
           </motion.div>
 
           <style dangerouslySetInnerHTML={{ __html: `
@@ -165,6 +168,8 @@ export default function WorldReport({ choices, open, onClose }: { choices: Choic
             .wr-node{flex:0 0 64px;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-light,#D4B85C);padding-top:2px}
             .wr-line{font-family:var(--font-sans);font-size:0.88rem;color:rgba(255,255,255,0.72);line-height:1.55}
             .wr-hint{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.04em;color:rgba(255,255,255,0.4);margin:18px 0 0}
+            .wr-complete{font-family:var(--font-serif);font-size:1.02rem;color:rgba(255,255,255,0.7);line-height:1.6;margin:20px 0 0;padding-top:16px;border-top:1px solid rgba(212,184,92,0.2)}
+            .wr-complete span{color:var(--gold-light,#D4B85C);font-style:italic}
           ` }} />
         </motion.div>
       )}
