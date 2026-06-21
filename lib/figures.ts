@@ -3,10 +3,10 @@
 // lights, stage, atmosphere). Keyed by ENCOUNTERS id.
 export const FIGURES: Record<string, { image: string; accent: string; env?: string }> = {
   Nvidia: { image: '/characters/jensen-figure.png', accent: '#1affa0', env: 'datacenter' }, // nvidia green
-  TSMC: { image: '/characters/cc-wei-figure.png', accent: '#3aa0ff' },   // silicon blue
-  ASML: { image: '/characters/fouquet-figure.png', accent: '#ff9a3a' },  // lithography amber
+  TSMC: { image: '/characters/cc-wei-figure.png', accent: '#3aa0ff', env: 'cleanroom' },   // silicon blue
+  ASML: { image: '/characters/fouquet-figure.png', accent: '#ff9a3a', env: 'euvhall' },  // lithography amber
   Copper: { image: '/characters/andres-figure.png', accent: '#e8843a', env: 'minepit' }, // copper
-  Power: { image: '/characters/nadia-figure.png', accent: '#ffd23a' },   // grid yellow
+  Power: { image: '/characters/nadia-figure.png', accent: '#ffd23a', env: 'controlroom' },   // grid yellow
 };
 
 export function resolveFigureId(id: string): string {

@@ -255,6 +255,138 @@ function AtacamaPit({ accent }: { accent: string }) {
   );
 }
 
+function Platform({ accent, color }: { accent: string; color: string }) {
+  return (
+    <>
+      <mesh position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <cylinderGeometry args={[1.7, 1.8, 0.1, 64]} />
+        <meshStandardMaterial color={color} metalness={0.5} roughness={0.45} />
+      </mesh>
+      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[1.55, 1.7, 64]} />
+        <meshBasicMaterial color={accent} toneMapped={false} side={THREE.DoubleSide} />
+      </mesh>
+    </>
+  );
+}
+
+// TSMC fab cleanroom: bright bay, rows of instanced lithography tools + a lit ceiling.
+function CleanRoom({ accent }: { accent: string }) {
+  const tools = useRef<THREE.InstancedMesh>(null);
+  const lights = useRef<THREE.InstancedMesh>(null);
+  const ceil = useRef<THREE.InstancedMesh>(null);
+  const data = useMemo(() => {
+    const d = new THREE.Object3D();
+    const toolMats: THREE.Matrix4[] = [], lightMats: THREE.Matrix4[] = [], ceilMats: THREE.Matrix4[] = [];
+    const lightCols: THREE.Color[] = [];
+    const base = new THREE.Color(accent);
+    const pal = [base.clone(), new THREE.Color('#bdf7ff'), new THREE.Color('#7fe0ff'), base.clone().multiplyScalar(1.4)];
+    for (const side of [-1, 1]) {
+      for (let zi = 0; zi < 12; zi++) {
+        const z = 1.5 - zi * 1.7, x = side * 3.7;
+        d.position.set(x, 1.0, z); d.rotation.set(0, 0, 0); d.scale.set(1.6, 2.0, 1.5); d.updateMatrix();
+        toolMats.push(d.matrix.clone());
+        d.position.set(x - side * 0.82, 1.5, z); d.scale.set(0.06, 0.55, 0.9); d.updateMatrix();
+        lightMats.push(d.matrix.clone());
+        lightCols.push(pal[(Math.random() * pal.length) | 0].clone().multiplyScalar(0.7 + Math.random() * 0.6));
+      }
+    }
+    for (let xi = -3; xi <= 3; xi++) for (let zi = 0; zi < 10; zi++) {
+      d.position.set(xi * 1.9, 5.6, 1.5 - zi * 1.9); d.rotation.set(0, 0, 0); d.scale.set(1.5, 0.1, 1.5); d.updateMatrix();
+      ceilMats.push(d.matrix.clone());
+    }
+    return { toolMats, lightMats, lightCols, ceilMats };
+  }, [accent]);
+  useEffect(() => {
+    const t = tools.current, l = lights.current, c = ceil.current;
+    if (t) { data.toolMats.forEach((m, i) => t.setMatrixAt(i, m)); t.instanceMatrix.needsUpdate = true; }
+    if (l) { data.lightMats.forEach((m, i) => l.setMatrixAt(i, m)); data.lightCols.forEach((cc, i) => l.setColorAt(i, cc)); l.instanceMatrix.needsUpdate = true; if (l.instanceColor) l.instanceColor.needsUpdate = true; }
+    if (c) { data.ceilMats.forEach((m, i) => c.setMatrixAt(i, m)); c.instanceMatrix.needsUpdate = true; }
+  }, [data]);
+  return (
+    <group>
+      <Platform accent={accent} color="#1a2230" />
+      <instancedMesh ref={tools} args={[undefined as any, undefined as any, data.toolMats.length]} castShadow receiveShadow>
+        <boxGeometry args={[1, 1, 1]} /><meshStandardMaterial color="#c4ccd6" metalness={0.4} roughness={0.5} />
+      </instancedMesh>
+      <instancedMesh ref={lights} args={[undefined as any, undefined as any, data.lightMats.length]}>
+        <boxGeometry args={[1, 1, 1]} /><meshBasicMaterial toneMapped={false} />
+      </instancedMesh>
+      <instancedMesh ref={ceil} args={[undefined as any, undefined as any, data.ceilMats.length]}>
+        <boxGeometry args={[1, 1, 1]} /><meshBasicMaterial color="#eef6ff" toneMapped={false} />
+      </instancedMesh>
+      <pointLight position={[0, 5, 0]} intensity={120} color="#eaf4ff" distance={32} />
+      <pointLight position={[0, 5, -7]} intensity={120} color="#eaf4ff" distance={32} />
+      <pointLight position={[0, 4, -13]} intensity={70} color="#cfe6ff" distance={28} />
+    </group>
+  );
+}
+
+// ASML EUV machine hall: one giant lithography machine dominating the space.
+function EuvHall({ accent }: { accent: string }) {
+  return (
+    <group>
+      <Platform accent={accent} color="#15171c" />
+      <group position={[0, 0, -7]}>
+        <mesh position={[0, 1.9, 0]} castShadow><boxGeometry args={[5, 3.6, 4]} /><meshStandardMaterial color="#d8dde6" metalness={0.6} roughness={0.4} /></mesh>
+        <mesh position={[0, 1.9, 2.03]}><boxGeometry args={[4.6, 3.1, 0.08]} /><meshStandardMaterial color="#2a2f38" metalness={0.7} roughness={0.4} /></mesh>
+        {[-1.4, 0, 1.4].map((x, i) => (<mesh key={i} position={[x, 4.1, 0]}><cylinderGeometry args={[0.6, 0.6, 1.7, 24]} /><meshStandardMaterial color="#b8c0cc" metalness={0.7} roughness={0.35} /></mesh>))}
+        <mesh position={[-3.3, 1.5, 0]} castShadow><boxGeometry args={[1.6, 2.8, 3]} /><meshStandardMaterial color="#c8cdd6" metalness={0.55} roughness={0.45} /></mesh>
+        <mesh position={[3.3, 1.5, 0]} castShadow><boxGeometry args={[1.6, 2.8, 3]} /><meshStandardMaterial color="#c8cdd6" metalness={0.55} roughness={0.45} /></mesh>
+        {[-1.5, -0.5, 0.5, 1.5].map((x, i) => (<mesh key={`p${i}`} position={[x, 1.0, 2.09]}><boxGeometry args={[0.5, 0.5, 0.05]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>))}
+        <mesh position={[0, 2.0, 2.12]}><boxGeometry args={[0.14, 0.14, 0.6]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+        {[-2, 2].map((x, i) => (<mesh key={`pi${i}`} position={[x, 2.8, 1.5]} rotation={[Math.PI / 2, 0, 0]}><cylinderGeometry args={[0.12, 0.12, 3, 12]} /><meshStandardMaterial color="#9aa2ad" metalness={0.7} roughness={0.4} /></mesh>))}
+      </group>
+      <pointLight position={[0, 4, -2]} intensity={120} color="#dce6f2" distance={32} />
+      <pointLight position={[0, 2, 1]} intensity={55} color={accent} distance={18} />
+      <spotLight position={[0, 8, 3]} angle={0.8} penumbra={1} intensity={280} color="#eef3fb" distance={44} />
+    </group>
+  );
+}
+
+// Power grid control room: a curved video wall of glowing monitors + a console.
+function ControlRoom({ accent }: { accent: string }) {
+  const screens = useRef<THREE.InstancedMesh>(null);
+  const data = useMemo(() => {
+    const d = new THREE.Object3D();
+    const mats: THREE.Matrix4[] = [];
+    const cols: THREE.Color[] = [];
+    const base = new THREE.Color(accent);
+    const pal = [base.clone(), new THREE.Color('#39e0ff'), new THREE.Color('#34d399'), new THREE.Color('#bdf7ff')];
+    const colsN = 11, rowsN = 4, R = 8, cz = -6;
+    for (let c = 0; c < colsN; c++) {
+      const ang = (c / (colsN - 1) - 0.5) * 2.0;
+      const cx = Math.sin(ang) * R;
+      const cz2 = cz + R - Math.cos(ang) * R;
+      for (let r = 0; r < rowsN; r++) {
+        d.position.set(cx, 1.2 + r * 1.05, cz2);
+        d.rotation.set(0, -ang, 0);
+        d.scale.set(1.45, 0.92, 0.08);
+        d.updateMatrix();
+        mats.push(d.matrix.clone());
+        cols.push(pal[(Math.random() * pal.length) | 0].clone().multiplyScalar(0.45 + Math.random() * 0.85));
+      }
+    }
+    return { mats, cols };
+  }, [accent]);
+  useEffect(() => {
+    const s = screens.current;
+    if (s) { data.mats.forEach((m, i) => s.setMatrixAt(i, m)); data.cols.forEach((c, i) => s.setColorAt(i, c)); s.instanceMatrix.needsUpdate = true; if (s.instanceColor) s.instanceColor.needsUpdate = true; }
+  }, [data]);
+  return (
+    <group>
+      <Platform accent={accent} color="#181a16" />
+      <instancedMesh ref={screens} args={[undefined as any, undefined as any, data.mats.length]}>
+        <boxGeometry args={[1, 1, 1]} /><meshBasicMaterial toneMapped={false} />
+      </instancedMesh>
+      <mesh position={[0, 0.62, -3]}><boxGeometry args={[7, 0.18, 1]} /><meshStandardMaterial color="#1a1d22" metalness={0.5} roughness={0.5} /></mesh>
+      <mesh position={[0, 0.32, -3]}><boxGeometry args={[7, 0.6, 0.8]} /><meshStandardMaterial color="#13151a" metalness={0.4} roughness={0.6} /></mesh>
+      <pointLight position={[0, 3, -4]} intensity={30} color={accent} distance={22} />
+      <pointLight position={[0, 2, 2]} intensity={16} color="#9bbcf5" distance={16} />
+    </group>
+  );
+}
+
 function Scene({ image, accent, env, target, minPolar, mouthRef, speaking }: { image: string; accent: string; env?: string; target: [number, number, number]; minPolar: number; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
   return (
     <>
@@ -268,7 +400,12 @@ function Scene({ image, accent, env, target, minPolar, mouthRef, speaking }: { i
       <Suspense fallback={null}>
         <HoloFigure image={image} accent={accent} mouthRef={mouthRef} speaking={speaking} />
       </Suspense>
-      {env === 'datacenter' ? <DataCenter accent={accent} /> : env === 'minepit' ? <AtacamaPit accent={accent} /> : <Stage accent={accent} />}
+      {env === 'datacenter' ? <DataCenter accent={accent} />
+        : env === 'minepit' ? <AtacamaPit accent={accent} />
+        : env === 'cleanroom' ? <CleanRoom accent={accent} />
+        : env === 'euvhall' ? <EuvHall accent={accent} />
+        : env === 'controlroom' ? <ControlRoom accent={accent} />
+        : <Stage accent={accent} />}
       <Sparkles count={70} scale={[14, 7, 10]} position={[0, 3.5, -1]} size={2.2} speed={0.25} color={accent} opacity={0.5} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[70, 70]} />
