@@ -454,9 +454,18 @@ export default function EncounterScene({ id }: { id: string }) {
     : stage === 'done' ? `${script.done.verdict}. ${script.done.text}`
     : '';
 
+  // hard-stop whatever's playing (line change, navigation, unmount, tab hidden)
+  const stopAudio = useCallback(() => {
+    const a = audioElRef.current;
+    if (a) { a.onended = null; a.onerror = null; try { a.pause(); } catch {} }
+    audioElRef.current = null;
+    mouthRef.current = 0;
+    setSpeaking(false);
+  }, []);
+
   const playLine = useCallback((text: string) => {
     if (!text) return;
-    if (audioElRef.current) audioElRef.current.pause();
+    stopAudio();
     const audio = new Audio(`/audio/${lineAudioId(script.voiceId || '', text)}.mp3`);
     audioElRef.current = audio;
     let ctx = ctxRef.current;
@@ -473,7 +482,7 @@ export default function EncounterScene({ id }: { id: string }) {
     } catch {}
     setSpeaking(true);
     const tick = () => {
-      if (audio.paused || audio.ended) { mouthRef.current = 0; return; }
+      if (audioElRef.current !== audio || audio.paused || audio.ended) { mouthRef.current = 0; return; }
       if (analyser && data) {
         analyser.getByteTimeDomainData(data);
         let su = 0;
@@ -482,13 +491,29 @@ export default function EncounterScene({ id }: { id: string }) {
       }
       requestAnimationFrame(tick);
     };
-    audio.onended = () => { setSpeaking(false); mouthRef.current = 0; };
-    audio.onerror = () => { setSpeaking(false); mouthRef.current = 0; };
-    ctx.resume().then(() => audio.play()).then(() => tick()).catch(() => setSpeaking(false));
-  }, [script.voiceId]);
+    audio.onended = () => { if (audioElRef.current === audio) stopAudio(); };
+    audio.onerror = () => { if (audioElRef.current === audio) stopAudio(); };
+    // guard the async play(): if a newer line superseded this one, don't start it
+    ctx.resume().then(() => (audioElRef.current === audio ? audio.play() : undefined)).then(() => { if (audioElRef.current === audio) tick(); }).catch(() => {});
+  }, [script.voiceId, stopAudio]);
 
   // speak each line as it appears
   useEffect(() => { if (started && currentText) playLine(currentText); /* eslint-disable-next-line */ }, [started, stage, idx, choice]);
+
+  // stop audio when leaving the scene or hiding the tab
+  useEffect(() => {
+    const onVis = () => { if (document.hidden) stopAudio(); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      stopAudio();
+      const c = ctxRef.current;
+      if (c) { c.close().catch(() => {}); ctxRef.current = null; }
+    };
+  }, [stopAudio]);
+
+  // stop the voice the instant you navigate away (don't wait out the fade)
+  const leave = (href: string, label: string) => { stopAudio(); go(href, label); };
 
   const advance = () => {
     if (stage === 'intro') { if (idx < introLines.length - 1) setIdx(idx + 1); else setStage('decide'); }
@@ -517,7 +542,7 @@ export default function EncounterScene({ id }: { id: string }) {
       <div className="es-ui">
         {/* identity (top-left) */}
         <div className="es-top">
-          <button className="es-back" onClick={() => go('/world', 'returning to the world')}>← back to the world</button>
+          <button className="es-back" onClick={() => leave('/world', 'returning to the world')}>← back to the world</button>
           <div className="es-eyebrow" style={{ color: fig.accent, textShadow: `0 0 16px ${fig.accent}88` }}>{script.locationTag}</div>
           <h1 className="es-name">{script.name}</h1>
           <div className="es-role">{script.role} — stylized, dramatized from public statements</div>
@@ -575,8 +600,8 @@ export default function EncounterScene({ id }: { id: string }) {
               <div className="es-verdict" style={{ color: fig.accent }}>{script.done.verdict}</div>
               <p className="es-line">{script.done.text}</p>
               <div className="es-done-actions">
-                <button className="es-done-btn es-done-secondary" onClick={() => go('/world', 'returning to the world')}>← back to the world</button>
-                {next && <button className="es-done-btn" style={{ background: `linear-gradient(135deg, ${fig.accent}, ${fig.accent}bb)` }} onClick={() => go(`/meet/${next.node}`, `traveling onward`)}>{next.label}</button>}
+                <button className="es-done-btn es-done-secondary" onClick={() => leave('/world', 'returning to the world')}>← back to the world</button>
+                {next && <button className="es-done-btn" style={{ background: `linear-gradient(135deg, ${fig.accent}, ${fig.accent}bb)` }} onClick={() => leave(`/meet/${next.node}`, `traveling onward`)}>{next.label}</button>}
               </div>
             </div>
           )}
