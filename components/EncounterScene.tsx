@@ -110,7 +110,91 @@ function Stage({ accent }: { accent: string }) {
   );
 }
 
-function Scene({ image, accent, mouthRef, speaking }: { image: string; accent: string; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
+// Procedurally-placed server hall: two banks of instanced racks (one draw call each)
+// receding into the fog, each studded with glowing server lights in varied colors.
+function DataCenter({ accent }: { accent: string }) {
+  const racks = useRef<THREE.InstancedMesh>(null);
+  const lights = useRef<THREE.InstancedMesh>(null);
+  const { rackMats, lightMats, lightCols } = useMemo(() => {
+    const dummy = new THREE.Object3D();
+    const rackMats: THREE.Matrix4[] = [];
+    const lightMats: THREE.Matrix4[] = [];
+    const lightCols: THREE.Color[] = [];
+    const base = new THREE.Color(accent);
+    const palette = [base.clone(), new THREE.Color('#39e0ff'), base.clone().multiplyScalar(1.7), new THREE.Color('#bdf7ff')];
+    for (const side of [-1, 1]) {
+      for (let zi = 0; zi < 14; zi++) {
+        const z = 2.0 - zi * 1.5;
+        for (let xi = 0; xi < 2; xi++) {
+          const x = side * (3.6 + xi * 0.95);
+          dummy.position.set(x, 1.2, z);
+          dummy.rotation.set(0, 0, 0);
+          dummy.scale.set(0.85, 2.4, 1.25);
+          dummy.updateMatrix();
+          rackMats.push(dummy.matrix.clone());
+          const faceX = x - side * 0.46; // aisle-facing front
+          for (let li = 0; li < 4; li++) {
+            const y = 0.5 + li * 0.46 + (Math.random() - 0.5) * 0.12;
+            dummy.position.set(faceX, y, z + (Math.random() - 0.5) * 0.35);
+            dummy.scale.set(0.05, 0.18, 0.5);
+            dummy.updateMatrix();
+            lightMats.push(dummy.matrix.clone());
+            lightCols.push(palette[(Math.random() * palette.length) | 0].clone().multiplyScalar(0.55 + Math.random() * 0.9));
+          }
+        }
+      }
+    }
+    return { rackMats, lightMats, lightCols };
+  }, [accent]);
+
+  useEffect(() => {
+    const rm = racks.current;
+    const lm = lights.current;
+    if (rm) { rackMats.forEach((m, i) => rm.setMatrixAt(i, m)); rm.instanceMatrix.needsUpdate = true; }
+    if (lm) {
+      lightMats.forEach((m, i) => lm.setMatrixAt(i, m));
+      lightCols.forEach((c, i) => lm.setColorAt(i, c));
+      lm.instanceMatrix.needsUpdate = true;
+      if (lm.instanceColor) lm.instanceColor.needsUpdate = true;
+    }
+  }, [rackMats, lightMats, lightCols]);
+
+  return (
+    <group>
+      {/* figure platform */}
+      <mesh position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <cylinderGeometry args={[1.7, 1.8, 0.1, 64]} />
+        <meshStandardMaterial color="#0a1118" metalness={0.6} roughness={0.4} />
+      </mesh>
+      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[1.55, 1.7, 64]} />
+        <meshBasicMaterial color={accent} toneMapped={false} side={THREE.DoubleSide} />
+      </mesh>
+      <instancedMesh ref={racks} args={[undefined as any, undefined as any, rackMats.length]} castShadow receiveShadow>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="#10151f" metalness={0.7} roughness={0.45} emissive={accent} emissiveIntensity={0.05} />
+      </instancedMesh>
+      <instancedMesh ref={lights} args={[undefined as any, undefined as any, lightMats.length]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshBasicMaterial toneMapped={false} />
+      </instancedMesh>
+      {/* glowing aisle strip */}
+      <mesh position={[0, 0.02, -9]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[1.6, 32]} />
+        <meshBasicMaterial color={accent} transparent opacity={0.16} toneMapped={false} />
+      </mesh>
+      {/* overhead cable trays */}
+      {[-3.6, 3.6].map((x, i) => (
+        <mesh key={i} position={[x, 4.7, -7]}>
+          <boxGeometry args={[0.5, 0.12, 30]} />
+          <meshStandardMaterial color="#0a0e16" metalness={0.6} roughness={0.5} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function Scene({ image, accent, env, mouthRef, speaking }: { image: string; accent: string; env?: string; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
   return (
     <>
       <color attach="background" args={['#04060b']} />
@@ -123,7 +207,7 @@ function Scene({ image, accent, mouthRef, speaking }: { image: string; accent: s
       <Suspense fallback={null}>
         <HoloFigure image={image} accent={accent} mouthRef={mouthRef} speaking={speaking} />
       </Suspense>
-      <Stage accent={accent} />
+      {env === 'datacenter' ? <DataCenter accent={accent} /> : <Stage accent={accent} />}
       <Sparkles count={70} scale={[14, 7, 10]} position={[0, 3.5, -1]} size={2.2} speed={0.25} color={accent} opacity={0.5} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[70, 70]} />
@@ -223,7 +307,7 @@ export default function EncounterScene({ id }: { id: string }) {
     <div className="es-stage">
       <Fader out={out} label={label} />
       <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 1.7, 5.4], fov: 44 }}>
-        <Scene image={fig.image} accent={fig.accent} mouthRef={mouthRef} speaking={speaking} />
+        <Scene image={fig.image} accent={fig.accent} env={fig.env} mouthRef={mouthRef} speaking={speaking} />
       </Canvas>
 
       <div className="es-ui">

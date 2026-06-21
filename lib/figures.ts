@@ -1,8 +1,8 @@
 // Per-figure visual config for the 3D encounter scene: the Grok-generated
 // stylized portrait + an accent color that themes the whole scene (hologram tint,
 // lights, stage, atmosphere). Keyed by ENCOUNTERS id.
-export const FIGURES: Record<string, { image: string; accent: string }> = {
-  Nvidia: { image: '/characters/jensen-figure.png', accent: '#1affa0' }, // nvidia green
+export const FIGURES: Record<string, { image: string; accent: string; env?: string }> = {
+  Nvidia: { image: '/characters/jensen-figure.png', accent: '#1affa0', env: 'datacenter' }, // nvidia green
   TSMC: { image: '/characters/cc-wei-figure.png', accent: '#3aa0ff' },   // silicon blue
   ASML: { image: '/characters/fouquet-figure.png', accent: '#ff9a3a' },  // lithography amber
   Copper: { image: '/characters/andres-figure.png', accent: '#e8843a' }, // copper
