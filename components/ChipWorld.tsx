@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Encounter from '@/components/Encounter';
+import WorldReport from '@/components/WorldReport';
 import { ENCOUNTERS } from '@/lib/encounters';
 
 // Reuse the existing Three.js globe (ssr:false — it needs the DOM/WebGL).
@@ -84,6 +85,8 @@ export default function ChipWorld() {
   const [active, setActive] = useState<number | null>(null);
   const [encounterNode, setEncounterNode] = useState<string | null>(null);
   const [choices, setChoices] = useState<Record<string, string>>({});
+  const [reportOpen, setReportOpen] = useState(false);
+  const callsMade = ['Nvidia', 'TSMC', 'ASML', 'Copper'].filter((p) => choices[p]).length;
   const node = active != null ? NODES[active] : null;
 
   const stops = NODES.map((n, i) => ({ place: n.place, location: n.location, active: i === active, index: i }));
@@ -93,6 +96,7 @@ export default function ChipWorld() {
     <section className="cw-stage">
       {/* ── Immersive background: animated glows + grid + vignette ── */}
       <div className="cw-bg" aria-hidden>
+        <div className="cw-stars" />
         <div className="cw-glow cw-glow-gold" />
         <div className="cw-glow cw-glow-blue" />
         <div className="cw-grid-overlay" />
@@ -183,6 +187,12 @@ export default function ChipWorld() {
       <span className="cw-bracket cw-bracket-tl" aria-hidden />
       <span className="cw-bracket cw-bracket-br" aria-hidden />
 
+      {/* The world you built — consequence report (accumulates your decisions) */}
+      <button className="cw-report-btn" onClick={() => setReportOpen(true)}>
+        ⚖ The world you built · {callsMade}/4
+      </button>
+      <WorldReport choices={choices} open={reportOpen} onClose={() => setReportOpen(false)} />
+
       {/* Encounters — the quest: meet a figure, decide, travel onward */}
       <AnimatePresence>
         {encounterNode && (
@@ -204,6 +214,8 @@ export default function ChipWorld() {
       <style dangerouslySetInnerHTML={{ __html: `
         .cw-stage{position:relative;min-height:100vh;overflow:hidden;background:#0c0f1f;display:flex;flex-direction:column}
         .cw-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+        .cw-stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 40px 50px,#fff,transparent),radial-gradient(1px 1px at 130px 90px,rgba(255,255,255,0.75),transparent),radial-gradient(1px 1px at 210px 160px,rgba(255,255,255,0.85),transparent),radial-gradient(1.2px 1.2px at 90px 210px,rgba(255,255,255,0.6),transparent),radial-gradient(1px 1px at 250px 40px,rgba(255,255,255,0.7),transparent);background-size:280px 280px;animation:cwTwinkle 7s ease-in-out infinite}
+        @keyframes cwTwinkle{0%,100%{opacity:0.45}50%{opacity:0.8}}
         .cw-glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.9}
         .cw-glow-gold{width:760px;height:760px;top:-18%;left:-12%;background:radial-gradient(circle,rgba(184,134,11,0.20),transparent 65%);animation:cwFloat1 24s ease-in-out infinite}
         .cw-glow-blue{width:620px;height:620px;bottom:-20%;right:-10%;background:radial-gradient(circle,rgba(59,108,180,0.16),transparent 65%);animation:cwFloat2 30s ease-in-out infinite}
@@ -223,6 +235,8 @@ export default function ChipWorld() {
 
         .cw-globe-fill{position:absolute;inset:0;z-index:1}
 
+        .cw-report-btn{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:6;background:rgba(212,184,92,0.12);border:1px solid rgba(212,184,92,0.4);color:var(--gold-light,#D4B85C);font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.08em;padding:10px 20px;border-radius:999px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s}
+        .cw-report-btn:hover{background:rgba(212,184,92,0.22);color:#fff;transform:translateX(-50%) translateY(-1px)}
         .cw-hud{position:absolute;bottom:22px;right:24px;z-index:3;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.16em;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:8px}
         .cw-hud-dot{width:6px;height:6px;border-radius:50%;background:var(--gold-light,#D4B85C);box-shadow:0 0 8px var(--gold-light,#D4B85C);animation:cwPulse 2s ease-in-out infinite}
         @keyframes cwPulse{0%,100%{opacity:0.4}50%{opacity:1}}
