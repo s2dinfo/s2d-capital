@@ -100,6 +100,7 @@ export default function ChipWorld() {
   const [encounterNode, setEncounterNode] = useState<string | null>(null);
   const [choices, setChoices] = useState<Record<string, string>>({});
   const [reportOpen, setReportOpen] = useState(false);
+  const [started, setStarted] = useState(false); // false = cinematic Chapter-One opening
   const callsMade = NODES.filter((n) => choices[n.place]).length;
   // the supply links you've earned by meeting both figures — the chain draws itself
   const discoveredArcs = ARCS.filter((a) => a.ends.every((p) => choices[p]));
@@ -107,6 +108,15 @@ export default function ChipWorld() {
 
   const stops = NODES.map((n, i) => ({ place: n.place, location: n.location, active: i === active, index: i }));
   const focus: [number, number] = node ? node.location : [38, 60];
+
+  // "Begin the journey" — fly the camera to Nvidia, then Jensen is waiting (guided
+  // first decision). The world opens to free roam once you return.
+  const beginJourney = () => {
+    setStarted(true);
+    const nvidiaIdx = NODES.findIndex((n) => n.place === 'Nvidia');
+    setActive(nvidiaIdx);
+    setTimeout(() => setEncounterNode('Nvidia'), 1600);
+  };
 
   return (
     <section className="cw-stage">
@@ -119,30 +129,69 @@ export default function ChipWorld() {
         <div className="cw-vignette" />
       </div>
 
-      {/* ── Title overlay (top) ── */}
-      <div className="cw-title">
-        <div className="cw-eyebrow">THE CHIP · CHAPTER ONE</div>
-        <h1 className="cw-h1">
-          The world that makes the <span className="gradient-text" style={{ fontStyle: 'italic' }}>AI era</span> possible
-        </h1>
-      </div>
+      {/* ── Cinematic Chapter-One opening — frames the journey, guides the first step ── */}
+      <AnimatePresence>
+        {!started && (
+          <motion.div
+            className="cw-intro"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.7, ease: 'easeInOut' }}
+          >
+            <motion.div
+              className="cw-intro-card"
+              initial={{ opacity: 0, y: 26, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="cw-intro-eyebrow">THE CHIP · CHAPTER ONE</div>
+              <h1 className="cw-intro-title">
+                Trace the AI era<br />from a <span className="gradient-text" style={{ fontStyle: 'italic' }}>wafer to a wire</span>.
+              </h1>
+              <p className="cw-intro-sub">
+                Five people. One chain. Every chip, every datacenter, every grid — and the real
+                decisions that built them. You make the calls. The world remembers.
+              </p>
+              <div className="cw-intro-actions">
+                <button className="cw-intro-go" onClick={beginJourney}>Begin the journey&nbsp;&nbsp;→</button>
+                <button className="cw-intro-skip" onClick={() => setStarted(true)}>or explore the map freely</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Title overlay (top) — only once the journey has begun ── */}
+      {started && (
+        <div className="cw-title">
+          <div className="cw-eyebrow">THE CHIP · CHAPTER ONE</div>
+          <h1 className="cw-h1">
+            The world that makes the <span className="gradient-text" style={{ fontStyle: 'italic' }}>AI era</span> possible
+          </h1>
+        </div>
+      )}
 
       {/* ── Live world meters — the consequence dashboard. Every call trades
            Output vs. Resilience vs. Sustainability; you can't max one. ── */}
-      <div className="cw-meters">
-        <div className="cw-meters-head">THE WORLD · LIVE STATE</div>
-        <MeterBars meters={worldMeters(choices)} />
-        <div className="cw-meters-foot">{callsMade === 0 ? 'Meet the people to map the chain.' : `${callsMade}/${NODES.length} calls · ${discoveredArcs.length}/${ARCS.length} routes mapped`}</div>
-      </div>
+      {started && (
+        <div className="cw-meters">
+          <div className="cw-meters-head">THE WORLD · LIVE STATE</div>
+          <MeterBars meters={worldMeters(choices)} />
+          <div className="cw-meters-foot">{callsMade === 0 ? 'Meet the people to map the chain.' : `${callsMade}/${NODES.length} calls · ${discoveredArcs.length}/${ARCS.length} routes mapped`}</div>
+        </div>
+      )}
 
       {/* ── Node selector (reliable — globe labels are small/rotating) ── */}
-      <div className="cw-pills">
-        {NODES.map((n, i) => (
-          <button key={n.place} className={'cw-pill' + (i === active ? ' cw-pill-on' : '')} onClick={() => setActive(i)}>
-            {n.place}
-          </button>
-        ))}
-      </div>
+      {started && (
+        <div className="cw-pills">
+          {NODES.map((n, i) => (
+            <button key={n.place} className={'cw-pill' + (i === active ? ' cw-pill-on' : '')} onClick={() => setActive(i)}>
+              {n.place}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ── The globe — fills the whole stage (immersive zoom, no box clip) ── */}
       <div className="cw-globe-fill">
@@ -259,6 +308,16 @@ export default function ChipWorld() {
 
         .cw-globe-fill{position:absolute;inset:0;z-index:1}
 
+        .cw-intro{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center;background:radial-gradient(120% 90% at 50% 45%,rgba(8,11,22,0.62) 0%,rgba(6,9,18,0.9) 70%,rgba(5,7,14,0.97) 100%);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+        .cw-intro-card{max-width:640px}
+        .cw-intro-eyebrow{font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.32em;color:var(--gold-light,#D4B85C);margin-bottom:26px}
+        .cw-intro-title{font-family:var(--font-serif);font-weight:400;font-size:clamp(2.4rem,5.4vw,3.9rem);line-height:1.06;color:#fff;margin:0 0 22px;letter-spacing:-0.01em}
+        .cw-intro-sub{font-family:var(--font-sans);font-size:clamp(0.95rem,1.4vw,1.08rem);line-height:1.75;color:rgba(255,255,255,0.62);max-width:500px;margin:0 auto 38px}
+        .cw-intro-actions{display:flex;flex-direction:column;align-items:center;gap:16px}
+        .cw-intro-go{font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.14em;text-transform:uppercase;color:#0b0e16;background:linear-gradient(135deg,#E8CE7A,#C9A84F);border:none;padding:15px 34px;border-radius:999px;cursor:pointer;box-shadow:0 12px 36px rgba(201,168,79,0.34);transition:transform 0.2s,box-shadow 0.2s}
+        .cw-intro-go:hover{transform:translateY(-2px);box-shadow:0 18px 48px rgba(201,168,79,0.5)}
+        .cw-intro-skip{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;transition:color 0.2s}
+        .cw-intro-skip:hover{color:rgba(255,255,255,0.75)}
         .cw-meters{position:absolute;top:96px;left:24px;z-index:6;width:248px;padding:14px 16px 12px;background:linear-gradient(160deg,rgba(20,25,44,0.82),rgba(12,15,31,0.86));border:1px solid rgba(255,255,255,0.08);border-radius:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,0.35)}
         .cw-meters-head{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.18em;color:var(--gold-light,#D4B85C);margin-bottom:11px}
         .cw-meters-foot{font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.04em;color:rgba(255,255,255,0.38);margin-top:11px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.06)}
