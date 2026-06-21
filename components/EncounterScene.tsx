@@ -11,7 +11,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, MeshReflectorMaterial, Sparkles, Billboard, useTexture } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
 import { ENCOUNTERS, lineAudioId } from '@/lib/encounters';
-import { FIGURES, resolveFigureId, PRIOR } from '@/lib/figures';
+import { FIGURES, FACTS, resolveFigureId, PRIOR } from '@/lib/figures';
 import { useChoices } from '@/lib/choices';
 import { useFade } from '@/lib/useFade';
 import Fader from '@/components/Fader';
@@ -425,7 +425,47 @@ function Refinery({ accent }: { accent: string }) {
   );
 }
 
-function Scene({ image, accent, env, target, minPolar, mouthRef, speaking }: { image: string; accent: string; env?: string; target: [number, number, number]; minPolar: number; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
+// A clickable, pulsing insight-orb floating in the scene.
+function InfoSpot({ pos, accent, found, onClick }: { pos: [number, number, number]; accent: string; found: boolean; onClick: () => void }) {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame((s) => {
+    if (ref.current) {
+      const k = found ? 0.65 : 1 + Math.sin(s.clock.elapsedTime * 3 + pos[0]) * 0.14;
+      ref.current.scale.setScalar(k);
+    }
+  });
+  return (
+    <group position={pos}>
+      <mesh
+        ref={ref}
+        onClick={(e) => { e.stopPropagation(); onClick(); }}
+        onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; }}
+        onPointerOut={() => { document.body.style.cursor = 'default'; }}
+      >
+        <sphereGeometry args={[0.17, 20, 20]} />
+        <meshBasicMaterial color={found ? '#ffffff' : accent} toneMapped={false} transparent opacity={found ? 0.5 : 0.95} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.26, 0.32, 28]} />
+        <meshBasicMaterial color={accent} toneMapped={false} transparent opacity={0.6} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
+}
+
+const SPOT_POS: [number, number, number][] = [[-3.2, 2.0, 0.8], [3.2, 2.0, 0.8], [0, 3.5, -0.4]];
+
+function InfoSpots({ facts, accent, found, onReveal }: { facts: { label: string; text: string }[]; accent: string; found: Set<number>; onReveal: (i: number) => void }) {
+  return (
+    <>
+      {facts.map((_, i) => (
+        <InfoSpot key={i} pos={SPOT_POS[i % SPOT_POS.length]} accent={accent} found={found.has(i)} onClick={() => onReveal(i)} />
+      ))}
+    </>
+  );
+}
+
+function Scene({ image, accent, env, target, minPolar, facts, found, onReveal, mouthRef, speaking }: { image: string; accent: string; env?: string; target: [number, number, number]; minPolar: number; facts: { label: string; text: string }[]; found: Set<number>; onReveal: (i: number) => void; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
   return (
     <>
       <color attach="background" args={['#04060b']} />
@@ -446,6 +486,7 @@ function Scene({ image, accent, env, target, minPolar, mouthRef, speaking }: { i
         : env === 'refinery' ? <Refinery accent={accent} />
         : <Stage accent={accent} />}
       <Sparkles count={70} scale={[14, 7, 10]} position={[0, 3.5, -1]} size={2.2} speed={0.25} color={accent} opacity={0.5} />
+      <InfoSpots facts={facts} accent={accent} found={found} onReveal={onReveal} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[70, 70]} />
         <MeshReflectorMaterial blur={[300, 110]} resolution={1024} mixBlur={1} mixStrength={45} roughness={0.8} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.3} color="#060a11" metalness={0.75} />
@@ -468,6 +509,12 @@ export default function EncounterScene({ id }: { id: string }) {
   const fig = FIGURES[key];
   const [choices, setChoice] = useChoices();
   const { go, out, label } = useFade();
+
+  // interactive insight-orbs — explore the scene to discover facts
+  const facts = FACTS[key] || [];
+  const [found, setFound] = useState<Set<number>>(new Set());
+  const [revealed, setRevealed] = useState<number | null>(null);
+  const reveal = (i: number) => { setRevealed(i); setFound((p) => new Set(p).add(i)); };
 
   const priorChoice = PRIOR[key] ? choices[PRIOR[key]] : null;
   const introLines = useMemo(() => {
@@ -575,7 +622,7 @@ export default function EncounterScene({ id }: { id: string }) {
     <div className="es-stage">
       <Fader out={out} label={label} />
       <Canvas shadows dpr={[1, 2]} camera={{ position: camPos, fov: 44 }}>
-        <Scene image={fig.image} accent={fig.accent} env={fig.env} target={camTarget} minPolar={minPolar} mouthRef={mouthRef} speaking={speaking} />
+        <Scene image={fig.image} accent={fig.accent} env={fig.env} target={camTarget} minPolar={minPolar} facts={facts} found={found} onReveal={reveal} mouthRef={mouthRef} speaking={speaking} />
       </Canvas>
 
       <div className="es-ui">
@@ -586,6 +633,20 @@ export default function EncounterScene({ id }: { id: string }) {
           <h1 className="es-name">{script.name}</h1>
           <div className="es-role">{script.role} — stylized, dramatized from public statements</div>
         </div>
+
+        {/* interactive insight-orbs: counter + reveal card */}
+        {facts.length > 0 && (
+          <div className="es-insights" style={{ borderColor: `${fig.accent}55` }}>
+            ◇ {found.size}/{facts.length} insights{found.size === facts.length ? ' · explored' : ''}
+          </div>
+        )}
+        {revealed !== null && facts[revealed] && (
+          <div className="es-fact" onClick={() => setRevealed(null)}>
+            <div className="es-fact-label" style={{ color: fig.accent }}>{facts[revealed].label}</div>
+            <p className="es-fact-text">{facts[revealed].text}</p>
+            <div className="es-fact-close">tap to close</div>
+          </div>
+        )}
 
         {/* dialogue + gameplay (bottom) */}
         <div className="es-panel-wrap">
@@ -657,6 +718,12 @@ export default function EncounterScene({ id }: { id: string }) {
         .es-eyebrow{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.24em;margin-bottom:10px}
         .es-name{font-family:var(--font-serif);font-weight:400;font-size:clamp(1.8rem,3.6vw,2.8rem);color:#fff;margin:0 0 8px;line-height:1}
         .es-role{font-family:var(--font-sans);font-size:0.8rem;color:rgba(255,255,255,0.5)}
+        .es-insights{position:absolute;top:30px;right:32px;pointer-events:none;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.12em;color:rgba(255,255,255,0.7);background:rgba(16,20,34,0.6);border:1px solid;border-radius:999px;padding:8px 15px;backdrop-filter:blur(8px)}
+        .es-fact{pointer-events:auto;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(88vw,420px);background:linear-gradient(160deg,rgba(18,22,38,0.94),rgba(10,13,26,0.96));border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:22px 24px 16px;backdrop-filter:blur(16px);box-shadow:0 24px 70px rgba(0,0,0,0.6);cursor:pointer;text-align:center;animation:esPop 0.3s cubic-bezier(0.16,1,0.3,1)}
+        @keyframes esPop{from{opacity:0;transform:translate(-50%,-46%) scale(0.95)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+        .es-fact-label{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:11px}
+        .es-fact-text{font-family:var(--font-sans);font-size:1.02rem;line-height:1.6;color:rgba(255,255,255,0.92);margin:0 0 14px}
+        .es-fact-close{font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.1em;color:rgba(255,255,255,0.35)}
         .es-panel-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
         .es-cta{pointer-events:auto;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#04140d;border:none;padding:14px 30px;border-radius:999px;cursor:pointer;transition:transform 0.2s}
         .es-cta:hover{transform:translateY(-2px)}
