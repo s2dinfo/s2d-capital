@@ -12,3 +12,7 @@ export const FIGURES: Record<string, { image: string; accent: string }> = {
 export function resolveFigureId(id: string): string {
   return Object.keys(FIGURES).find((k) => k.toLowerCase() === id.toLowerCase()) || 'Nvidia';
 }
+
+// which figure's prior choice this figure reacts to (continuity across the journey)
+export const PRIOR: Record<string, string> = { TSMC: 'Nvidia', ASML: 'TSMC', Power: 'Copper' };
+

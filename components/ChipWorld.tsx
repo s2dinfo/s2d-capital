@@ -2,10 +2,11 @@
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import Encounter from '@/components/Encounter';
 import WorldReport, { worldMeters, MeterBars } from '@/components/WorldReport';
 import { ENCOUNTERS } from '@/lib/encounters';
+import { useChoices } from '@/lib/choices';
 
 // Reuse the existing Three.js globe (ssr:false — it needs the DOM/WebGL).
 const JourneyGlobeGL = dynamic(() => import('@/components/JourneyGlobeGL'), {
@@ -93,12 +94,10 @@ const ARCS = [
 ];
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).
-const PRIOR: Record<string, string> = { TSMC: 'Nvidia', ASML: 'TSMC', Power: 'Copper' };
-
 export default function ChipWorld() {
+  const router = useRouter();
   const [active, setActive] = useState<number | null>(null);
-  const [encounterNode, setEncounterNode] = useState<string | null>(null);
-  const [choices, setChoices] = useState<Record<string, string>>({});
+  const [choices] = useChoices(); // shared store — reflects decisions made in the 3D scenes
   const [reportOpen, setReportOpen] = useState(false);
   const [started, setStarted] = useState(false); // false = cinematic Chapter-One opening
   const callsMade = NODES.filter((n) => choices[n.place]).length;
@@ -113,21 +112,15 @@ export default function ChipWorld() {
   // once — the "was it worth it?" beat that bookends the Chapter-One opening.
   const climaxShown = useRef(false);
   useEffect(() => {
-    if (callsMade === NODES.length && !climaxShown.current && !encounterNode) {
+    if (callsMade === NODES.length && !climaxShown.current) {
       climaxShown.current = true;
       const t = setTimeout(() => setReportOpen(true), 900);
       return () => clearTimeout(t);
     }
-  }, [callsMade, encounterNode]);
+  }, [callsMade]);
 
-  // "Begin the journey" — fly the camera to Nvidia, then Jensen is waiting (guided
-  // first decision). The world opens to free roam once you return.
-  const beginJourney = () => {
-    setStarted(true);
-    const nvidiaIdx = NODES.findIndex((n) => n.place === 'Nvidia');
-    setActive(nvidiaIdx);
-    setTimeout(() => setEncounterNode('Nvidia'), 1600);
-  };
+  // "Begin the journey" — go straight in to meet Jensen in his 3D space.
+  const beginJourney = () => router.push('/meet/Nvidia');
 
   return (
     <section className="cw-stage">
@@ -254,7 +247,7 @@ export default function ChipWorld() {
             <h2 className="cw-d-title">{node.title}</h2>
             <p className="cw-d-body">{node.body}</p>
             {ENCOUNTERS[node.place] && (
-              <button className="cw-d-meet" onClick={() => setEncounterNode(node.place)}>▶&nbsp;&nbsp;MEET {ENCOUNTERS[node.place].name.toUpperCase()}</button>
+              <button className="cw-d-meet" onClick={() => router.push(`/meet/${node.place}`)}>▶&nbsp;&nbsp;MEET {ENCOUNTERS[node.place].name.toUpperCase()}</button>
             )}
             {node.href && (
               <Link href={node.href} className="cw-d-link">READ THE FULL STORY →</Link>
@@ -276,24 +269,6 @@ export default function ChipWorld() {
         ⚖ The world you built · {callsMade}/{NODES.length}
       </button>
       <WorldReport choices={choices} open={reportOpen} onClose={() => setReportOpen(false)} />
-
-      {/* Encounters — the quest: meet a figure, decide, travel onward */}
-      <AnimatePresence>
-        {encounterNode && (
-          <Encounter
-            key={encounterNode}
-            script={ENCOUNTERS[encounterNode]}
-            priorChoice={choices[PRIOR[encounterNode] ?? ''] ?? null}
-            onClose={() => setEncounterNode(null)}
-            onDecision={(c) => setChoices((prev) => ({ ...prev, [encounterNode]: c }))}
-            onNext={(next) => {
-              const i = NODES.findIndex((n) => n.place === next);
-              if (i >= 0) setActive(i);
-              setEncounterNode(next);
-            }}
-          />
-        )}
-      </AnimatePresence>
 
       <style dangerouslySetInnerHTML={{ __html: `
         .cw-stage{position:relative;min-height:100vh;overflow:hidden;background:#0c0f1f;display:flex;flex-direction:column}
