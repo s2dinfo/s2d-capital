@@ -35,7 +35,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     name: 'Jensen Huang',
     role: 'Founder & CEO, Nvidia',
     tag: 'JENSEN',
-    portrait: '/characters/jensen.mp4',
+    portrait: '/characters/jensen-still.jpg',
     voiceId: 'cjVigY5qzO86Huf0OWal', // Eric — smooth, confident
     intro: [
       { who: 'narration', text: 'Santa Clara, California. Inside Nvidia, a man in a black leather jacket looks up from a silicon wafer.' },
@@ -69,7 +69,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     name: 'C.C. Wei',
     role: 'Chairman & CEO, TSMC',
     tag: 'C.C. WEI',
-    portrait: '/characters/cc-wei.mp4',
+    portrait: '/characters/cc-wei-still.jpg',
     voiceId: 'pqHfZKP75CvOlQylNhV4', // Bill — wise, mature, older
     priorReactions: {
       ai: 'So — you bet everything on AI chips. Bold. Now you must understand the company that actually has to build them.',
@@ -107,7 +107,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     name: 'Christophe Fouquet',
     role: 'CEO, ASML',
     tag: 'FOUQUET',
-    portrait: '/characters/fouquet.mp4',
+    portrait: '/characters/fouquet-still.jpg',
     voiceId: 'onwK4e9ZLuTAKqWW03F9', // Daniel — steady broadcaster
     priorReactions: {
       taiwan: 'So Taiwan keeps everything. Then you’d better pray nothing happens to it — because the machines that make those chips possible all come from here.',
@@ -143,13 +143,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     name: 'Andrés Vidal',
     role: 'Veteran Mine Director',
     tag: 'ANDRÉS',
-    portrait: '/characters/copper-stylized.png', // fallback still
-    expressions: {
-      informative: '/characters/copper-idle-loop.mp4',
-      questioning: '/characters/copper-question-idle-loop.mp4',
-      serious: '/characters/copper-serious-idle-loop.mp4',
-      resolved: '/characters/copper-resolved-idle-loop.mp4',
-    },
+    portrait: '/characters/copper-stylized.png', // plain neutral still
     voiceId: 'nPczCjzI2devNBz1zQrb', // Brian — deep, resonant
     imagePrompt: 'a veteran Chilean copper-mine director in his early 60s, weathered tanned face, short grey hair, trimmed grey stubble, slight confident smile, wearing a high-visibility orange jacket over a dark work shirt, an open-pit copper mine softly blurred behind him',
     intro: [
