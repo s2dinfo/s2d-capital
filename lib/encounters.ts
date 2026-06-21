@@ -58,7 +58,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
       ai: { verdict: 'That’s the call Nvidia actually made.', text: 'Data-center went from a side bet to the vast majority of Nvidia’s revenue. It became one of the most valuable companies on earth. The catch: it all still rides on TSMC — 110 miles from mainland China.' },
     },
     reality: {
-      ai: 'Nvidia’s data-center revenue went from ~$3B a year (2020) to over $47B in a single quarter (late 2024). In June 2024 it briefly became the world’s most valuable company at ~$3 trillion. The AI bet defined the decade.',
+      ai: 'Nvidia’s data-center revenue went from ~$3B for all of 2020 to over $30B in a single quarter by late 2024 — roughly 10× the old annual figure, every quarter. In June 2024 it briefly became the world’s most valuable company at ~$3 trillion. The AI bet defined the decade.',
       gaming: 'Gaming was Nvidia’s core business for two decades — yet by 2024 it was a small fraction of revenue beside data-center AI. The firms that hesitated on AI are the ones that lost the most ground.',
     },
     outro: [
@@ -141,7 +141,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
       comply: { verdict: 'That’s the path that actually unfolded.', text: 'The Dutch government, pressed by Washington, restricted ASML’s most advanced exports to China. You align with the West — and hand China a national mission to build its own EUV from scratch. The bottleneck becomes a battleground.' },
     },
     reality: {
-      sell: 'In reality the choice wasn’t fully ASML’s. The Netherlands, under US pressure, barred exports of its most advanced EUV machines to China and later curbed some older DUV tools too — China had been one of ASML’s largest markets.',
+      sell: 'In reality the choice wasn’t fully ASML’s. The Netherlands, under US pressure, barred exports of its most advanced EUV machines to China and later moved to curb some older DUV tools too — and China was about a third of ASML’s sales in 2025, one of its largest markets.',
       comply: 'Export controls held. China responded by pouring tens of billions into a domestic chip-tool industry and stockpiling older machines — accelerating the exact capability the controls were meant to deny.',
     },
     outro: [
@@ -180,7 +180,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     },
     reality: {
       ramp: 'Copper is now treated as a binding constraint on AI and electrification. Chile produces ~¼ of the world’s copper but faces declining ore grades and water disputes in the Atacama — every extra tonne carries a real local cost.',
-      restraint: 'Analysts project a structural copper deficit this decade as demand outpaces supply — and a new mine takes 10–15 years to permit and build. Restraint anywhere tightens a shortage everywhere.',
+      restraint: 'Analysts project a structural copper deficit — BHP sees a ~10-million-tonne shortfall by 2035 — as demand outpaces supply, and a new mine takes 10–15 years to permit and build. Restraint anywhere tightens a shortage everywhere.',
     },
     outro: [
       { who: 'speaker', text: 'Now you understand the part no one puts on a slide. The AI revolution is not just silicon. It is dug out of the ground, in places like this, by people like us — and the ground is not infinite.' },
@@ -221,7 +221,7 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
       pace: { verdict: 'The honest brake — and the unpopular one.', text: 'You protect the grid and the people on it. But the datacenters sit in a years-long queue, the AI timeline slips, and the buildout simply moves to whoever will say yes faster. The constraint was never the chip. It was the wire.' },
     },
     reality: {
-      rush: 'AI datacenters are straining grids worldwide. In Northern Virginia — the planet’s largest datacenter hub — utilities have proposed new gas plants and delayed coal-plant retirements to meet the load, and data centers are projected to consume a fast-rising share of US electricity by 2030.',
+      rush: 'AI datacenters are straining grids worldwide. In Northern Virginia — the planet’s largest datacenter hub — utilities plan up to 15 GW of new gas by 2030 and have slowed coal-plant retirements to keep up. Data centers could draw ~12% of US electricity by 2030, up from 3–4% today.',
       pace: 'Interconnection queues for new power now stretch years, and some grid operators have begun pacing or pausing datacenter hookups. The binding constraint on AI has quietly shifted from chips to electricity.',
     },
     outro: [
