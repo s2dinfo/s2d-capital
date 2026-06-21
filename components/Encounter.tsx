@@ -210,6 +210,17 @@ export default function Encounter({
               <motion.div key="result" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
                 <div className="enc-verdict">{script.outcomes[choice].verdict}</div>
                 <p className="enc-result-text">{script.outcomes[choice].text}</p>
+                {script.reality?.[choice] && (
+                  <motion.div
+                    className="enc-reality"
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="enc-reality-head">◆ What really happened</div>
+                    <p className="enc-reality-text">{script.reality[choice]}</p>
+                  </motion.div>
+                )}
               </motion.div>
             )}
 
@@ -278,6 +289,9 @@ export default function Encounter({
         .enc-choice-s{display:block;font-family:var(--font-sans);font-size:0.78rem;color:rgba(255,255,255,0.5)}
         .enc-verdict{font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-light,#D4B85C);margin-bottom:12px}
         .enc-result-text{font-family:var(--font-sans);font-size:0.98rem;color:rgba(255,255,255,0.85);line-height:1.7;margin:0}
+        .enc-reality{margin-top:18px;padding:15px 17px;background:rgba(91,141,239,0.08);border:1px solid rgba(91,141,239,0.28);border-left:3px solid #5B8DEF;border-radius:10px}
+        .enc-reality-head{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:#9bbcf5;margin-bottom:8px}
+        .enc-reality-text{font-family:var(--font-sans);font-size:0.88rem;color:rgba(255,255,255,0.82);line-height:1.65;margin:0}
         .enc-foot{margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06)}
         .enc-next,.enc-go{background:var(--gold-light,#D4B85C);color:#1A1A2E;border:none;border-radius:10px;padding:11px 22px;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.06em;font-weight:600;cursor:pointer;transition:filter 0.2s}
         .enc-next:hover,.enc-go:hover{filter:brightness(1.1)}

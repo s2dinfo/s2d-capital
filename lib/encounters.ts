@@ -22,6 +22,9 @@ export type EncounterScript = {
   intro: Line[];
   decision: { prompt: string; options: EncounterOption[] };
   outcomes: Record<string, { verdict: string; text: string }>;
+  // the factual "what really happened" reveal — concrete, public-record outcome
+  // shown after the player commits. Keyed by option id. This is the learn-payload.
+  reality?: Record<string, string>;
   outro: Line[];
   done: { verdict: string; text: string };
   article?: string;
@@ -53,6 +56,10 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     outcomes: {
       gaming: { verdict: 'A safe quarter.', text: 'You book the revenue gamers always deliver. But the AI buyers waiting on data-center GPUs don’t wait — they go elsewhere. You protected this quarter and handed away the decade. Safe was the trap.' },
       ai: { verdict: 'That’s the call Nvidia actually made.', text: 'Data-center went from a side bet to the vast majority of Nvidia’s revenue. It became one of the most valuable companies on earth. The catch: it all still rides on TSMC — 110 miles from mainland China.' },
+    },
+    reality: {
+      ai: 'Nvidia’s data-center revenue went from ~$3B a year (2020) to over $47B in a single quarter (late 2024). In June 2024 it briefly became the world’s most valuable company at ~$3 trillion. The AI bet defined the decade.',
+      gaming: 'Gaming was Nvidia’s core business for two decades — yet by 2024 it was a small fraction of revenue beside data-center AI. The firms that hesitated on AI are the ones that lost the most ground.',
     },
     outro: [
       { who: 'speaker', text: 'Now you understand my half of it. The most important chips on earth — designed by a company that can’t build them.' },
@@ -92,6 +99,10 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
       taiwan: { verdict: 'The shield holds — for now.', text: 'You keep costs low and concentration high. The world keeps protecting Taiwan because it has no choice. But you’ve placed the entire AI economy on one fault line, 110 miles from China. One blockade freezes everything.' },
       spread: { verdict: 'That’s the path TSMC is actually walking.', text: 'Arizona and Japan fabs are rising — at a reported ~50% higher cost. You de-risk geography but bleed margin, and you quietly weaken the very shield that kept Taiwan safe. There is no free choice here.' },
     },
+    reality: {
+      taiwan: 'Taiwan still makes roughly 90% of the world’s most advanced (sub-7nm) chips. That single-island concentration is why a Taiwan Strait conflict is modeled as a multi-trillion-dollar shock to the global economy — the “silicon shield.”',
+      spread: 'TSMC’s Arizona fab slipped years past its first target and reportedly costs far more to run than a Taiwan fab. Onshoring leading-edge chips turned out far harder and pricier than policymakers assumed.',
+    },
     outro: [
       { who: 'speaker', text: 'Now you see it. Everyone wants these chips. Almost no one on earth can make them.' },
       { who: 'speaker', text: 'And the few who can sit in the most dangerous place on the map.' },
@@ -129,6 +140,10 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
       sell: { verdict: 'You keep the revenue — and the heat.', text: 'China stays a top customer, but you’re now the front line of a tech cold war. And every advanced machine you ship helps China build the very capability meant to replace you.' },
       comply: { verdict: 'That’s the path that actually unfolded.', text: 'The Dutch government, pressed by Washington, restricted ASML’s most advanced exports to China. You align with the West — and hand China a national mission to build its own EUV from scratch. The bottleneck becomes a battleground.' },
     },
+    reality: {
+      sell: 'In reality the choice wasn’t fully ASML’s. The Netherlands, under US pressure, barred exports of its most advanced EUV machines to China and later curbed some older DUV tools too — China had been one of ASML’s largest markets.',
+      comply: 'Export controls held. China responded by pouring tens of billions into a domestic chip-tool industry and stockpiling older machines — accelerating the exact capability the controls were meant to deny.',
+    },
     outro: [
       { who: 'speaker', text: 'One company. One machine. Without it, there are no advanced chips — no AI, anywhere on earth.' },
       { who: 'speaker', text: 'That is the most concentrated point of power in the modern economy. And it sits right here, in a Dutch field.' },
@@ -162,6 +177,10 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     outcomes: {
       ramp: { verdict: 'You feed the machine.', text: 'Copper flows; the datacenters and the car lines keep humming. But you draw down aquifers in the driest desert on earth, the towns around you fight you in court, and your own costs climb as the ore keeps thinning. You bought the world a few years — and a reckoning.' },
       restraint: { verdict: 'The honest answer — and the painful one.', text: 'You protect the desert and your people. But the copper the world needs simply isn’t there. Prices spike, the green transition and the AI buildout both slow, and the shortfall becomes everyone’s problem. There was never a clean choice — only who pays.' },
+    },
+    reality: {
+      ramp: 'Copper is now treated as a binding constraint on AI and electrification. Chile produces ~¼ of the world’s copper but faces declining ore grades and water disputes in the Atacama — every extra tonne carries a real local cost.',
+      restraint: 'Analysts project a structural copper deficit this decade as demand outpaces supply — and a new mine takes 10–15 years to permit and build. Restraint anywhere tightens a shortage everywhere.',
     },
     outro: [
       { who: 'speaker', text: 'Now you understand the part no one puts on a slide. The AI revolution is not just silicon. It is dug out of the ground, in places like this, by people like us — and the ground is not infinite.' },
