@@ -1,152 +1,165 @@
 'use client';
-// ── Vertical slice: the Nvidia encounter as a real 3D space you can look around in.
-// Proves the new foundation — R3F + custom GLSL shader + baked-feel lighting + post
-// + the existing ElevenLabs voice — vs. the old "click a card" demo. ──
+// ── The Nvidia encounter as a real 3D space with a RIGGED, TALKING avatar. ──
+// Environment: stylized stage + reflective floor + emissive structure + atmosphere.
+// Character: a VRM avatar that lip-syncs to the real ElevenLabs voice (mouth driven
+// by a live Web Audio analyser), blinks, sways, and looks at the camera.
 import * as THREE from 'three';
-import { useRef, useMemo, useState, Suspense } from 'react';
+import { useRef, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, MeshReflectorMaterial, useTexture } from '@react-three/drei';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { OrbitControls, MeshReflectorMaterial, Sparkles } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { ENCOUNTERS, lineAudioId } from '@/lib/encounters';
 
-const VERT = `
-  varying vec2 vUv;
-  void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
-`;
-// Hologram look: tinted portrait + scanlines + a travelling scan bar + soft oval
-// mask (so it reads as a projection, not a pasted photo) + a speaking pulse.
-const FRAG = `
-  uniform sampler2D uMap;
-  uniform float uTime;
-  uniform float uSpeaking;
-  varying vec2 vUv;
-  void main(){
-    vec2 uv = vUv;
-    float jitter = sin(uv.y * 140.0 + uTime * 9.0) * 0.0016 * (0.4 + uSpeaking);
-    uv.x += jitter;
-    vec4 tex = texture2D(uMap, uv);
-    float lum = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
-    vec3 holo = mix(vec3(0.10, 0.95, 0.50), vec3(0.65, 1.0, 0.85), lum);
-    vec3 col = mix(tex.rgb, holo, 0.4);
-    col *= 0.82 + 0.18 * sin(uv.y * 820.0 - uTime * 7.0);            // scanlines
-    float bar = abs(fract(uv.y - uTime * 0.10) - 0.5);              // travelling scan bar
-    col += smoothstep(0.5, 0.46, bar) * vec3(0.15, 0.45, 0.30);
-    vec2 c = uv - 0.5;
-    float d = length(vec2(c.x * 1.15, c.y * 0.95));
-    float mask = smoothstep(0.58, 0.34, d);                         // soft oval edge fade
-    float flick = 0.92 + 0.08 * sin(uTime * 30.0 + 2.0);
-    col *= 1.0 + 0.22 * uSpeaking * sin(uTime * 16.0);              // speaking glow pulse
-    float alpha = mask * flick * (0.80 + 0.20 * uSpeaking);
-    gl_FragColor = vec4(col, alpha);
-  }
-`;
-
-function Hologram({ speaking }: { speaking: boolean }) {
-  const tex = useTexture('/characters/jensen-still.jpg');
-  tex.colorSpace = THREE.SRGBColorSpace;
-  const matRef = useRef<THREE.ShaderMaterial>(null);
-  const grpRef = useRef<THREE.Group>(null);
-  const uniforms = useMemo(
-    () => ({ uMap: { value: tex }, uTime: { value: 0 }, uSpeaking: { value: 0 } }),
-    [tex],
-  );
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (matRef.current) {
-      matRef.current.uniforms.uTime.value = t;
-      const target = speaking ? 1 : 0;
-      matRef.current.uniforms.uSpeaking.value += (target - matRef.current.uniforms.uSpeaking.value) * 0.08;
-    }
-    if (grpRef.current) grpRef.current.position.y = 1.55 + Math.sin(t * 1.2) * 0.04;
+// ── The rigged avatar ──────────────────────────────────────────────────────
+function Avatar({ mouthRef }: { mouthRef: React.MutableRefObject<number> }) {
+  const gltf = useLoader(GLTFLoader, '/characters/avatar.vrm', (loader) => {
+    (loader as GLTFLoader).register((parser) => new VRMLoaderPlugin(parser));
   });
+  const vrm = (gltf.userData as { vrm: any }).vrm;
+  const blinkT = useRef(2);
+  const mouth = useRef(0);
+
+  useEffect(() => {
+    if (!vrm) return;
+    VRMUtils.removeUnnecessaryVertices(vrm.scene);
+    vrm.scene.traverse((o: THREE.Object3D) => {
+      o.frustumCulled = false;
+      o.castShadow = true;
+    });
+  }, [vrm]);
+
+  useFrame((state, delta) => {
+    if (!vrm) return;
+    const t = state.clock.elapsedTime;
+    const em = vrm.expressionManager;
+    const bone = (n: string) => vrm.humanoid?.getNormalizedBoneNode?.(n);
+
+    // pose out of the default T-pose into a natural relaxed stance (arms down)
+    const lUp = bone('leftUpperArm'); if (lUp) lUp.rotation.set(0.1, 0, -1.25);
+    const rUp = bone('rightUpperArm'); if (rUp) rUp.rotation.set(0.1, 0, 1.25);
+    const lLo = bone('leftLowerArm'); if (lLo) lLo.rotation.set(0, -0.25, -0.15);
+    const rLo = bone('rightLowerArm'); if (rLo) rLo.rotation.set(0, 0.25, 0.15);
+
+    // lip-sync: smooth the analyser amplitude into the mouth-open expression
+    mouth.current += (mouthRef.current - mouth.current) * 0.5;
+    if (em) {
+      em.setValue('aa', Math.min(1, mouth.current));
+      // periodic natural blink
+      blinkT.current -= delta;
+      let blink = 0;
+      if (blinkT.current < 0.16 && blinkT.current > 0) blink = 1 - Math.abs(blinkT.current - 0.08) / 0.08;
+      if (blinkT.current <= 0) blinkT.current = 2.5 + Math.random() * 3.5;
+      em.setValue('blink', Math.max(0, blink));
+    }
+    // jaw bone fallback (some VRMs animate the mouth via a jaw bone, not expressions)
+    const jaw = vrm.humanoid?.getNormalizedBoneNode?.('jaw');
+    if (jaw) jaw.rotation.x = Math.min(1, mouth.current) * 0.28;
+
+    // subtle idle aliveness
+    const spine = vrm.humanoid?.getNormalizedBoneNode?.('spine');
+    if (spine) spine.rotation.y = Math.sin(t * 0.5) * 0.035;
+    const head = vrm.humanoid?.getNormalizedBoneNode?.('head');
+    if (head) head.rotation.x = Math.sin(t * 0.7) * 0.025;
+
+    // look at the viewer
+    if (vrm.lookAt) vrm.lookAt.target = state.camera;
+    vrm.update(delta);
+  });
+
+  // face the +Z camera
+  return <primitive object={vrm.scene} rotation={[0, 0, 0]} position={[0, 0, 0]} />;
+}
+
+// ── Environment ─────────────────────────────────────────────────────────────
+function Stage() {
   return (
-    <group ref={grpRef} position={[0, 1.55, 0]}>
-      <mesh>
-        <planeGeometry args={[2.2, 2.9, 1, 1]} />
-        <shaderMaterial
-          ref={matRef}
-          transparent
-          depthWrite={false}
-          side={THREE.DoubleSide}
-          uniforms={uniforms}
-          vertexShader={VERT}
-          fragmentShader={FRAG}
-        />
+    <group>
+      {/* glowing stage disc the figure stands on */}
+      <mesh position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <cylinderGeometry args={[1.7, 1.8, 0.1, 64]} />
+        <meshStandardMaterial color="#0a1118" metalness={0.6} roughness={0.4} />
       </mesh>
-      {/* projection base glow on the floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]}>
-        <circleGeometry args={[1.15, 48]} />
-        <meshBasicMaterial color="#1affa0" transparent opacity={0.13} toneMapped={false} />
+      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[1.55, 1.7, 64]} />
+        <meshBasicMaterial color="#1affa0" toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
+      {/* back structure: emissive vertical light bars */}
+      {[-6, -4.4, -2.8, 2.8, 4.4, 6].map((x, i) => (
+        <mesh key={i} position={[x, 3.2, -6.5]}>
+          <boxGeometry args={[0.1, 6.4, 0.1]} />
+          <meshStandardMaterial color="#08120c" emissive="#1affa0" emissiveIntensity={2.2} toneMapped={false} />
+        </mesh>
+      ))}
+      {/* a wide dim back wall for depth */}
+      <mesh position={[0, 3, -7]}>
+        <planeGeometry args={[40, 14]} />
+        <meshStandardMaterial color="#060a10" metalness={0.3} roughness={0.9} />
+      </mesh>
+      {/* overhead accent bars */}
+      {[-2.2, 0, 2.2].map((x, i) => (
+        <mesh key={`o${i}`} position={[x, 6.5, -1]} rotation={[Math.PI / 2, 0, 0]}>
+          <boxGeometry args={[0.08, 4, 0.08]} />
+          <meshStandardMaterial color="#08120c" emissive="#39e0ff" emissiveIntensity={1.6} toneMapped={false} />
+        </mesh>
+      ))}
     </group>
   );
 }
 
-function Pillars() {
-  const xs = [-5, -3, 3, 5, 6.5];
+function Scene({ mouthRef }: { mouthRef: React.MutableRefObject<number> }) {
   return (
     <>
-      {xs.map((x, i) => (
-        <mesh key={i} position={[x, 3, -5 - (i % 2) * 2.5]}>
-          <boxGeometry args={[0.14, 6, 0.14]} />
-          <meshStandardMaterial color="#0a140e" emissive="#1affa0" emissiveIntensity={2.4} toneMapped={false} />
-        </mesh>
-      ))}
-    </>
-  );
-}
+      <color attach="background" args={['#04060b']} />
+      <fog attach="fog" args={['#04060b', 8, 26]} />
 
-function Scene({ speaking }: { speaking: boolean }) {
-  return (
-    <>
-      <color attach="background" args={['#05060c']} />
-      <fog attach="fog" args={['#05060c', 9, 24]} />
-
-      <hemisphereLight args={['#223', '#000', 0.4]} />
-      <ambientLight intensity={0.12} />
-      <spotLight position={[3, 8, 5]} angle={0.6} penumbra={0.9} intensity={400} color="#cfffe6" distance={40} castShadow shadow-mapSize={[1024, 1024]} />
-      <pointLight position={[-3.5, 2.2, -3]} intensity={45} color="#1affa0" distance={22} />
-      <pointLight position={[3.5, 1.6, 2.5]} intensity={28} color="#39e0ff" distance={20} />
+      <hemisphereLight args={['#2a3340', '#000', 0.5]} />
+      <ambientLight intensity={0.18} />
+      <spotLight position={[2.5, 7, 5]} angle={0.55} penumbra={0.9} intensity={500} color="#eaf6ff" distance={40} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0002} />
+      <spotLight position={[-4, 4, -2]} angle={0.7} penumbra={1} intensity={120} color="#1affa0" distance={28} />
+      <pointLight position={[3.5, 2, 3]} intensity={26} color="#39e0ff" distance={22} />
 
       <Suspense fallback={null}>
-        <Hologram speaking={speaking} />
+        <Avatar mouthRef={mouthRef} />
       </Suspense>
-      <Pillars />
+      <Stage />
+      <Sparkles count={70} scale={[14, 7, 10]} position={[0, 3.5, -1]} size={2.2} speed={0.25} color="#1affa0" opacity={0.5} />
 
-      {/* reflective floor — reflects the hologram + pillars for the premium look */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <planeGeometry args={[60, 60]} />
+      {/* reflective floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
+        <planeGeometry args={[70, 70]} />
         <MeshReflectorMaterial
-          blur={[300, 100]}
+          blur={[300, 110]}
           resolution={1024}
           mixBlur={1}
-          mixStrength={42}
-          roughness={0.85}
+          mixStrength={45}
+          roughness={0.8}
           depthScale={1.1}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.3}
-          color="#070b12"
-          metalness={0.7}
+          color="#060a11"
+          metalness={0.75}
         />
       </mesh>
 
       <OrbitControls
         makeDefault
         enablePan={false}
-        minDistance={3.5}
+        minDistance={2.8}
         maxDistance={9}
-        minPolarAngle={0.7}
-        maxPolarAngle={1.55}
+        minPolarAngle={0.6}
+        maxPolarAngle={1.56}
         autoRotate
-        autoRotateSpeed={0.35}
+        autoRotateSpeed={0.3}
         target={[0, 1.3, 0]}
       />
 
       <EffectComposer>
-        <Bloom intensity={0.6} luminanceThreshold={0.38} luminanceSmoothing={0.25} mipmapBlur />
+        <Bloom intensity={0.7} luminanceThreshold={0.4} luminanceSmoothing={0.25} mipmapBlur />
         <Vignette eskil={false} offset={0.3} darkness={0.92} />
-        <Noise opacity={0.045} premultiply />
+        <Noise opacity={0.04} premultiply />
       </EffectComposer>
     </>
   );
@@ -154,25 +167,44 @@ function Scene({ speaking }: { speaking: boolean }) {
 
 export default function NvidiaScene() {
   const [speaking, setSpeaking] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mouthRef = useRef(0);
+  const ctxRef = useRef<AudioContext | null>(null);
 
   const speak = () => {
     if (speaking) return;
     const script = ENCOUNTERS.Nvidia;
     const line = script.intro.find((l) => l.who === 'speaker')?.text || '';
     const src = `/audio/${lineAudioId(script.voiceId || '', line)}.mp3`;
-    const a = new Audio(src);
-    audioRef.current = a;
-    a.onended = () => setSpeaking(false);
-    a.onerror = () => setSpeaking(false);
+    const audio = new Audio(src);
+    let ctx = ctxRef.current;
+    if (!ctx) {
+      ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      ctxRef.current = ctx;
+    }
+    const source = ctx.createMediaElementSource(audio);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+    source.connect(analyser);
+    analyser.connect(ctx.destination);
+    const data = new Uint8Array(analyser.fftSize);
     setSpeaking(true);
-    a.play().catch(() => setSpeaking(false));
+    const tick = () => {
+      if (audio.paused || audio.ended) { mouthRef.current = 0; return; }
+      analyser.getByteTimeDomainData(data);
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) { const v = (data[i] - 128) / 128; sum += v * v; }
+      mouthRef.current = Math.min(1, Math.sqrt(sum / data.length) * 3.4);
+      requestAnimationFrame(tick);
+    };
+    audio.onended = () => { setSpeaking(false); mouthRef.current = 0; };
+    audio.onerror = () => { setSpeaking(false); mouthRef.current = 0; };
+    ctx.resume().then(() => audio.play()).then(() => tick()).catch(() => setSpeaking(false));
   };
 
   return (
     <div className="ns-stage">
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 1.6, 5.5], fov: 45 }}>
-        <Scene speaking={speaking} />
+      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 1.4, 3.8], fov: 42 }}>
+        <Scene mouthRef={mouthRef} />
       </Canvas>
 
       <div className="ns-ui">
@@ -180,7 +212,7 @@ export default function NvidiaScene() {
           <Link href="/world" className="ns-back">← back to the world</Link>
           <div className="ns-eyebrow">NVIDIA HQ · SANTA CLARA</div>
           <h1 className="ns-name">Jensen Huang</h1>
-          <div className="ns-role">Founder &amp; CEO, Nvidia — dramatized from public statements</div>
+          <div className="ns-role">Founder &amp; CEO, Nvidia — stylized, dramatized from public statements</div>
         </div>
         <div className="ns-bottom">
           <button className={'ns-speak' + (speaking ? ' ns-speaking' : '')} onClick={speak}>
@@ -191,7 +223,7 @@ export default function NvidiaScene() {
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .ns-stage{position:fixed;inset:0;background:#05060c}
+        .ns-stage{position:fixed;inset:0;background:#04060b}
         .ns-stage canvas{display:block;width:100%;height:100%}
         .ns-ui{position:absolute;inset:0;pointer-events:none;padding:28px 32px;display:flex;flex-direction:column;justify-content:space-between}
         .ns-top{max-width:60%}
