@@ -270,6 +270,118 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     ],
     done: { verdict: 'You’ve found the keystone.', text: 'Supply meets demand. Everything you traced — design, fab, machine, metal, power — exists to feed one race. You’ve seen the whole world now: who makes it, and who it’s all for.' },
   },
+
+  Microsoft: {
+    id: 'Microsoft',
+    locationTag: 'MICROSOFT · REDMOND',
+    name: 'Satya Nadella',
+    role: 'CEO, Microsoft',
+    tag: 'SATYA',
+    portrait: '/characters/nadella-figure.png',
+    voiceId: 'ErXwobaYiN019PkySvjV', // Antoni — warm, measured
+    priorReactions: {
+      scale: 'So Sam told you he’ll build it at any cost. He can dream it. I’m the one who has to write the cheque — and pour the concrete.',
+      pace: 'Sam talked restraint. Admirable. But the company that funds the most compute usually owns the future. So the cheque lands on my desk.',
+    },
+    intro: [
+      { who: 'narration', text: 'Redmond, Washington. In a quiet glass office, the man whose company bankrolls much of the AI race studies a capital-expenditure plan larger than some nations’ budgets.' },
+      { who: 'speaker', text: 'The labs get the headlines. We get the bill. Microsoft is the cloud, the capital, the datacenters under the AI you’ve been tracing — and the biggest backer of the lab you just met.' },
+      { who: 'speaker', text: 'Wall Street wants discipline. The future wants everything. I am spending tens of billions a quarter on chips and buildings that only pay off if this bet is right.' },
+      { who: 'speaker', text: 'So I make the call every cloud giant is making right now.' },
+    ],
+    decision: {
+      prompt: 'You run Microsoft. The AI buildout is the biggest capital bet in tech history. How do you play it?',
+      options: [
+        { id: 'invest', label: 'Spend whatever it takes', sub: 'Record datacenter capex, back the labs, build the AI cloud no one can match.' },
+        { id: 'discipline', label: 'Show capital discipline', sub: 'Pace the spend, protect margins, don’t bet the company on a boom that might cool.' },
+      ],
+    },
+    outcomes: {
+      invest: { verdict: 'The path Big Tech is actually on.', text: 'You out-spend everyone — the AI cloud becomes yours, the labs run on your iron. But you’ve converted a mountain of cash into concrete and silicon that must earn its keep. If the boom stalls, that capex becomes the most expensive mistake in tech.' },
+      discipline: { verdict: 'Prudent — and quietly risky.', text: 'Your margins hold, your investors relax. But compute is destiny right now, and a rival writing bigger cheques may simply lap you. In a winner-take-most race, discipline can look a lot like surrender.' },
+    },
+    reality: {
+      invest: 'In reality, Microsoft and its hyperscaler peers pushed AI-datacenter capital spending to record highs — tens of billions of dollars per quarter — and Microsoft’s multibillion-dollar backing of OpenAI made it the financial spine of the AI boom.',
+      discipline: 'In reality, investors have repeatedly pressed Big Tech on whether the AI capex will pay off — yet the giants keep spending, because falling behind on compute is treated as the bigger risk than overbuilding.',
+    },
+    outro: [
+      { who: 'speaker', text: 'Now you see the money behind the magic. The AI you trace through silicon and copper runs on balance sheets the size of economies.' },
+      { who: 'speaker', text: 'We are pouring a decade of profit into a bet on intelligence. History will call it visionary or insane. There is no third option.' },
+    ],
+    done: { verdict: 'You’ve followed the money.', text: 'The cloud giants are the capital that turns ambition into datacenters. You’ve seen the lab that wants the compute, and now the balance sheet that builds it.' },
+  },
+
+  Oil: {
+    id: 'Oil',
+    locationTag: 'SAUDI ARAMCO · DHAHRAN',
+    name: 'Amin Nasser',
+    role: 'CEO, Saudi Aramco',
+    tag: 'NASSER',
+    portrait: '/characters/nasser-figure.png',
+    voiceId: 'VR6AewLTigWG4xSOukaG', // Arnold — deep, authoritative
+    intro: [
+      { who: 'narration', text: 'Dhahran, Saudi Arabia. Beneath a sky the colour of brass, the head of the world’s largest oil company watches a flare burn against the heat-haze.' },
+      { who: 'speaker', text: 'Everyone tells me oil is finished. Then everyone asks me to pump more. The AI you have been chasing? Its datacenters need power — and a great deal of that power, still, is gas and oil.' },
+      { who: 'speaker', text: 'I sit on the cheapest, largest reserves on earth. The world says transition; the world also keeps burning more than ever. And the energy hunger of this AI age only adds to it.' },
+      { who: 'speaker', text: 'So I face the oldest question in the new century.' },
+    ],
+    decision: {
+      prompt: 'You run Saudi Aramco. Demand is high, the transition looms. What do you do?',
+      options: [
+        { id: 'pump', label: 'Keep the oil flowing', sub: 'The world still runs on it — and the AI-power boom needs it. Supply the demand, bank the cash.' },
+        { id: 'pivot', label: 'Pivot to the transition', sub: 'Pour the oil money into clean energy now, accept lower output, lead the change.' },
+      ],
+    },
+    outcomes: {
+      pump: { verdict: 'The choice the majors keep making.', text: 'You meet the demand that’s really there — including the gas firing up to power datacenters — and you bank historic profits. You also deepen the world’s dependence on the very thing it swears it’s leaving, and own the climate cost of every barrel.' },
+      pivot: { verdict: 'The honest long bet.', text: 'You spend today’s oil fortune buying tomorrow. Noble, and slow — and while you pivot, someone else happily pumps the barrels the world still demands. Leading the transition can mean handing rivals the present.' },
+    },
+    reality: {
+      pump: 'In reality, global oil demand has kept hitting record highs even amid the energy transition, and the surge in electricity demand — including from AI datacenters — has revived gas. Aramco remains the world’s most profitable company by leaning into supply.',
+      pivot: 'In reality, oil majors that leaned hardest into clean energy often pulled back when returns lagged and demand stayed strong — a sign of how hard it is to leave hydrocarbons while the world still wants them.',
+    },
+    outro: [
+      { who: 'speaker', text: 'You see it now. Even an age built on silicon and software still drinks oil and burns gas to keep its machines awake.' },
+      { who: 'speaker', text: 'The future is electric, they say. Perhaps. But someone must power the bridge to it — and that, for now, is me.' },
+    ],
+    done: { verdict: 'You’ve met the old power.', text: 'Beneath the new economy of chips and clouds runs the old one of barrels and BTUs. The AI age did not end the oil age — it gave it a strange new customer.' },
+  },
+
+  RareEarth: {
+    id: 'RareEarth',
+    locationTag: 'RARE EARTHS · BAOTOU, CHINA',
+    name: 'Chen Wei',
+    role: 'Rare-Earth Processing Director',
+    tag: 'CHEN',
+    portrait: '/characters/rareearth-figure.png',
+    voiceId: 'TxGEqnHWrfWFTfGW9XjX', // Josh — steady
+    intro: [
+      { who: 'narration', text: 'Baotou, Inner Mongolia — the rare-earth capital of the world. Beside tailings ponds that glow faintly under grey skies, a processing director turns from a wall of refinery controls.' },
+      { who: 'speaker', text: 'You have admired the chips, the machines, the magnets that move everything. Now consider where they truly begin. The rare earths inside them — the motors, the lasers, the precision optics — are mined and refined here. Mostly here.' },
+      { who: 'speaker', text: 'The West can dig some of the ore. Refining it cleanly, at scale — that knowledge, that capacity, sits with us. Roughly nine in ten of the world’s processed rare earths pass through Chinese hands.' },
+      { who: 'speaker', text: 'Which gives my government a quiet, enormous lever. And so the question reaches my desk.' },
+    ],
+    decision: {
+      prompt: 'You run the processing. The world depends on you. What do you do with that leverage?',
+      options: [
+        { id: 'restrict', label: 'Tighten the tap', sub: 'Restrict exports to pressure rivals. Turn dependence into power.' },
+        { id: 'supply', label: 'Stay the reliable supplier', sub: 'Keep exporting freely. Keep the world hooked — and calm.' },
+      ],
+    },
+    outcomes: {
+      restrict: { verdict: 'A lever China has actually pulled.', text: 'You weaponise the chokepoint — and overnight, factories and defense lines half a world away scramble. But you also hand them the one motive strong enough to break free: fear. Every restriction funds a rival mine and refinery that, in a decade, ends your monopoly.' },
+      supply: { verdict: 'Patience as strategy.', text: 'You keep the prices low and the world comfortable — and comfortable buyers don’t build their own. Your dominance endures precisely because you never abuse it. Quiet leverage outlasts loud leverage. But the lever sits there, always, tempting.' },
+    },
+    reality: {
+      restrict: 'In reality, China refines roughly 85–90% of the world’s rare earths and has used export controls on rare earths and related materials (and on gallium and germanium) as strategic leverage — which in turn accelerated Western efforts to build alternative supply.',
+      supply: 'In reality, China’s decades of low-cost, reliable supply are exactly what let it capture ~90% of rare-earth processing in the first place — and every time it tightens controls, it spurs rivals to invest in breaking the dependence.',
+    },
+    outro: [
+      { who: 'speaker', text: 'Now you see the floor beneath even the floor. Before the chip, before the magnet, before the motor — the refined earth that the modern world cannot make without.' },
+      { who: 'speaker', text: 'Power is not only who builds the most. Sometimes it is who quietly controls the one thing no one else can yet make.' },
+    ],
+    done: { verdict: 'You’ve found the deepest chokepoint.', text: 'The whole glittering tower of chips and clouds rests on refined rare earth — and on who controls it. Technology is geology, plus the will to process it. You’ve seen the bottom of the stack.' },
+  },
 };
 
 // ── Voice helpers (shared by the app player and scripts/gen-voices.ts) ──

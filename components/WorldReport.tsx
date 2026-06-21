@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export type Choices = Record<string, string>;
 
-const NODES = ['Nvidia', 'TSMC', 'ASML', 'Copper', 'Power', 'OpenAI'] as const;
+const NODES = ['Nvidia', 'TSMC', 'ASML', 'Copper', 'Power', 'OpenAI', 'Microsoft', 'Oil', 'RareEarth'] as const;
 // the bold / accelerationist option at each node
-const BOLD: Record<string, string> = { Nvidia: 'ai', TSMC: 'taiwan', ASML: 'sell', Copper: 'ramp', Power: 'rush', OpenAI: 'scale' };
+const BOLD: Record<string, string> = { Nvidia: 'ai', TSMC: 'taiwan', ASML: 'sell', Copper: 'ramp', Power: 'rush', OpenAI: 'scale', Microsoft: 'invest', Oil: 'pump', RareEarth: 'restrict' };
 
 const LINES: Record<string, Record<string, string>> = {
   Nvidia: {
@@ -35,6 +35,18 @@ const LINES: Record<string, Record<string, string>> = {
   OpenAI: {
     scale: 'You bet everything on scale — the largest compute buildout in history, the demand that bends the whole chain.',
     pace: 'You stayed disciplined — sustainable compute, and the gamble that the race can be won slower.',
+  },
+  Microsoft: {
+    invest: 'You spent whatever it took — record capex, the AI cloud no one can match, the company bet on the boom.',
+    discipline: 'You held capital discipline — margins safe, but a rival writing bigger cheques may lap you.',
+  },
+  Oil: {
+    pump: 'You kept the oil flowing — historic profits, the AI-power boom fed, the climate bill deferred.',
+    pivot: 'You pivoted to the transition — slower, cleaner, and ceding today’s barrels to whoever still pumps them.',
+  },
+  RareEarth: {
+    restrict: 'You tightened the tap — leverage wielded, and the world’s scramble to break free from you begun.',
+    supply: 'You stayed the reliable supplier — quiet dominance kept, the lever left unpulled.',
   },
 };
 
@@ -76,6 +88,9 @@ const METER_DELTAS: Record<string, Record<string, { output: number; resilience: 
   Copper: { ramp: { output: 20, resilience: 4, sustainability: -24 }, restraint: { output: -16, resilience: 6, sustainability: 20 } },
   Power: { rush: { output: 20, resilience: -14, sustainability: -22 }, pace: { output: -16, resilience: 12, sustainability: 14 } },
   OpenAI: { scale: { output: 24, resilience: -16, sustainability: -18 }, pace: { output: -14, resilience: 10, sustainability: 12 } },
+  Microsoft: { invest: { output: 22, resilience: -14, sustainability: -14 }, discipline: { output: -14, resilience: 12, sustainability: 10 } },
+  Oil: { pump: { output: 16, resilience: 6, sustainability: -24 }, pivot: { output: -14, resilience: -4, sustainability: 20 } },
+  RareEarth: { restrict: { output: -8, resilience: -22, sustainability: -4 }, supply: { output: 10, resilience: 12, sustainability: 2 } },
 };
 const clampM = (x: number) => Math.max(0, Math.min(100, Math.round(x)));
 export function worldMeters(choices: Choices) {

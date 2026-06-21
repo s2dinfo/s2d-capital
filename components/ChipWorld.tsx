@@ -89,6 +89,33 @@ const NODES: Node[] = [
     title: 'The demand the whole chain feeds',
     body: 'Everything else on this map is supply. OpenAI is the demand — the appetite for compute that pulls every wafer, gigawatt, and dollar toward itself. The AI labs racing to build intelligence are now the single largest force shaping the chip, energy, and capital markets on earth. The chip, the machine, the metal, the power: they are the runway. This is the plane.',
   },
+  {
+    place: 'Microsoft',
+    location: [47.64, -122.13],
+    eyebrow: 'Microsoft · Redmond',
+    stat: '$80B+',
+    statLabel: 'a year on AI datacenters',
+    title: 'The capital behind the cloud',
+    body: 'The labs dream it; the cloud giants pay for it. Microsoft, Amazon and Google are pouring record capital — tens of billions a quarter — into the datacenters, chips and power the AI race runs on, and Microsoft is the financial spine behind OpenAI. This is where ambition becomes a balance sheet the size of an economy.',
+  },
+  {
+    place: 'Oil',
+    location: [26.29, 50.15],
+    eyebrow: 'Saudi Aramco · Dhahran',
+    stat: '#1',
+    statLabel: 'most profitable company on earth',
+    title: 'The old power under the new',
+    body: 'The AI age was supposed to be post-oil. Instead, surging electricity demand — including from datacenters — revived gas, and global oil demand keeps hitting records. Saudi Aramco sits on the cheapest, largest reserves on earth. Beneath the economy of chips and clouds still runs the old one of barrels and BTUs.',
+  },
+  {
+    place: 'RareEarth',
+    location: [40.66, 109.84],
+    eyebrow: 'Rare Earths · Baotou, China',
+    stat: '~90%',
+    statLabel: 'of rare earths refined in China',
+    title: 'The chokepoint beneath everything',
+    body: 'Before the chip, before the magnet, before the motor: rare earths. The West can mine some ore, but China refines roughly 85–90% of the world\'s rare earths — and has used that grip as strategic leverage. It is the deepest chokepoint of all: technology is geology, plus the will to process it.',
+  },
 ];
 
 const CHOKEPOINTS = [{ label: 'Taiwan Strait', location: [24.5, 119.5] as [number, number] }];
@@ -102,6 +129,9 @@ const ARCS = [
   { from: NODES[3].location, to: NODES[4].location, ends: ['Copper', 'Power'] },  // copper → the grid (wire, busbar, transformers)
   { from: NODES[4].location, to: NODES[2].location, ends: ['Power', 'Nvidia'] },  // the grid → the datacenters running the AI
   { from: NODES[2].location, to: NODES[5].location, ends: ['Nvidia', 'OpenAI'] }, // Nvidia's chips → the AI lab that buys them all (demand)
+  { from: NODES[6].location, to: NODES[5].location, ends: ['Microsoft', 'OpenAI'] }, // the cloud's capital backs the lab
+  { from: NODES[7].location, to: NODES[4].location, ends: ['Oil', 'Power'] },         // oil & gas still fuel the grid
+  { from: NODES[8].location, to: NODES[2].location, ends: ['RareEarth', 'Nvidia'] },  // refined rare earths → the electronics
 ];
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).

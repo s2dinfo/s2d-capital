@@ -387,6 +387,44 @@ function ControlRoom({ accent }: { accent: string }) {
   );
 }
 
+// Oil refinery: distillation towers, pipes, storage tanks, a flare stack burning.
+function Refinery({ accent }: { accent: string }) {
+  const towers: [number, number, number][] = [[-4, 3.4, -8], [-1.5, 4.4, -9], [1.5, 3.8, -8.5], [4.2, 4.8, -9.5]];
+  return (
+    <group>
+      <Platform accent={accent} color="#1c1812" />
+      {towers.map((p, i) => (
+        <mesh key={i} position={[p[0], p[1] / 2, p[2]]} castShadow>
+          <cylinderGeometry args={[0.6, 0.72, p[1], 16]} />
+          <meshStandardMaterial color="#aeb4bd" metalness={0.6} roughness={0.5} />
+        </mesh>
+      ))}
+      {[1.3, 2.6, 3.8].map((y, i) => (
+        <mesh key={`pi${i}`} position={[0, y, -8.5]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.1, 0.1, 9, 10]} />
+          <meshStandardMaterial color="#8a909a" metalness={0.6} roughness={0.5} />
+        </mesh>
+      ))}
+      {([[-6, -11], [6, -11], [0, -13]] as [number, number][]).map((p, i) => (
+        <mesh key={`t${i}`} position={[p[0], 1.0, p[1]]} castShadow>
+          <cylinderGeometry args={[1.7, 1.7, 2, 24]} />
+          <meshStandardMaterial color="#9aa0a8" metalness={0.4} roughness={0.6} />
+        </mesh>
+      ))}
+      {/* flare stack + flame */}
+      <mesh position={[5.5, 3, -6]}><cylinderGeometry args={[0.18, 0.22, 6, 12]} /><meshStandardMaterial color="#7a7f87" metalness={0.6} roughness={0.5} /></mesh>
+      <mesh position={[5.5, 6.5, -6]}><coneGeometry args={[0.5, 1.5, 12]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+      <pointLight position={[5.5, 6.6, -6]} intensity={120} color={accent} distance={28} />
+      {[-3, 0, 3].map((x, i) => (
+        <mesh key={`g${i}`} position={[x, 0.4, -7]}><boxGeometry args={[0.3, 0.3, 0.06]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+      ))}
+      <pointLight position={[0, 5, -3]} intensity={90} color="#ffd9a0" distance={34} />
+      <pointLight position={[-5, 4, -8]} intensity={50} color="#ffcaa0" distance={26} />
+      <spotLight position={[0, 10, 2]} angle={0.8} penumbra={1} intensity={210} color="#fff0d8" distance={42} />
+    </group>
+  );
+}
+
 function Scene({ image, accent, env, target, minPolar, mouthRef, speaking }: { image: string; accent: string; env?: string; target: [number, number, number]; minPolar: number; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
   return (
     <>
@@ -405,6 +443,7 @@ function Scene({ image, accent, env, target, minPolar, mouthRef, speaking }: { i
         : env === 'cleanroom' ? <CleanRoom accent={accent} />
         : env === 'euvhall' ? <EuvHall accent={accent} />
         : env === 'controlroom' ? <ControlRoom accent={accent} />
+        : env === 'refinery' ? <Refinery accent={accent} />
         : <Stage accent={accent} />}
       <Sparkles count={70} scale={[14, 7, 10]} position={[0, 3.5, -1]} size={2.2} speed={0.25} color={accent} opacity={0.5} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
