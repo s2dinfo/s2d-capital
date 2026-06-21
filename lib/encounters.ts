@@ -15,6 +15,8 @@ export type EncounterScript = {
   portrait?: string; // URL to a STYLISED character image (e.g. '/characters/jensen.png'); placeholder shows until set
   voiceId?: string;  // ElevenLabs voice id — `npm run gen:voices` pre-renders this character's lines
   imagePrompt?: string; // subject for the visuals pipeline (Grok / Flux) — how this character's face was made
+  face?: { closed: string; open: string }; // two-frame talking head (mouth closed/open), swapped by the clip's volume — preferred over a looping video
+  expressions?: { informative: string; questioning: string; serious: string; resolved: string }; // context-driven STILLS (mouth closed), cross-faded by encounter beat — no lip-sync needed
   // an extra opening line that reacts to the choice made at the PREVIOUS stop
   priorReactions?: Record<string, string>;
   intro: Line[];
@@ -141,7 +143,13 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     name: 'Andrés Vidal',
     role: 'Veteran Mine Director',
     tag: 'ANDRÉS',
-    portrait: '/characters/copper-grok.mp4',
+    portrait: '/characters/copper-stylized.png', // fallback still
+    expressions: {
+      informative: '/characters/copper-idle-loop.mp4',
+      questioning: '/characters/copper-question-idle-loop.mp4',
+      serious: '/characters/copper-serious-idle-loop.mp4',
+      resolved: '/characters/copper-resolved-idle-loop.mp4',
+    },
     voiceId: 'nPczCjzI2devNBz1zQrb', // Brian — deep, resonant
     imagePrompt: 'a veteran Chilean copper-mine director in his early 60s, weathered tanned face, short grey hair, trimmed grey stubble, slight confident smile, wearing a high-visibility orange jacket over a dark work shirt, an open-pit copper mine softly blurred behind him',
     intro: [

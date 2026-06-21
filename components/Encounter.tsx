@@ -30,6 +30,9 @@ export default function Encounter({
   const [sound, setSound] = useState(true);
   const uttRef = useRef<SpeechSynthesisUtterance | null>(null); // keep a ref so Chrome doesn't GC the utterance mid-speech
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const acRef = useRef<AudioContext | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const mouthRef = useRef<HTMLImageElement | null>(null); // the mouth-open frame; opacity driven by clip volume
 
   // Prepend the figure's reaction to what you decided at the previous stop.
   const intro: Line[] = useMemo(() => {
@@ -39,6 +42,9 @@ export default function Encounter({
 
   const pick = (c: string) => { setChoice(c); setStage('result'); onDecision?.(c); };
   const line = stage === 'intro' ? intro[idx] : stage === 'outro' ? script.outro[idx] : null;
+  // Context-driven expression for this beat (no lip-sync): informative → questioning → serious → resolved.
+  const expr: 'informative' | 'questioning' | 'serious' | 'resolved' =
+    stage === 'decide' ? 'questioning' : stage === 'result' || stage === 'outro' ? 'serious' : stage === 'done' ? 'resolved' : 'informative';
   const adv = (arr: Line[], nextStage: Stage) => () => (idx < arr.length - 1 ? setIdx(idx + 1) : (setIdx(0), setStage(nextStage)));
 
   // Voice: a generic (non-cloned) TTS reads the actual encounter lines aloud as
@@ -52,10 +58,46 @@ export default function Encounter({
     : stage === 'done'
     ? `${script.done.verdict}. ${script.done.text}`
     : '';
-  // Stop whatever is currently playing (audio clip and/or browser TTS).
+  const setMouth = (v: number) => { if (mouthRef.current) mouthRef.current.style.opacity = String(v); };
+  // Stop whatever is currently playing (audio clip and/or browser TTS) + close the mouth.
   const stopVoice = () => {
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    setMouth(0);
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
     try { window.speechSynthesis?.cancel(); } catch {}
+  };
+  // Two-frame talking head: open the mouth in proportion to the clip's live volume
+  // (so it syncs to the real voice and works for any length of text — no looping video).
+  const startMouth = (audio: HTMLAudioElement) => {
+    if (!script.face) return;
+    try {
+      const AC = (window.AudioContext || (window as any).webkitAudioContext);
+      if (!acRef.current) acRef.current = new AC();
+      const ctx = acRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
+      const source = ctx.createMediaElementSource(audio);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      analyser.connect(ctx.destination);
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      // Clean FLAP (no cross-fade ghosting): while there's sound, hard-swap
+      // closed<->open on a steady cartoon cadence; shut during silence.
+      let open = false;
+      let lastFlip = 0;
+      const tick = (t: number) => {
+        analyser.getByteTimeDomainData(data);
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) { const x = (data[i] - 128) / 128; sum += x * x; }
+        const speaking = Math.sqrt(sum / data.length) > 0.03;
+        if (speaking) {
+          if (t - lastFlip > 135) { open = !open; lastFlip = t; setMouth(open ? 1 : 0); }
+        } else if (open) { open = false; setMouth(0); }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+      audio.addEventListener('ended', () => setMouth(0), { once: true });
+    } catch { /* audio analysis is optional — mouth just stays closed */ }
   };
   useEffect(() => {
     stopVoice();
@@ -77,6 +119,7 @@ export default function Encounter({
       const fallback = () => { if (fellBack) return; fellBack = true; speakTTS(); };
       audio.addEventListener('error', fallback, { once: true });
       audio.play().catch((e: any) => { if (e?.name !== 'AbortError') fallback(); }); // ignore play-interrupted races; only fall back on real failures
+      startMouth(audio);
       return () => stopVoice();
     }
     const t = setTimeout(speakTTS, 80);
@@ -100,7 +143,24 @@ export default function Encounter({
         <div className="enc-row">
         {/* Character portrait — drop a stylised image at script.portrait */}
         <div className="enc-portrait">
-          {script.portrait && !imgError ? (
+          {script.expressions ? (
+            <div className="enc-portrait-img enc-face">
+              <div className="enc-kb">
+                <AnimatePresence>
+                  {/\.(mp4|webm)$/i.test(script.expressions[expr]) ? (
+                    <motion.video key={expr} src={script.expressions[expr]} className="enc-face-img" autoPlay loop muted playsInline initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                  ) : (
+                    <motion.img key={expr} src={script.expressions[expr]} alt={script.name} className="enc-face-img" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          ) : script.face ? (
+            <div className="enc-portrait-img enc-face">
+              <img src={script.face.closed} alt={script.name} className="enc-face-img" />
+              <img ref={mouthRef} src={script.face.open} alt="" aria-hidden className="enc-face-img enc-face-open" />
+            </div>
+          ) : script.portrait && !imgError ? (
             /\.(mp4|webm|m4v)$/i.test(script.portrait) ? (
               <video src={script.portrait} className="enc-portrait-img" autoPlay loop muted playsInline onError={() => setImgError(true)} />
             ) : (
@@ -188,6 +248,11 @@ export default function Encounter({
         .enc-main{flex:1;min-width:0;display:flex;flex-direction:column}
         .enc-portrait{flex:0 0 172px;display:flex;flex-direction:column;align-items:center;gap:10px}
         .enc-portrait-img,.enc-portrait-ph{width:172px;height:228px;border-radius:14px;border:1px solid rgba(212,184,92,0.38);object-fit:cover;background:radial-gradient(circle at 50% 28%,#262c54,#0d1120)}
+        .enc-face{position:relative;overflow:hidden}
+        .enc-face-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+        .enc-kb{position:absolute;inset:0;animation:encKenBurns 16s ease-in-out infinite}
+        @keyframes encKenBurns{0%,100%{transform:scale(1.03)}50%{transform:scale(1.08) translate(-1%,-1.5%)}}
+        .enc-face-open{opacity:0;transition:opacity 0.04s linear}
         .enc-portrait-ph{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
         .enc-ph-bust{position:absolute;bottom:-8px;width:150px;height:150px;fill:rgba(255,255,255,0.07)}
         .enc-ph-initial{font-family:var(--font-serif);font-size:3.6rem;color:rgba(212,184,92,0.9);position:relative}
