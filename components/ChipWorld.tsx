@@ -2,11 +2,12 @@
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import WorldReport, { worldMeters, MeterBars } from '@/components/WorldReport';
+import Fader from '@/components/Fader';
 import { ENCOUNTERS } from '@/lib/encounters';
 import { useChoices } from '@/lib/choices';
+import { useFade } from '@/lib/useFade';
 
 // Reuse the existing Three.js globe (ssr:false — it needs the DOM/WebGL).
 const JourneyGlobeGL = dynamic(() => import('@/components/JourneyGlobeGL'), {
@@ -95,7 +96,7 @@ const ARCS = [
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).
 export default function ChipWorld() {
-  const router = useRouter();
+  const { go, out, label } = useFade();
   const [active, setActive] = useState<number | null>(null);
   const [choices] = useChoices(); // shared store — reflects decisions made in the 3D scenes
   const [reportOpen, setReportOpen] = useState(false);
@@ -119,11 +120,12 @@ export default function ChipWorld() {
     }
   }, [callsMade]);
 
-  // "Begin the journey" — go straight in to meet Jensen in his 3D space.
-  const beginJourney = () => router.push('/meet/Nvidia');
+  // "Begin the journey" — travel in to meet Jensen in his 3D space.
+  const beginJourney = () => go('/meet/Nvidia', 'entering nvidia');
 
   return (
     <section className="cw-stage">
+      <Fader out={out} label={label} />
       {/* ── Immersive background: animated glows + grid + vignette ── */}
       <div className="cw-bg" aria-hidden>
         <div className="cw-stars" />
@@ -247,7 +249,7 @@ export default function ChipWorld() {
             <h2 className="cw-d-title">{node.title}</h2>
             <p className="cw-d-body">{node.body}</p>
             {ENCOUNTERS[node.place] && (
-              <button className="cw-d-meet" onClick={() => router.push(`/meet/${node.place}`)}>▶&nbsp;&nbsp;MEET {ENCOUNTERS[node.place].name.toUpperCase()}</button>
+              <button className="cw-d-meet" onClick={() => go(`/meet/${node.place}`, `entering ${node.place}`)}>▶&nbsp;&nbsp;MEET {ENCOUNTERS[node.place].name.toUpperCase()}</button>
             )}
             {node.href && (
               <Link href={node.href} className="cw-d-link">READ THE FULL STORY →</Link>

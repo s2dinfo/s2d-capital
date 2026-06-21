@@ -7,13 +7,14 @@
 // shared store so the globe reflects them. Data-driven by ENCOUNTERS[id] + FIGURES[id].
 import * as THREE from 'three';
 import { useRef, useMemo, useState, useEffect, useCallback, Suspense } from 'react';
-import Link from 'next/link';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, MeshReflectorMaterial, Sparkles, Billboard, useTexture } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
 import { ENCOUNTERS, lineAudioId } from '@/lib/encounters';
 import { FIGURES, resolveFigureId, PRIOR } from '@/lib/figures';
 import { useChoices } from '@/lib/choices';
+import { useFade } from '@/lib/useFade';
+import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
 
 const VERT = `
@@ -145,6 +146,7 @@ export default function EncounterScene({ id }: { id: string }) {
   const script = ENCOUNTERS[key];
   const fig = FIGURES[key];
   const [choices, setChoice] = useChoices();
+  const { go, out, label } = useFade();
 
   const priorChoice = PRIOR[key] ? choices[PRIOR[key]] : null;
   const introLines = useMemo(() => {
@@ -219,6 +221,7 @@ export default function EncounterScene({ id }: { id: string }) {
 
   return (
     <div className="es-stage">
+      <Fader out={out} label={label} />
       <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 1.7, 5.4], fov: 44 }}>
         <Scene image={fig.image} accent={fig.accent} mouthRef={mouthRef} speaking={speaking} />
       </Canvas>
@@ -226,7 +229,7 @@ export default function EncounterScene({ id }: { id: string }) {
       <div className="es-ui">
         {/* identity (top-left) */}
         <div className="es-top">
-          <Link href="/world" className="es-back">← back to the world</Link>
+          <button className="es-back" onClick={() => go('/world', 'returning to the world')}>← back to the world</button>
           <div className="es-eyebrow" style={{ color: fig.accent, textShadow: `0 0 16px ${fig.accent}88` }}>{script.locationTag}</div>
           <h1 className="es-name">{script.name}</h1>
           <div className="es-role">{script.role} — stylized, dramatized from public statements</div>
@@ -284,8 +287,8 @@ export default function EncounterScene({ id }: { id: string }) {
               <div className="es-verdict" style={{ color: fig.accent }}>{script.done.verdict}</div>
               <p className="es-line">{script.done.text}</p>
               <div className="es-done-actions">
-                <Link href="/world" className="es-done-btn es-done-secondary">← back to the world</Link>
-                {next && <Link href={`/meet/${next.node}`} className="es-done-btn" style={{ background: `linear-gradient(135deg, ${fig.accent}, ${fig.accent}bb)` }}>{next.label}</Link>}
+                <button className="es-done-btn es-done-secondary" onClick={() => go('/world', 'returning to the world')}>← back to the world</button>
+                {next && <button className="es-done-btn" style={{ background: `linear-gradient(135deg, ${fig.accent}, ${fig.accent}bb)` }} onClick={() => go(`/meet/${next.node}`, `traveling onward`)}>{next.label}</button>}
               </div>
             </div>
           )}
@@ -297,7 +300,7 @@ export default function EncounterScene({ id }: { id: string }) {
         .es-stage canvas{display:block;width:100%;height:100%}
         .es-ui{position:absolute;inset:0;pointer-events:none;padding:28px 32px;display:flex;flex-direction:column;justify-content:space-between}
         .es-top{max-width:55%}
-        .es-back{pointer-events:auto;display:inline-block;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:rgba(255,255,255,0.5);text-decoration:none;margin-bottom:20px}
+        .es-back{pointer-events:auto;display:inline-block;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;color:rgba(255,255,255,0.5);text-decoration:none;margin-bottom:20px;background:none;border:none;cursor:pointer;padding:0}
         .es-back:hover{color:#fff}
         .es-eyebrow{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.24em;margin-bottom:10px}
         .es-name{font-family:var(--font-serif);font-weight:400;font-size:clamp(1.8rem,3.6vw,2.8rem);color:#fff;margin:0 0 8px;line-height:1}
@@ -326,7 +329,7 @@ export default function EncounterScene({ id }: { id: string }) {
         .es-meters-head{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.16em;color:rgba(255,255,255,0.5);margin-bottom:9px}
         .es-card .es-next{margin-top:16px}
         .es-done-actions{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
-        .es-done-btn{font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;color:#04140d;padding:12px 22px;border-radius:999px;text-decoration:none;cursor:pointer}
+        .es-done-btn{font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;color:#04140d;padding:12px 22px;border-radius:999px;text-decoration:none;cursor:pointer;border:none}
         .es-done-secondary{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8)}
       ` }} />
     </div>
