@@ -80,6 +80,15 @@ const NODES: Node[] = [
     title: 'The wire under the whole AI era',
     body: 'Chips and copper get the headlines, but the real 2024–26 bottleneck is electricity. A single AI datacenter can draw as much power as a small city — and they are being built faster than grids can be rebuilt. In Northern Virginia, the world\'s densest datacenter hub, utilities are firing up gas and delaying coal retirements just to keep up. The slowest clock in the AI race is the grid.',
   },
+  {
+    place: 'OpenAI',
+    location: [37.77, -122.42],
+    eyebrow: 'OpenAI · San Francisco',
+    stat: '∞',
+    statLabel: 'compute it could absorb',
+    title: 'The demand the whole chain feeds',
+    body: 'Everything else on this map is supply. OpenAI is the demand — the appetite for compute that pulls every wafer, gigawatt, and dollar toward itself. The AI labs racing to build intelligence are now the single largest force shaping the chip, energy, and capital markets on earth. The chip, the machine, the metal, the power: they are the runway. This is the plane.',
+  },
 ];
 
 const CHOKEPOINTS = [{ label: 'Taiwan Strait', location: [24.5, 119.5] as [number, number] }];
@@ -92,6 +101,7 @@ const ARCS = [
   { from: NODES[3].location, to: NODES[2].location, ends: ['Copper', 'Nvidia'] }, // copper (Chile) → the AI infrastructure
   { from: NODES[3].location, to: NODES[4].location, ends: ['Copper', 'Power'] },  // copper → the grid (wire, busbar, transformers)
   { from: NODES[4].location, to: NODES[2].location, ends: ['Power', 'Nvidia'] },  // the grid → the datacenters running the AI
+  { from: NODES[2].location, to: NODES[5].location, ends: ['Nvidia', 'OpenAI'] }, // Nvidia's chips → the AI lab that buys them all (demand)
 ];
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).

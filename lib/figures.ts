@@ -7,6 +7,7 @@ export const FIGURES: Record<string, { image: string; accent: string; env?: stri
   ASML: { image: '/characters/fouquet-figure.png', accent: '#ff9a3a', env: 'euvhall' },  // lithography amber
   Copper: { image: '/characters/andres-figure.png', accent: '#e8843a', env: 'minepit' }, // copper
   Power: { image: '/characters/nadia-figure.png', accent: '#ffd23a', env: 'controlroom' },   // grid yellow
+  OpenAI: { image: '/characters/altman-figure.png', accent: '#9d8bff', env: 'datacenter' },  // AI violet — the demand
 };
 
 export function resolveFigureId(id: string): string {
@@ -14,5 +15,5 @@ export function resolveFigureId(id: string): string {
 }
 
 // which figure's prior choice this figure reacts to (continuity across the journey)
-export const PRIOR: Record<string, string> = { TSMC: 'Nvidia', ASML: 'TSMC', Power: 'Copper' };
+export const PRIOR: Record<string, string> = { TSMC: 'Nvidia', ASML: 'TSMC', Power: 'Copper', OpenAI: 'Nvidia' };
 

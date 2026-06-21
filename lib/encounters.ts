@@ -230,6 +230,46 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
     ],
     done: { verdict: 'You’ve reached the bottom of the stack.', text: 'Design, fabrication, the machine, the metal — and finally the power that moves through all of it. The whole AI era, traced from a wafer to a wire. You made every call along the chain.' },
   },
+
+  OpenAI: {
+    id: 'OpenAI',
+    locationTag: 'OPENAI · SAN FRANCISCO',
+    name: 'Sam Altman',
+    role: 'CEO, OpenAI',
+    tag: 'SAM',
+    portrait: '/characters/altman-figure.png',
+    voiceId: 'pNInz6obpgDQGcFmaJgB', // Adam — measured, even
+    priorReactions: {
+      ai: 'So you watched Nvidia bet the company on AI chips. Good — because I’m the one who has to buy them all. Every last one.',
+      gaming: 'You saw Nvidia hesitate. I can’t afford to. The chips, the power, the capital — I need all of it, faster than the world can make it.',
+    },
+    intro: [
+      { who: 'narration', text: 'San Francisco. In a plain office above the fog, the man racing to build artificial intelligence looks up from a power-purchase agreement the size of a small country’s grid.' },
+      { who: 'speaker', text: 'You’ve walked the whole chain — the machine in the Netherlands, the fab in Taiwan, the chips, the copper, the grid. Now meet the reason it’s all on fire. Me.' },
+      { who: 'speaker', text: 'I need compute. More than exists. More than the world currently knows how to build. Every model is hungrier than the last, and the only thing between us and the next one is silicon, power, and money — at a scale nobody has ever attempted.' },
+      { who: 'speaker', text: 'So here is the decision that defines this era. How hard do I push?' },
+    ],
+    decision: {
+      prompt: 'You run OpenAI. The race for compute is the race for everything. How far do you go?',
+      options: [
+        { id: 'scale', label: 'Build it all — at any cost', sub: 'Raise hundreds of billions, build the largest datacenters in history. Win the race outright.' },
+        { id: 'pace', label: 'Pace it to what’s sustainable', sub: 'Build only what the grid, the supply chain, and the world can bear. Stay disciplined.' },
+      ],
+    },
+    outcomes: {
+      scale: { verdict: 'That’s the path the AI labs are actually on.', text: 'You become the demand that bends the entire chain — pulling every wafer, every gigawatt, every dollar toward compute. You might reach the future first. You also concentrate unimaginable cost and risk on a bet that has to pay off, fast, or it breaks you.' },
+      pace: { verdict: 'Discipline — and the gamble that it’s enough.', text: 'You build only what the world can sustain — kinder to the grid, the climate, your balance sheet. But the race is winner-take-most, and somewhere a rival is spending like there’s no tomorrow. Restraint is wise right up until you lose.' },
+    },
+    reality: {
+      scale: 'In reality, OpenAI and its partners announced “Stargate” — an AI-datacenter buildout reported in the hundreds of billions of dollars — and hyperscaler AI capital spending hit record highs, making the AI labs the single force pulling the entire chip-and-power supply chain.',
+      pace: 'In reality, the compute race has rewarded scale: the labs that locked up the most chips, power, and capital have led. The binding limit has shifted from ambition to electricity and money — exactly the constraints you met along the chain.',
+    },
+    outro: [
+      { who: 'speaker', text: 'Now you see why the whole world you just walked is on fire. Every fab, every mine, every substation — they’re all racing to feed this one appetite.' },
+      { who: 'speaker', text: 'The chip, the machine, the metal, the power — they were never the story. They’re the runway. This is the plane.' },
+    ],
+    done: { verdict: 'You’ve found the keystone.', text: 'Supply meets demand. Everything you traced — design, fab, machine, metal, power — exists to feed one race. You’ve seen the whole world now: who makes it, and who it’s all for.' },
+  },
 };
 
 // ── Voice helpers (shared by the app player and scripts/gen-voices.ts) ──
