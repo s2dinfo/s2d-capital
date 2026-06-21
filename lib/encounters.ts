@@ -187,6 +187,48 @@ export const ENCOUNTERS: Record<string, EncounterScript> = {
       { who: 'speaker', text: 'They call copper the metal of electrification. I call it the real bottleneck. You can design a chip in a year. You cannot conjure a copper mine in less than a decade.' },
     ],
     done: { verdict: 'You’ve found the hidden floor of the AI era.', text: 'Beneath the chips and the datacenters lies the physical world — copper, water, rock, and the people who move them. No copper, no grid. No grid, no AI. That is the story under the story.' },
+    next: { node: 'Power', label: 'Follow the copper to the grid →' },
+  },
+
+  Power: {
+    id: 'Power',
+    locationTag: 'DATA CENTER ALLEY · LOUDOUN COUNTY, VIRGINIA',
+    name: 'Nadia Brandt',
+    role: 'Grid Operations Director',
+    tag: 'NADIA',
+    portrait: '/characters/power-still.png',
+    voiceId: 'EXAVITQu4vr4xnSDxMaL', // Sarah — clear, measured
+    imagePrompt: 'a female grid operations director in her early 50s, calm authoritative face, shoulder-length dark hair with a few greys, wearing a charcoal blazer over a high-visibility safety vest, a softly blurred electrical substation and control-room screens behind her',
+    priorReactions: {
+      ramp: 'So you tore the copper out of the ground to feed the boom. Good — because all that metal ends up here, as wire and busbar, trying to move power we may not have.',
+      restraint: 'You held the copper back. Honest — but it leaves me short of the very wire and transformers I need to carry the load they’re demanding.',
+    },
+    intro: [
+      { who: 'narration', text: 'Loudoun County, Virginia — “Data Center Alley,” where more of the world’s internet passes through than anywhere on earth. Beside a humming substation, a grid director pulls up a load forecast that bends almost vertical.' },
+      { who: 'speaker', text: 'Everyone talks about chips and copper. Almost no one asks the obvious question: what powers all of it? A single AI datacenter can draw as much electricity as a small city. And they want to build dozens — here, now.' },
+      { who: 'speaker', text: 'My grid was built for homes and offices, not for this. To connect the AI buildout at the speed they want, I’d have to fire up every source I have — including gas — and pass the cost straight to households.' },
+      { who: 'speaker', text: 'Or I make them wait. So here is the choice nobody in the AI story wants to own.' },
+    ],
+    decision: {
+      prompt: 'You run the grid. The AI companies want gigawatts connected — now.',
+      options: [
+        { id: 'rush', label: 'Energize them now', sub: 'Fire up every source, fast-track the hookups. Feed the boom — strain the grid and the bills.' },
+        { id: 'pace', label: 'Pace it to the grid', sub: 'Queue the datacenters to real capacity. Protect ratepayers — and slow the AI timeline.' },
+      ],
+    },
+    outcomes: {
+      rush: { verdict: 'The lights stay on — for the datacenters.', text: 'You energize the buildout. The AI keeps scaling, but you lean on gas, delay your coal retirements, and household bills climb to subsidize server halls. You bought the boom its power — and someone else pays the meter.' },
+      pace: { verdict: 'The honest brake — and the unpopular one.', text: 'You protect the grid and the people on it. But the datacenters sit in a years-long queue, the AI timeline slips, and the buildout simply moves to whoever will say yes faster. The constraint was never the chip. It was the wire.' },
+    },
+    reality: {
+      rush: 'AI datacenters are straining grids worldwide. In Northern Virginia — the planet’s largest datacenter hub — utilities have proposed new gas plants and delayed coal-plant retirements to meet the load, and data centers are projected to consume a fast-rising share of US electricity by 2030.',
+      pace: 'Interconnection queues for new power now stretch years, and some grid operators have begun pacing or pausing datacenter hookups. The binding constraint on AI has quietly shifted from chips to electricity.',
+    },
+    outro: [
+      { who: 'speaker', text: 'Now you’ve seen the floor beneath the floor. Silicon, copper — and under both of them, raw power, by the gigawatt.' },
+      { who: 'speaker', text: 'You can design a chip in a year and dig a mine in a decade. But rebuilding a grid? That is the slowest clock of all. And the AI era is racing it.' },
+    ],
+    done: { verdict: 'You’ve reached the bottom of the stack.', text: 'Design, fabrication, the machine, the metal — and finally the power that moves through all of it. The whole AI era, traced from a wafer to a wire. You made every call along the chain.' },
   },
 };
 

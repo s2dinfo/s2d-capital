@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export type Choices = Record<string, string>;
 
-const NODES = ['Nvidia', 'TSMC', 'ASML', 'Copper'] as const;
+const NODES = ['Nvidia', 'TSMC', 'ASML', 'Copper', 'Power'] as const;
 // the bold / accelerationist option at each node
-const BOLD: Record<string, string> = { Nvidia: 'ai', TSMC: 'taiwan', ASML: 'sell', Copper: 'ramp' };
+const BOLD: Record<string, string> = { Nvidia: 'ai', TSMC: 'taiwan', ASML: 'sell', Copper: 'ramp', Power: 'rush' };
 
 const LINES: Record<string, Record<string, string>> = {
   Nvidia: {
@@ -27,6 +27,10 @@ const LINES: Record<string, Record<string, string>> = {
   Copper: {
     ramp: 'You ramped copper hard — the boom is fed, the desert and its towns pay the price.',
     restraint: 'You held copper back — the desert spared, the shortfall now everyone’s problem.',
+  },
+  Power: {
+    rush: 'You energized the AI buildout at full tilt — the grid groans, the bills climb, the carbon with it.',
+    pace: 'You paced the buildout to the grid — the lights stay stable, the AI timeline slips.',
   },
 };
 
@@ -66,6 +70,7 @@ const METER_DELTAS: Record<string, Record<string, { output: number; resilience: 
   TSMC: { taiwan: { output: 14, resilience: -22, sustainability: -4 }, spread: { output: -12, resilience: 22, sustainability: 4 } },
   ASML: { sell: { output: 14, resilience: -6, sustainability: -20 }, comply: { output: -14, resilience: 6, sustainability: 14 } },
   Copper: { ramp: { output: 20, resilience: 4, sustainability: -24 }, restraint: { output: -16, resilience: 6, sustainability: 20 } },
+  Power: { rush: { output: 20, resilience: -14, sustainability: -22 }, pace: { output: -16, resilience: 12, sustainability: 14 } },
 };
 const clampM = (x: number) => Math.max(0, Math.min(100, Math.round(x)));
 export function worldMeters(choices: Choices) {

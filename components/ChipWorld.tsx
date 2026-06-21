@@ -69,6 +69,15 @@ const NODES: Node[] = [
     title: 'The metal the AI era is built on',
     body: 'Chips get the headlines, but AI runs on copper — the datacenters, the grid, the wiring that feeds it all. The richest ore is gone, the biggest mines sit in the driest desert on earth, and you cannot conjure a new copper mine in under a decade. Copper, not silicon, may be the real bottleneck.',
   },
+  {
+    place: 'Power',
+    location: [39.05, -77.55],
+    eyebrow: 'Data Center Alley · Virginia',
+    stat: '1 city',
+    statLabel: 'of power, per AI datacenter',
+    title: 'The wire under the whole AI era',
+    body: 'Chips and copper get the headlines, but the real 2024–26 bottleneck is electricity. A single AI datacenter can draw as much power as a small city — and they are being built faster than grids can be rebuilt. In Northern Virginia, the world\'s densest datacenter hub, utilities are firing up gas and delaying coal retirements just to keep up. The slowest clock in the AI race is the grid.',
+  },
 ];
 
 const CHOKEPOINTS = [{ label: 'Taiwan Strait', location: [24.5, 119.5] as [number, number] }];
@@ -79,17 +88,19 @@ const ARCS = [
   { from: NODES[0].location, to: NODES[1].location, ends: ['ASML', 'TSMC'] },
   { from: NODES[1].location, to: NODES[2].location, ends: ['TSMC', 'Nvidia'] },
   { from: NODES[3].location, to: NODES[2].location, ends: ['Copper', 'Nvidia'] }, // copper (Chile) → the AI infrastructure
+  { from: NODES[3].location, to: NODES[4].location, ends: ['Copper', 'Power'] },  // copper → the grid (wire, busbar, transformers)
+  { from: NODES[4].location, to: NODES[2].location, ends: ['Power', 'Nvidia'] },  // the grid → the datacenters running the AI
 ];
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).
-const PRIOR: Record<string, string> = { TSMC: 'Nvidia', ASML: 'TSMC' };
+const PRIOR: Record<string, string> = { TSMC: 'Nvidia', ASML: 'TSMC', Power: 'Copper' };
 
 export default function ChipWorld() {
   const [active, setActive] = useState<number | null>(null);
   const [encounterNode, setEncounterNode] = useState<string | null>(null);
   const [choices, setChoices] = useState<Record<string, string>>({});
   const [reportOpen, setReportOpen] = useState(false);
-  const callsMade = ['Nvidia', 'TSMC', 'ASML', 'Copper'].filter((p) => choices[p]).length;
+  const callsMade = NODES.filter((n) => choices[n.place]).length;
   // the supply links you've earned by meeting both figures — the chain draws itself
   const discoveredArcs = ARCS.filter((a) => a.ends.every((p) => choices[p]));
   const node = active != null ? NODES[active] : null;
@@ -121,7 +132,7 @@ export default function ChipWorld() {
       <div className="cw-meters">
         <div className="cw-meters-head">THE WORLD · LIVE STATE</div>
         <MeterBars meters={worldMeters(choices)} />
-        <div className="cw-meters-foot">{callsMade === 0 ? 'Meet the people to map the chain.' : `${callsMade}/4 calls · ${discoveredArcs.length}/${ARCS.length} routes mapped`}</div>
+        <div className="cw-meters-foot">{callsMade === 0 ? 'Meet the people to map the chain.' : `${callsMade}/${NODES.length} calls · ${discoveredArcs.length}/${ARCS.length} routes mapped`}</div>
       </div>
 
       {/* ── Node selector (reliable — globe labels are small/rotating) ── */}
@@ -202,7 +213,7 @@ export default function ChipWorld() {
 
       {/* The world you built — consequence report (accumulates your decisions) */}
       <button className="cw-report-btn" onClick={() => setReportOpen(true)}>
-        ⚖ The world you built · {callsMade}/4
+        ⚖ The world you built · {callsMade}/{NODES.length}
       </button>
       <WorldReport choices={choices} open={reportOpen} onClose={() => setReportOpen(false)} />
 
