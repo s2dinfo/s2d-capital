@@ -66,7 +66,7 @@ function HoloFigure({ image, accent, mouthRef, speaking }: { image: string; acce
     if (billRef.current) billRef.current.position.y = 1.82 + Math.sin(t * 1.1) * 0.03;
   });
   return (
-    <Billboard ref={billRef} position={[0, 1.82, 0]}>
+    <Billboard ref={billRef} position={[0, 1.82, 0]} lockX lockZ>
       <mesh>
         <planeGeometry args={[2.35, 3.13]} />
         <shaderMaterial ref={matRef} transparent depthWrite={false} uniforms={uniforms} vertexShader={VERT} fragmentShader={FRAG} />
@@ -194,7 +194,68 @@ function DataCenter({ accent }: { accent: string }) {
   );
 }
 
-function Scene({ image, accent, env, mouthRef, speaking }: { image: string; accent: string; env?: string; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
+// Procedurally-terraced open-pit copper mine descending behind the figure, with
+// haul trucks parked on the benches and a warm fill light. Fully deterministic.
+function AtacamaPit({ accent }: { accent: string }) {
+  const cz = -9;
+  const levels = 10;
+  const benches = [] as { i: number; rOut: number; rIn: number; y: number; yNext: number }[];
+  for (let i = 0; i < levels; i++) {
+    const rIn = 2.6 + i * 1.5;
+    const rOut = rIn + 1.5;
+    const y = -0.4 + i * 0.95;          // terraces RISE going outward (far pit wall)
+    const yNext = -0.4 + (i + 1) * 0.95;
+    benches.push({ i, rOut, rIn, y, yNext });
+  }
+  const trucks = [{ i: 4, a: -1.2 }, { i: 6, a: -1.9 }, { i: 5, a: -2.5 }, { i: 7, a: -0.7 }];
+  return (
+    <group>
+      {/* figure rim platform */}
+      <mesh position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <cylinderGeometry args={[1.7, 1.8, 0.1, 64]} />
+        <meshStandardMaterial color="#2a1d14" metalness={0.25} roughness={0.85} />
+      </mesh>
+      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[1.55, 1.7, 64]} />
+        <meshBasicMaterial color={accent} toneMapped={false} side={THREE.DoubleSide} />
+      </mesh>
+      <group position={[0, 0, cz]}>
+        {benches.map((b) => (
+          <group key={b.i}>
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, b.y, 0]} receiveShadow>
+              <ringGeometry args={[b.rIn, b.rOut, 96]} />
+              <meshStandardMaterial color={b.i % 2 ? '#5c4231' : '#6b4d39'} roughness={0.97} metalness={0.04} side={THREE.DoubleSide} />
+            </mesh>
+            <mesh position={[0, (b.y + b.yNext) / 2, 0]}>
+              <cylinderGeometry args={[b.rOut, b.rOut, b.yNext - b.y, 96, 1, true]} />
+              <meshStandardMaterial color="#3c2a1d" roughness={1} metalness={0.04} side={THREE.DoubleSide} />
+            </mesh>
+          </group>
+        ))}
+        {trucks.map((t, k) => {
+          const b = benches[t.i];
+          const r = (b.rIn + b.rOut) / 2;
+          return (
+            <group key={`t${k}`} position={[r * Math.cos(t.a), b.y + 0.25, r * Math.sin(t.a)]} rotation={[0, -t.a, 0]}>
+              <mesh><boxGeometry args={[0.9, 0.45, 0.5]} /><meshStandardMaterial color="#caa23a" roughness={0.7} metalness={0.3} /></mesh>
+              <mesh position={[0.52, 0.08, 0]}><boxGeometry args={[0.12, 0.12, 0.12]} /><meshBasicMaterial color="#fff6c8" toneMapped={false} /></mesh>
+            </group>
+          );
+        })}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.4 + levels * 0.95, 0]}>
+          <ringGeometry args={[2.6 + levels * 1.5 - 0.15, 2.6 + levels * 1.5 + 0.1, 96]} />
+          <meshBasicMaterial color={accent} transparent opacity={0.55} toneMapped={false} side={THREE.DoubleSide} />
+        </mesh>
+      </group>
+      <pointLight position={[0, 5, cz + 3]} intensity={150} color="#ffb066" distance={52} />
+      <pointLight position={[7, 4, cz]} intensity={70} color="#ffd9a0" distance={42} />
+      <pointLight position={[-7, 4, cz]} intensity={70} color="#ffd9a0" distance={42} />
+      <spotLight position={[0, 14, cz - 2]} angle={1.0} penumbra={1} intensity={340} color="#fff0d8" distance={66} />
+    </group>
+  );
+}
+
+function Scene({ image, accent, env, target, minPolar, mouthRef, speaking }: { image: string; accent: string; env?: string; target: [number, number, number]; minPolar: number; mouthRef: React.MutableRefObject<number>; speaking: boolean }) {
   return (
     <>
       <color attach="background" args={['#04060b']} />
@@ -207,13 +268,13 @@ function Scene({ image, accent, env, mouthRef, speaking }: { image: string; acce
       <Suspense fallback={null}>
         <HoloFigure image={image} accent={accent} mouthRef={mouthRef} speaking={speaking} />
       </Suspense>
-      {env === 'datacenter' ? <DataCenter accent={accent} /> : <Stage accent={accent} />}
+      {env === 'datacenter' ? <DataCenter accent={accent} /> : env === 'minepit' ? <AtacamaPit accent={accent} /> : <Stage accent={accent} />}
       <Sparkles count={70} scale={[14, 7, 10]} position={[0, 3.5, -1]} size={2.2} speed={0.25} color={accent} opacity={0.5} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[70, 70]} />
         <MeshReflectorMaterial blur={[300, 110]} resolution={1024} mixBlur={1} mixStrength={45} roughness={0.8} depthScale={1.1} minDepthThreshold={0.4} maxDepthThreshold={1.3} color="#060a11" metalness={0.75} />
       </mesh>
-      <OrbitControls makeDefault enablePan={false} minDistance={2.8} maxDistance={9} minPolarAngle={0.6} maxPolarAngle={1.56} autoRotate autoRotateSpeed={0.18} target={[0, 1.65, 0]} />
+      <OrbitControls makeDefault enablePan={false} minDistance={2.8} maxDistance={11} minPolarAngle={minPolar} maxPolarAngle={1.56} autoRotate autoRotateSpeed={0.18} target={target} />
       <EffectComposer>
         <Bloom intensity={0.7} luminanceThreshold={0.4} luminanceSmoothing={0.25} mipmapBlur />
         <Vignette eskil={false} offset={0.3} darkness={0.92} />
@@ -303,11 +364,17 @@ export default function EncounterScene({ id }: { id: string }) {
   const meters = worldMeters({ ...choices, ...(choice ? { [key]: choice } : {}) });
   const next = script.next;
 
+  // the mine pit reads best from a higher angle looking down into it
+  const isMine = fig.env === 'minepit';
+  const camPos: [number, number, number] = isMine ? [0, 2.3, 6.6] : [0, 1.7, 5.4];
+  const camTarget: [number, number, number] = isMine ? [0, 2.2, -3] : [0, 1.65, 0];
+  const minPolar = isMine ? 0.5 : 0.6;
+
   return (
     <div className="es-stage">
       <Fader out={out} label={label} />
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 1.7, 5.4], fov: 44 }}>
-        <Scene image={fig.image} accent={fig.accent} env={fig.env} mouthRef={mouthRef} speaking={speaking} />
+      <Canvas shadows dpr={[1, 2]} camera={{ position: camPos, fov: 44 }}>
+        <Scene image={fig.image} accent={fig.accent} env={fig.env} target={camTarget} minPolar={minPolar} mouthRef={mouthRef} speaking={speaking} />
       </Canvas>
 
       <div className="es-ui">
