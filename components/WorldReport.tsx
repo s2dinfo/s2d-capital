@@ -48,7 +48,62 @@ export function buildReport(choices: Choices) {
     blurb = 'You built a careful, resilient world — slower and costlier, but it won’t shatter. The AI buildout strains against your restraint.';
   }
   const decisions = made.map((n) => ({ node: n, line: LINES[n]?.[choices[n]] || '' }));
-  return { made: made.length, total: NODES.length, archetype, blurb, decisions, bold };
+  const meters = worldMeters(choices);
+  let warning = '';
+  if (made.length >= 2) {
+    if (meters.resilience <= 15) warning = 'Your world is dangerously fragile — one shock (a blockade, an export ban) and it shatters.';
+    else if (meters.sustainability <= 15) warning = 'You’ve mortgaged the future — the environment, the workers, and the alliances are stretched to breaking.';
+    else if (meters.output <= 15) warning = 'You’ve strangled output — safe, but the AI economy you were meant to feed is starving.';
+    else if (meters.output >= 88 && meters.resilience <= 32) warning = 'Maxed for output, hollow on resilience — a flat-out world running on borrowed time.';
+  }
+  return { made: made.length, total: NODES.length, archetype, blurb, decisions, bold, meters, warning };
+}
+
+// ── Competing meters with double-bounded failure: each call trades Output vs.
+// Resilience vs. Sustainability. You can't max one without breaking another. ──
+const METER_DELTAS: Record<string, Record<string, { output: number; resilience: number; sustainability: number }>> = {
+  Nvidia: { ai: { output: 22, resilience: -12, sustainability: 0 }, gaming: { output: -10, resilience: 12, sustainability: 4 } },
+  TSMC: { taiwan: { output: 14, resilience: -22, sustainability: -4 }, spread: { output: -12, resilience: 22, sustainability: 4 } },
+  ASML: { sell: { output: 14, resilience: -6, sustainability: -20 }, comply: { output: -14, resilience: 6, sustainability: 14 } },
+  Copper: { ramp: { output: 20, resilience: 4, sustainability: -24 }, restraint: { output: -16, resilience: 6, sustainability: 20 } },
+};
+const clampM = (x: number) => Math.max(0, Math.min(100, Math.round(x)));
+export function worldMeters(choices: Choices) {
+  let output = 50, resilience = 50, sustainability = 50;
+  for (const n of NODES) {
+    const d = choices[n] ? METER_DELTAS[n]?.[choices[n]] : null;
+    if (!d) continue;
+    output += d.output; resilience += d.resilience; sustainability += d.sustainability;
+  }
+  return { output: clampM(output), resilience: clampM(resilience), sustainability: clampM(sustainability) };
+}
+const METERS = [
+  { key: 'output', label: 'Output', color: '#D4B85C' },
+  { key: 'resilience', label: 'Resilience', color: '#5B8DEF' },
+  { key: 'sustainability', label: 'Sustainability', color: '#34d399' },
+] as const;
+export function MeterBars({ meters }: { meters: { output: number; resilience: number; sustainability: number } }) {
+  return (
+    <div className="mtr">
+      {METERS.map((m) => {
+        const v = meters[m.key];
+        const danger = v <= 15 || v >= 90;
+        return (
+          <div className="mtr-row" key={m.key}>
+            <span className="mtr-label">{m.label}</span>
+            <span className="mtr-track"><span className="mtr-fill" style={{ width: v + '%', background: danger ? '#f87171' : m.color }} /></span>
+          </div>
+        );
+      })}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .mtr{display:flex;flex-direction:column;gap:7px}
+        .mtr-row{display:flex;align-items:center;gap:9px}
+        .mtr-label{flex:0 0 96px;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6)}
+        .mtr-track{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden}
+        .mtr-fill{display:block;height:100%;border-radius:3px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1),background 0.4s}
+      ` }} />
+    </div>
+  );
 }
 
 export default function WorldReport({ choices, open, onClose }: { choices: Choices; open: boolean; onClose: () => void }) {
@@ -69,6 +124,12 @@ export default function WorldReport({ choices, open, onClose }: { choices: Choic
             <div className="wr-eyebrow">THE WORLD YOU BUILT · {r.made}/{r.total} CALLS MADE</div>
             <h2 className="wr-title">{r.archetype}</h2>
             <p className="wr-blurb">{r.blurb}</p>
+            {r.made > 0 && (
+              <div className="wr-meters">
+                <MeterBars meters={r.meters} />
+                {r.warning && <p className="wr-warning">⚠ {r.warning}</p>}
+              </div>
+            )}
             {r.decisions.length > 0 && (
               <div className="wr-list">
                 {r.decisions.map((d) => (
@@ -92,6 +153,8 @@ export default function WorldReport({ choices, open, onClose }: { choices: Choic
             .wr-eyebrow{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.22em;color:var(--gold-light,#D4B85C);margin-bottom:12px}
             .wr-title{font-family:var(--font-serif);font-weight:400;font-size:2.2rem;color:#fff;line-height:1.05;margin:0 0 14px}
             .wr-blurb{font-family:var(--font-sans);font-size:1rem;color:rgba(255,255,255,0.78);line-height:1.7;margin:0 0 22px}
+            .wr-meters{margin:0 0 22px;padding:16px 16px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px}
+            .wr-warning{font-family:var(--font-sans);font-size:0.82rem;color:#fca5a5;line-height:1.5;margin:14px 0 0;padding-top:12px;border-top:1px solid rgba(248,113,113,0.18)}
             .wr-list{display:flex;flex-direction:column;gap:12px;border-top:1px solid rgba(255,255,255,0.08);padding-top:18px}
             .wr-row{display:flex;gap:14px;align-items:baseline}
             .wr-node{flex:0 0 64px;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold-light,#D4B85C);padding-top:2px}

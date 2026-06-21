@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Encounter from '@/components/Encounter';
-import WorldReport from '@/components/WorldReport';
+import WorldReport, { worldMeters, MeterBars } from '@/components/WorldReport';
 import { ENCOUNTERS } from '@/lib/encounters';
 
 // Reuse the existing Three.js globe (ssr:false — it needs the DOM/WebGL).
@@ -109,6 +109,14 @@ export default function ChipWorld() {
         <h1 className="cw-h1">
           The world that makes the <span className="gradient-text" style={{ fontStyle: 'italic' }}>AI era</span> possible
         </h1>
+      </div>
+
+      {/* ── Live world meters — the consequence dashboard. Every call trades
+           Output vs. Resilience vs. Sustainability; you can't max one. ── */}
+      <div className="cw-meters">
+        <div className="cw-meters-head">THE WORLD · LIVE STATE</div>
+        <MeterBars meters={worldMeters(choices)} />
+        <div className="cw-meters-foot">{callsMade === 0 ? 'Make a call to move the world.' : `${callsMade}/4 calls shaping the world`}</div>
       </div>
 
       {/* ── Node selector (reliable — globe labels are small/rotating) ── */}
@@ -235,6 +243,10 @@ export default function ChipWorld() {
 
         .cw-globe-fill{position:absolute;inset:0;z-index:1}
 
+        .cw-meters{position:absolute;top:96px;left:24px;z-index:6;width:248px;padding:14px 16px 12px;background:linear-gradient(160deg,rgba(20,25,44,0.82),rgba(12,15,31,0.86));border:1px solid rgba(255,255,255,0.08);border-radius:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,0.35)}
+        .cw-meters-head{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.18em;color:var(--gold-light,#D4B85C);margin-bottom:11px}
+        .cw-meters-foot{font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.04em;color:rgba(255,255,255,0.38);margin-top:11px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.06)}
+        @media (max-width:720px){.cw-meters{display:none}}
         .cw-report-btn{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:6;background:rgba(212,184,92,0.12);border:1px solid rgba(212,184,92,0.4);color:var(--gold-light,#D4B85C);font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.08em;padding:10px 20px;border-radius:999px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s}
         .cw-report-btn:hover{background:rgba(212,184,92,0.22);color:#fff;transform:translateX(-50%) translateY(-1px)}
         .cw-hud{position:absolute;bottom:22px;right:24px;z-index:3;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.16em;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:8px}
