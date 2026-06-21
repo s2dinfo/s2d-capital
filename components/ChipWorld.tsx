@@ -72,10 +72,13 @@ const NODES: Node[] = [
 ];
 
 const CHOKEPOINTS = [{ label: 'Taiwan Strait', location: [24.5, 119.5] as [number, number] }];
+// Each arc is a real supply link. `ends` = the two figures it connects; the arc
+// is DISCOVERED (drawn) only once you've met both — the chain assembles itself
+// across the globe as you understand it.
 const ARCS = [
-  { from: NODES[0].location, to: NODES[1].location },
-  { from: NODES[1].location, to: NODES[2].location },
-  { from: NODES[3].location, to: NODES[2].location }, // copper (Chile) → the AI infrastructure
+  { from: NODES[0].location, to: NODES[1].location, ends: ['ASML', 'TSMC'] },
+  { from: NODES[1].location, to: NODES[2].location, ends: ['TSMC', 'Nvidia'] },
+  { from: NODES[3].location, to: NODES[2].location, ends: ['Copper', 'Nvidia'] }, // copper (Chile) → the AI infrastructure
 ];
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).
@@ -87,6 +90,8 @@ export default function ChipWorld() {
   const [choices, setChoices] = useState<Record<string, string>>({});
   const [reportOpen, setReportOpen] = useState(false);
   const callsMade = ['Nvidia', 'TSMC', 'ASML', 'Copper'].filter((p) => choices[p]).length;
+  // the supply links you've earned by meeting both figures — the chain draws itself
+  const discoveredArcs = ARCS.filter((a) => a.ends.every((p) => choices[p]));
   const node = active != null ? NODES[active] : null;
 
   const stops = NODES.map((n, i) => ({ place: n.place, location: n.location, active: i === active, index: i }));
@@ -116,7 +121,7 @@ export default function ChipWorld() {
       <div className="cw-meters">
         <div className="cw-meters-head">THE WORLD · LIVE STATE</div>
         <MeterBars meters={worldMeters(choices)} />
-        <div className="cw-meters-foot">{callsMade === 0 ? 'Make a call to move the world.' : `${callsMade}/4 calls shaping the world`}</div>
+        <div className="cw-meters-foot">{callsMade === 0 ? 'Meet the people to map the chain.' : `${callsMade}/4 calls · ${discoveredArcs.length}/${ARCS.length} routes mapped`}</div>
       </div>
 
       {/* ── Node selector (reliable — globe labels are small/rotating) ── */}
@@ -132,7 +137,7 @@ export default function ChipWorld() {
       <div className="cw-globe-fill">
         <JourneyGlobeGL
           stops={stops}
-          arcs={ARCS}
+          arcs={discoveredArcs}
           chokepoints={CHOKEPOINTS}
           focus={focus}
           activeCountry={null}
