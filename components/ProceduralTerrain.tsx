@@ -24,7 +24,11 @@ const C = {
   sand: new THREE.Color('#d8c896'), desert: new THREE.Color('#dcae62'), savanna: new THREE.Color('#a9a155'),
   grass: new THREE.Color('#4f7d3e'), forest: new THREE.Color('#33602c'), rock: new THREE.Color('#70675b'),
   rockLight: new THREE.Color('#8b8377'), snow: new THREE.Color('#eef4f8'),
+  bank: new THREE.Color('#c2a86f'), riverbed: new THREE.Color('#5b5038'),
 };
+const RIVER_BED = -0.5;
+const LAND_BIAS = 0.17;   // lift the land so more sits above sea level — rivers read as channels, not coastline
+const sstep = THREE.MathUtils.smoothstep;
 function biomeColor(h: number, moist: number, amp: number): THREE.Color {
   const t = h / amp;
   if (t < 0.03) return C.sand;
@@ -36,10 +40,10 @@ function biomeColor(h: number, moist: number, amp: number): THREE.Color {
   return C.forest;
 }
 
-function Water() {
+function Water({ dayRef }: { dayRef: { current: number } }) {
   const ref = useRef<THREE.ShaderMaterial>(null);
-  useFrame((s) => { if (ref.current) ref.current.uniforms.uTime.value = s.clock.elapsedTime; });
-  const uniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
+  useFrame((s) => { if (ref.current) { ref.current.uniforms.uTime.value = s.clock.elapsedTime; ref.current.uniforms.uDay.value = dayRef.current; } });
+  const uniforms = useMemo(() => ({ uTime: { value: 0 }, uDay: { value: 0.5 } }), []);
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]}>
       <planeGeometry args={[SIZE * 1.6, SIZE * 1.6, 90, 90]} />
@@ -53,12 +57,15 @@ function Water() {
             gl_Position = projectionMatrix * viewMatrix * wp;
           }`}
         fragmentShader={`
-          varying vec3 vW; uniform float uTime;
+          varying vec3 vW; uniform float uTime; uniform float uDay;
           void main(){
             vec3 deep = vec3(0.08,0.30,0.48); vec3 shallow = vec3(0.24,0.58,0.72);
             float r = (sin(vW.x*1.4 + uTime*1.4)*0.5+0.5) * (sin(vW.z*1.2 - uTime*1.1)*0.5+0.5);
             vec3 col = mix(deep, shallow, r*0.7);
             col += pow(r, 7.0) * 0.35;
+            float up = max(0.0, sin(uDay*6.28318 - 1.5708));        // 0 night, 1 noon
+            col *= 0.16 + up*0.84;                                   // dim at night
+            col += vec3(0.02,0.05,0.11) * (1.0-up);                 // faint moonlit blue
             gl_FragColor = vec4(col, 0.84);
           }`} />
     </mesh>
@@ -67,9 +74,18 @@ function Water() {
 
 function rngAng(n: number) { return ((Math.sin(n * 127.1) * 43758.5453) % 1) * Math.PI * 2; }
 
-function Terrain({ amp, freq, octaves, seed }: { amp: number; freq: number; octaves: number; seed: number }) {
+function Terrain({ amp, freq, octaves, seed, dayRef }: { amp: number; freq: number; octaves: number; seed: number; dayRef: { current: number } }) {
   const elev = useMemo(() => createNoise2D(alea('e' + seed)), [seed]);
   const moist = useMemo(() => createNoise2D(alea('m' + seed)), [seed]);
+  const river = useMemo(() => createNoise2D(alea('r' + seed)), [seed]);
+
+  // a winding river runs where the river-noise crosses zero, but only carves through
+  // the lowlands (so it reads as water flowing to the sea, not a slot canyon up high)
+  const riverMask = (px: number, py: number, h0: number) => {
+    const a = Math.abs(fbm(river, px, py, 3, freq * 0.7));
+    const lowland = 1 - sstep(h0, amp * 0.04, amp * 0.42);
+    return (1 - sstep(a, 0.0, 0.055)) * lowland;
+  };
 
   const geo = useMemo(() => {
     const g = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
@@ -77,16 +93,18 @@ function Terrain({ amp, freq, octaves, seed }: { amp: number; freq: number; octa
     const colors = new Float32Array(pos.count * 3);
     for (let i = 0; i < pos.count; i++) {
       const px = pos.getX(i), py = pos.getY(i);
-      const h = fbm(elev, px, py, octaves, freq) * amp;
+      const h0 = fbm(elev, px, py, octaves, freq) * amp + amp * LAND_BIAS;
       const mo = fbm(moist, px, py, 2, freq * 0.5);
+      const rt = riverMask(px, py, h0);
+      const h = THREE.MathUtils.lerp(h0, RIVER_BED, rt);   // carve the channel down to the bed
       pos.setZ(i, h);
-      const c = biomeColor(h, mo, amp);
+      const c = rt > 0.45 ? C.riverbed : rt > 0.12 ? C.bank : biomeColor(h0, mo, amp);
       colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
     }
     g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     g.computeVertexNormals();
     return g;
-  }, [elev, moist, amp, freq, octaves]);
+  }, [elev, moist, river, amp, freq, octaves]);
 
   const scatter = useMemo(() => {
     const rng = alea('s' + seed);
@@ -95,10 +113,11 @@ function Terrain({ amp, freq, octaves, seed }: { amp: number; freq: number; octa
     for (let i = 0; i < cells; i++) for (let j = 0; j < cells; j++) {
       const px = -SIZE / 2 + (i + 0.15 + rng() * 0.7) * cell;
       const py = -SIZE / 2 + (j + 0.15 + rng() * 0.7) * cell;
-      const h = fbm(elev, px, py, octaves, freq) * amp;
+      const h = fbm(elev, px, py, octaves, freq) * amp + amp * LAND_BIAS;
       const mo = fbm(moist, px, py, 2, freq * 0.5);
       const t = h / amp;
-      if (t < 0.04 || t > 0.72) continue;
+      if (t < 0.04 || t > 0.85) continue;
+      if (riverMask(px, py, h) > 0.2) continue;   // don't plant in the river
       const w: any = [px, h, -py, 0.5 + rng() * 0.7];
       if (mo > 0.35 && rng() > 0.3) trees.push(w);
       else if (mo > 0.0 && rng() > 0.62) trees.push(w);
@@ -106,7 +125,7 @@ function Terrain({ amp, freq, octaves, seed }: { amp: number; freq: number; octa
       else if (rng() > 0.82) rocks.push(w);
     }
     return { trees, rocks, cacti };
-  }, [elev, moist, amp, freq, octaves, seed]);
+  }, [elev, moist, river, amp, freq, octaves, seed]);
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const make = (geom: THREE.BufferGeometry, mat: THREE.Material, list: any[], yOff: number, rotY: boolean) => {
@@ -129,7 +148,7 @@ function Terrain({ amp, freq, octaves, seed }: { amp: number; freq: number; octa
       <primitive object={trees} />
       <primitive object={rocks} />
       <primitive object={cacti} />
-      <Water />
+      <Water dayRef={dayRef} />
     </group>
   );
 }
@@ -148,26 +167,71 @@ function CinematicFly() {
   return null;
 }
 
+// drives a full day/night cycle — the sun arcs overhead, light warms at dawn/dusk,
+// the sky + fog shift toward night, and the day value is published to dayRef so the
+// water can dim in step. day: 0/1 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk.
+function Sun({ auto, manual, dayRef }: { auto: boolean; manual: number; dayRef: { current: number } }) {
+  const light = useRef<THREE.DirectionalLight>(null);
+  const sky = useRef<any>(null);
+  const hemi = useRef<THREE.HemisphereLight>(null);
+  const amb = useRef<THREE.AmbientLight>(null);
+  const dayCol = useMemo(() => new THREE.Color('#fff3da'), []);
+  const duskCol = useMemo(() => new THREE.Color('#ff7327'), []);
+  const dayFog = useMemo(() => new THREE.Color('#c3d7e8'), []);
+  const nightFog = useMemo(() => new THREE.Color('#0a1424'), []);
+  const sunPos = useMemo(() => new THREE.Vector3(), []);
+  const tmp = useMemo(() => new THREE.Color(), []);
+  useFrame((s) => {
+    const day = auto ? (s.clock.elapsedTime * 0.03) % 1 : manual;
+    dayRef.current = day;
+    const ang = day * Math.PI * 2 - Math.PI / 2;            // noon (day .5) -> straight up
+    const sy = Math.sin(ang), sx = Math.cos(ang);
+    sunPos.set(sx * 60, sy * 60, 28);
+    const up = Math.max(0, sy);                              // 0 night .. 1 noon
+    const horizon = Math.max(0, 1 - Math.abs(sy) * 3);       // peaks at dawn/dusk
+    if (light.current) {
+      light.current.position.copy(sunPos);
+      light.current.intensity = 0.06 + up * 2.6;
+      light.current.color.copy(tmp.copy(dayCol).lerp(duskCol, horizon * 0.85));
+    }
+    if (sky.current) sky.current.material.uniforms.sunPosition.value.copy(sunPos);
+    if (hemi.current) hemi.current.intensity = 0.12 + up * 0.7;
+    if (amb.current) amb.current.intensity = 0.05 + up * 0.22;
+    const fog = s.scene.fog as THREE.Fog | null;
+    if (fog) fog.color.copy(nightFog).lerp(dayFog, 0.12 + up * 0.88);
+  });
+  return (
+    <>
+      <Sky ref={sky} sunPosition={[50, 22, 30]} turbidity={6} rayleigh={2.2} mieCoefficient={0.006} />
+      <ambientLight ref={amb} intensity={0.22} />
+      <hemisphereLight ref={hemi} args={['#dcebf7', '#3a4a34', 0.7]} />
+      <directionalLight ref={light} position={[50, 44, 26]} intensity={2.4} color="#fff3da" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-55} shadow-camera-right={55} shadow-camera-top={55} shadow-camera-bottom={-55} shadow-camera-far={160} />
+    </>
+  );
+}
+
+const TIME_LABEL = (d: number) => (d < 0.2 || d > 0.82 ? 'night' : d < 0.32 ? 'dawn' : d < 0.68 ? 'day' : 'dusk');
+
 export default function ProceduralTerrain() {
   const [amp, setAmp] = useState(10);
   const [freq, setFreq] = useState(0.05);
   const [octaves, setOctaves] = useState(5);
   const [seed, setSeed] = useState(1);
   const [fly, setFly] = useState(false);
+  const [timeAuto, setTimeAuto] = useState(true);
+  const [timeManual, setTimeManual] = useState(0.5);
+  const dayRef = useRef(0.5);
 
   return (
     <div className="pt-stage">
       <Canvas shadows dpr={[1, 2]} camera={{ position: [42, 28, 42], fov: 42 }}>
-        <Sky sunPosition={[50, 22, 30]} turbidity={5} rayleigh={1.4} mieCoefficient={0.006} />
         <fog attach="fog" args={['#c3d7e8', 80, 175]} />
-        <hemisphereLight args={['#dcebf7', '#3a4a34', 0.7]} />
-        <ambientLight intensity={0.22} />
-        <directionalLight position={[50, 44, 26]} intensity={2.4} color="#fff3da" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-55} shadow-camera-right={55} shadow-camera-top={55} shadow-camera-bottom={-55} shadow-camera-far={140} />
+        <Sun auto={timeAuto} manual={timeManual} dayRef={dayRef} />
         <Clouds material={THREE.MeshBasicMaterial} limit={60}>
           <Cloud seed={seed} segments={30} bounds={[40, 4, 40]} volume={9} color="#ffffff" opacity={0.55} position={[0, 30, -10]} />
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
         </Clouds>
-        <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} />
+        <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} />
         {fly ? <CinematicFly /> : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
           <Bloom intensity={0.3} luminanceThreshold={0.75} mipmapBlur />
@@ -179,16 +243,20 @@ export default function ProceduralTerrain() {
         <div className="pt-top">
           <Link href="/world" className="pt-back">← world</Link>
           <div className="pt-title">PROCEDURAL WORLD</div>
-          <div className="pt-sub">FBM noise terrain · moisture-noise biomes · shader water · jittered scatter</div>
+          <div className="pt-sub">FBM terrain · biomes · carved rivers · day/night cycle · shader water</div>
         </div>
         <div className="pt-panel">
           <Slider label="Amplitude" v={amp} min={3} max={18} step={0.5} onChange={setAmp} hint="height of the mountains" />
           <Slider label="Frequency" v={freq} min={0.018} max={0.095} step={0.002} onChange={setFreq} hint="ruggedness of the land" fmt={(x) => x.toFixed(3)} />
           <Slider label="Octaves" v={octaves} min={1} max={6} step={1} onChange={(x) => setOctaves(Math.round(x))} hint="layers of detail" />
+          <Slider label="Time of day" v={timeManual} min={0} max={1} step={0.01} disabled={timeAuto}
+            onChange={(x) => { setTimeAuto(false); setTimeManual(x); }} hint={timeAuto ? 'cycling automatically' : 'drag to set the sun'}
+            fmt={() => (timeAuto ? 'auto ☀→🌙' : TIME_LABEL(timeManual))} />
           <div className="pt-btns">
             <button className="pt-seed" onClick={() => setSeed((s) => s + 1)}>↻ new world</button>
             <button className={'pt-fly' + (fly ? ' pt-fly-on' : '')} onClick={() => setFly((f) => !f)}>{fly ? '⊙ orbit' : '🎥 fly over'}</button>
           </div>
+          <button className={'pt-fly' + (timeAuto ? ' pt-fly-on' : '')} style={{ width: '100%' }} onClick={() => setTimeAuto((a) => !a)}>{timeAuto ? '🌗 day/night: auto' : '🌗 day/night: manual'}</button>
         </div>
       </div>
 
@@ -213,9 +281,9 @@ export default function ProceduralTerrain() {
   );
 }
 
-function Slider({ label, v, min, max, step, onChange, hint, fmt }: { label: string; v: number; min: number; max: number; step: number; onChange: (n: number) => void; hint: string; fmt?: (n: number) => string }) {
+function Slider({ label, v, min, max, step, onChange, hint, fmt, disabled }: { label: string; v: number; min: number; max: number; step: number; onChange: (n: number) => void; hint: string; fmt?: (n: number) => string; disabled?: boolean }) {
   return (
-    <div className="pt-row">
+    <div className="pt-row" style={disabled ? { opacity: 0.55 } : undefined}>
       <label>{label} <span>{fmt ? fmt(v) : v}</span></label>
       <input type="range" min={min} max={max} step={step} value={v} onChange={(e) => onChange(parseFloat(e.target.value))} />
       <div className="pt-hint">{hint}</div>
