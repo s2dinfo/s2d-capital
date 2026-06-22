@@ -3,13 +3,17 @@
 // layer paints biomes (desert / savanna / forest / snow); shader water ripples; clouds
 // drift; trees, rocks and cacti scatter by a jittered (Poisson-ish) grid. All live.
 import * as THREE from 'three';
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useMemo, useRef, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, PointerLockControls, Sky, Clouds, Cloud } from '@react-three/drei';
+import { OrbitControls, PointerLockControls, Sky, Clouds, Cloud, Billboard, Html, useTexture } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
+import { FIGURES } from '@/lib/figures';
+import { ENCOUNTERS } from '@/lib/encounters';
+import { useChoices } from '@/lib/choices';
+import { worldMeters, MeterBars } from '@/components/WorldReport';
 
 const SIZE = 70;
 const SEG = 170;
@@ -166,7 +170,7 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
 // first-person walk — click to capture the mouse (look around), WASD to move, Shift to
 // run, Esc to release. The camera follows the ground so you walk up and over the hills.
 const EYE = 1.7;
-function FirstPerson({ sampleRef }: { sampleRef: { current: ((x: number, z: number) => number) | null } }) {
+function FirstPerson({ sampleRef, pausedRef }: { sampleRef: { current: ((x: number, z: number) => number) | null }; pausedRef: { current: boolean } }) {
   const camera = useThree((s) => s.camera);
   const keys = useRef<Record<string, boolean>>({});
   const fwd = useMemo(() => new THREE.Vector3(), []);
@@ -184,6 +188,7 @@ function FirstPerson({ sampleRef }: { sampleRef: { current: ((x: number, z: numb
   }, [camera, sampleRef]);
 
   useFrame((_, dt) => {
+    if (pausedRef.current) return;   // frozen while an encounter is open
     const k = keys.current;
     const sp = (k['ShiftLeft'] || k['ShiftRight'] ? 17 : 8.5) * Math.min(dt, 0.05);
     camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
@@ -202,6 +207,78 @@ function FirstPerson({ sampleRef }: { sampleRef: { current: ((x: number, z: numb
     }
   });
   return <PointerLockControls />;
+}
+
+// ── The people who run the chip world, standing out IN the world. Walk up to one
+// and their real decision triggers in-scene; your call moves the live world-meters. ──
+const FIELD = ([
+  { node: 'Nvidia', pos: [0, -20] },
+  { node: 'TSMC', pos: [18, -11] },
+  { node: 'Copper', pos: [21, 8] },
+  { node: 'Power', pos: [5, 21] },
+  { node: 'Oil', pos: [-17, 14] },
+  { node: 'RareEarth', pos: [-21, -6] },
+] as { node: string; pos: [number, number] }[])
+  .filter((f) => FIGURES[f.node] && ENCOUNTERS[f.node])
+  .map((f) => ({ ...f, fig: FIGURES[f.node], enc: ENCOUNTERS[f.node] }));
+
+function WorldHologram({ fig, enc, met, near, grpRef }: { fig: { image: string; accent: string }; enc: any; met: boolean; near: boolean; grpRef: (el: THREE.Group | null) => void }) {
+  const tex = useTexture(fig.image);
+  return (
+    <group ref={grpRef}>
+      {/* beacon — a column of light so you can see them from across the world */}
+      <mesh position={[0, 16, 0]}>
+        <cylinderGeometry args={[0.13, 0.13, 32, 8, 1, true]} />
+        <meshBasicMaterial color={fig.accent} transparent opacity={met ? 0.07 : 0.16} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+      {/* base ring on the ground */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.07, 0]}>
+        <ringGeometry args={[1.0, 1.35, 44]} />
+        <meshBasicMaterial color={fig.accent} transparent opacity={near ? 0.95 : met ? 0.4 : 0.7} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+      {/* portrait hologram, billboarded upright */}
+      <Billboard follow lockX lockZ position={[0, 1.95, 0]}>
+        <mesh position={[0, 0, -0.05]}>
+          <planeGeometry args={[2.35, 2.95]} />
+          <meshBasicMaterial color={fig.accent} transparent opacity={near ? 0.28 : 0.16} blending={THREE.AdditiveBlending} depthWrite={false} />
+        </mesh>
+        <mesh>
+          <planeGeometry args={[2.0, 2.6]} />
+          <meshBasicMaterial map={tex} transparent opacity={met ? 0.78 : 0.96} depthWrite={false} toneMapped={false} />
+        </mesh>
+      </Billboard>
+      <Html position={[0, 3.5, 0]} center distanceFactor={16} occlude={false} pointerEvents="none">
+        <div className="pt-fig-tag" style={{ borderColor: fig.accent, color: '#fff' }}>
+          <b style={{ color: fig.accent }}>✦ {enc.name}</b>
+          <span>{enc.role}</span>
+          <em>{met ? '✓ spoken' : 'walk up · press E'}</em>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+function WorldFigures({ sampleRef, walking, choices, nearRef, setNear }: { sampleRef: { current: ((x: number, z: number) => number) | null }; walking: boolean; choices: Record<string, string>; nearRef: { current: number }; setNear: (n: number) => void }) {
+  const camera = useThree((s) => s.camera);
+  const groups = useRef<(THREE.Group | null)[]>([]);
+  useFrame(() => {
+    let nearest = -1, nd = 36; // within 6 units
+    for (let i = 0; i < FIELD.length; i++) {
+      const g = groups.current[i]; if (!g) continue;
+      const [x, z] = FIELD[i].pos;
+      const gy = sampleRef.current ? Math.max(sampleRef.current(x, z), 0) : 0;
+      g.position.set(x, gy, z);
+      if (walking) { const dx = camera.position.x - x, dz = camera.position.z - z; const d2 = dx * dx + dz * dz; if (d2 < nd) { nd = d2; nearest = i; } }
+    }
+    if (nearest !== nearRef.current) { nearRef.current = nearest; setNear(nearest); }
+  });
+  return (
+    <Suspense fallback={null}>
+      {FIELD.map((f, i) => (
+        <WorldHologram key={f.node} fig={f.fig} enc={f.enc} met={!!choices[f.node]} near={nearRef.current === i} grpRef={(el) => { groups.current[i] = el; }} />
+      ))}
+    </Suspense>
+  );
 }
 
 // cinematic drone flyover — sweeps low across the world, banking, looking ahead
@@ -274,6 +351,30 @@ export default function ProceduralTerrain() {
   const dayRef = useRef(0.5);
   const sampleRef = useRef<((x: number, z: number) => number) | null>(null);
 
+  // in-world encounters
+  const [choices, setChoice] = useChoices();
+  const [near, setNear] = useState(-1);
+  const nearRef = useRef(-1);
+  const [active, setActive] = useState(-1);       // index of the open encounter, -1 = none
+  const pausedRef = useRef(false);
+  useEffect(() => { pausedRef.current = active >= 0; }, [active]);
+  const walking = mode === 'walk';
+  const metCount = FIELD.filter((f) => choices[f.node]).length;
+  const meters = worldMeters(choices);
+
+  // press E near a figure to speak; Esc closes the panel
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') { setActive(-1); return; }
+      if (e.code === 'KeyE' && walking && active < 0 && nearRef.current >= 0) {
+        setActive(nearRef.current);
+        if (typeof document !== 'undefined' && document.exitPointerLock) document.exitPointerLock();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [walking, active]);
+
   return (
     <div className="pt-stage">
       <Canvas shadows dpr={[1, 2]} camera={{ position: [42, 28, 42], fov: 42 }}>
@@ -284,7 +385,8 @@ export default function ProceduralTerrain() {
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
         </Clouds>
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
-        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} />
+        <WorldFigures sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
+        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} />
           : mode === 'fly' ? <CinematicFly />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
@@ -322,6 +424,30 @@ export default function ProceduralTerrain() {
         <div className="pt-walkhint">click to look around · <b>WASD</b> to move · <b>shift</b> to run · <b>esc</b> to release</div>
       )}
 
+      {/* objective + the live world you're building, on foot */}
+      {walking && (
+        <div className="pt-quest">
+          <div className="pt-quest-head">THE WORLD · LIVE STATE</div>
+          <MeterBars meters={meters} />
+          <div className="pt-quest-foot">{metCount === FIELD.length ? '✓ every call made — this is the world you built' : `${metCount}/${FIELD.length} spoken · find them by their beacons`}</div>
+        </div>
+      )}
+
+      {/* proximity prompt */}
+      {walking && active < 0 && near >= 0 && (
+        <div className="pt-prompt"><span className="pt-key">E</span> speak with <b style={{ color: FIELD[near].fig.accent }}>{FIELD[near].enc.name}</b> — {FIELD[near].enc.role}</div>
+      )}
+
+      {/* the in-scene decision */}
+      {active >= 0 && (
+        <EncounterPanel f={FIELD[active]} prior={choices[FIELD[active].node]} onPick={(id) => setChoice(FIELD[active].node, id)} onClose={() => setActive(-1)} />
+      )}
+
+      {/* finished the chain on foot */}
+      {walking && active < 0 && metCount === FIELD.length && (
+        <Link href="/world" className="pt-complete">⚖ You walked the whole chain — see the world you built →</Link>
+      )}
+
       <style dangerouslySetInnerHTML={{ __html: `
         .pt-stage{position:fixed;inset:0;background:#c3d7e8}
         .pt-ui{position:absolute;inset:0;pointer-events:none;padding:60px 28px 24px;display:flex;flex-direction:column;justify-content:space-between}
@@ -344,6 +470,38 @@ export default function ProceduralTerrain() {
         .pt-mode-on{background:#7fd0ff;color:#04140d;border-color:#7fd0ff;font-weight:700}
         .pt-walkhint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.06em;color:#fff;background:rgba(10,16,28,0.6);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:9px 18px;backdrop-filter:blur(8px)}
         .pt-walkhint b{color:#7fd0ff}
+
+        .pt-fig-tag{display:flex;flex-direction:column;align-items:center;gap:1px;white-space:nowrap;font-family:var(--font-mono);background:rgba(8,12,22,0.6);border:1px solid;border-radius:8px;padding:5px 11px;backdrop-filter:blur(4px)}
+        .pt-fig-tag b{font-size:0.82rem;letter-spacing:0.04em}
+        .pt-fig-tag span{font-size:0.6rem;color:rgba(255,255,255,0.62)}
+        .pt-fig-tag em{font-size:0.56rem;font-style:normal;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin-top:2px}
+
+        .pt-quest{position:absolute;top:90px;right:24px;z-index:6;width:240px;padding:14px 16px 12px;background:linear-gradient(160deg,rgba(20,25,44,0.85),rgba(12,15,31,0.9));border:1px solid rgba(255,255,255,0.1);border-radius:14px;backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,0.4)}
+        .pt-quest-head{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.18em;color:#7fd0ff;margin-bottom:10px}
+        .pt-quest-foot{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.03em;color:rgba(255,255,255,0.5);margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.08)}
+
+        .pt-prompt{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:none;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.04em;color:#fff;background:rgba(10,16,28,0.78);border:1px solid rgba(127,208,255,0.4);border-radius:999px;padding:11px 20px;backdrop-filter:blur(8px);box-shadow:0 8px 30px rgba(0,0,0,0.4)}
+        .pt-prompt .pt-key{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:9px;border-radius:5px;background:#7fd0ff;color:#04140d;font-weight:700;font-size:0.66rem;vertical-align:middle}
+
+        .pt-complete{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:auto;text-decoration:none;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.04em;color:#04140d;background:linear-gradient(135deg,#7fd0ff,#3affb0);border-radius:999px;padding:12px 22px;box-shadow:0 10px 34px rgba(127,208,255,0.4)}
+
+        .pt-enc{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 50% 50%,rgba(6,9,18,0.55),rgba(5,7,14,0.86));backdrop-filter:blur(3px)}
+        .pt-enc-card{position:relative;width:min(94vw,460px);background:rgba(13,18,32,0.92);border:1px solid;border-radius:18px;padding:26px 26px 24px;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+        .pt-enc-x{position:absolute;top:12px;right:15px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;line-height:1;cursor:pointer}
+        .pt-enc-x:hover{color:#fff}
+        .pt-enc-loc{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px}
+        .pt-enc-name{font-family:var(--font-mono);font-size:1.15rem;font-weight:700;color:#fff}
+        .pt-enc-role{font-family:var(--font-sans);font-size:0.74rem;color:rgba(255,255,255,0.55);margin-bottom:18px}
+        .pt-enc-prompt{font-family:var(--font-serif);font-size:1.12rem;line-height:1.4;color:#fff;margin-bottom:18px}
+        .pt-enc-opts{display:flex;flex-direction:column;gap:10px}
+        .pt-enc-opt{text-align:left;background:rgba(255,255,255,0.04);border:1px solid;border-radius:12px;padding:13px 15px;cursor:pointer;transition:all 0.18s;display:flex;flex-direction:column;gap:3px}
+        .pt-enc-opt:hover{background:rgba(255,255,255,0.09);transform:translateY(-1px)}
+        .pt-enc-opt b{font-family:var(--font-mono);font-size:0.82rem;color:#fff;letter-spacing:0.02em}
+        .pt-enc-opt span{font-family:var(--font-sans);font-size:0.72rem;color:rgba(255,255,255,0.58);line-height:1.4}
+        .pt-enc-verdict{font-family:var(--font-mono);font-size:0.95rem;font-weight:700;margin-bottom:12px;letter-spacing:0.02em}
+        .pt-enc-text{font-family:var(--font-sans);font-size:0.85rem;line-height:1.65;color:rgba(255,255,255,0.78);margin-bottom:20px}
+        .pt-enc-go{width:100%;border:none;border-radius:10px;padding:13px;font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;font-weight:700;color:#04140d;cursor:pointer;transition:filter 0.2s}
+        .pt-enc-go:hover{filter:brightness(1.1)}
       ` }} />
     </div>
   );
@@ -355,6 +513,44 @@ function Slider({ label, v, min, max, step, onChange, hint, fmt, disabled }: { l
       <label>{label} <span>{fmt ? fmt(v) : v}</span></label>
       <input type="range" min={min} max={max} step={step} value={v} onChange={(e) => onChange(parseFloat(e.target.value))} />
       <div className="pt-hint">{hint}</div>
+    </div>
+  );
+}
+
+// The diegetic decision — the figure's real call. Choosing writes to the shared choice
+// store (so the globe's meters + report see it) and reveals what actually happened.
+function EncounterPanel({ f, prior, onPick, onClose }: { f: { node: string; fig: { accent: string }; enc: any }; prior?: string; onPick: (id: string) => void; onClose: () => void }) {
+  const enc = f.enc;
+  const [picked, setPicked] = useState<string | null>(prior ?? null);
+  const choose = (id: string) => { onPick(id); setPicked(id); };
+  const out = picked ? enc.outcomes?.[picked] : null;
+  const reveal = picked ? (enc.reality?.[picked] || out?.text) : null;
+  return (
+    <div className="pt-enc" onClick={onClose}>
+      <div className="pt-enc-card" style={{ borderColor: f.fig.accent + '66' }} onClick={(e) => e.stopPropagation()}>
+        <button className="pt-enc-x" onClick={onClose} aria-label="Close">×</button>
+        <div className="pt-enc-loc" style={{ color: f.fig.accent }}>{enc.locationTag}</div>
+        <div className="pt-enc-name">{enc.name}</div>
+        <div className="pt-enc-role">{enc.role}</div>
+        {!picked ? (
+          <>
+            <div className="pt-enc-prompt">{enc.decision.prompt}</div>
+            <div className="pt-enc-opts">
+              {enc.decision.options.map((o: any) => (
+                <button key={o.id} className="pt-enc-opt" style={{ borderColor: f.fig.accent + '55' }} onClick={() => choose(o.id)}>
+                  <b>{o.label}</b><span>{o.sub}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="pt-enc-verdict" style={{ color: f.fig.accent }}>{out?.verdict}</div>
+            <div className="pt-enc-text">{reveal}</div>
+            <button className="pt-enc-go" style={{ background: f.fig.accent }} onClick={onClose}>walk on&nbsp;&nbsp;→</button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
