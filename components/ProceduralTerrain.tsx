@@ -3,10 +3,10 @@
 // layer paints biomes (desert / savanna / forest / snow); shader water ripples; clouds
 // drift; trees, rocks and cacti scatter by a jittered (Poisson-ish) grid. All live.
 import * as THREE from 'three';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sky, Clouds, Cloud } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { OrbitControls, PointerLockControls, Sky, Clouds, Cloud } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
@@ -74,7 +74,7 @@ function Water({ dayRef }: { dayRef: { current: number } }) {
 
 function rngAng(n: number) { return ((Math.sin(n * 127.1) * 43758.5453) % 1) * Math.PI * 2; }
 
-function Terrain({ amp, freq, octaves, seed, dayRef }: { amp: number; freq: number; octaves: number; seed: number; dayRef: { current: number } }) {
+function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number; freq: number; octaves: number; seed: number; dayRef: { current: number }; sampleRef: { current: ((x: number, z: number) => number) | null } }) {
   const elev = useMemo(() => createNoise2D(alea('e' + seed)), [seed]);
   const moist = useMemo(() => createNoise2D(alea('m' + seed)), [seed]);
   const river = useMemo(() => createNoise2D(alea('r' + seed)), [seed]);
@@ -86,6 +86,16 @@ function Terrain({ amp, freq, octaves, seed, dayRef }: { amp: number; freq: numb
     const lowland = 1 - sstep(h0, amp * 0.04, amp * 0.42);
     return (1 - sstep(a, 0.0, 0.055)) * lowland;
   };
+
+  // ground-height sampler in WORLD coords (the plane is rotated -90° about X, so world
+  // z = -planeY). The first-person walker reads this to follow the terrain.
+  useMemo(() => {
+    sampleRef.current = (wx: number, wz: number) => {
+      const px = wx, py = -wz;
+      const h0 = fbm(elev, px, py, octaves, freq) * amp + amp * LAND_BIAS;
+      return THREE.MathUtils.lerp(h0, RIVER_BED, riverMask(px, py, h0));
+    };
+  }, [elev, river, amp, freq, octaves]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const geo = useMemo(() => {
     const g = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
@@ -153,6 +163,47 @@ function Terrain({ amp, freq, octaves, seed, dayRef }: { amp: number; freq: numb
   );
 }
 
+// first-person walk — click to capture the mouse (look around), WASD to move, Shift to
+// run, Esc to release. The camera follows the ground so you walk up and over the hills.
+const EYE = 1.7;
+function FirstPerson({ sampleRef }: { sampleRef: { current: ((x: number, z: number) => number) | null } }) {
+  const camera = useThree((s) => s.camera);
+  const keys = useRef<Record<string, boolean>>({});
+  const fwd = useMemo(() => new THREE.Vector3(), []);
+  const right = useMemo(() => new THREE.Vector3(), []);
+
+  useEffect(() => {
+    const s = sampleRef.current;
+    const g = s ? s(0, 8) : 2;
+    camera.position.set(0, g + EYE, 8);             // spawn near the middle, on the ground
+    camera.lookAt(0, g + EYE, 0);
+    const down = (e: KeyboardEvent) => { keys.current[e.code] = true; };
+    const up = (e: KeyboardEvent) => { keys.current[e.code] = false; };
+    window.addEventListener('keydown', down); window.addEventListener('keyup', up);
+    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); keys.current = {}; };
+  }, [camera, sampleRef]);
+
+  useFrame((_, dt) => {
+    const k = keys.current;
+    const sp = (k['ShiftLeft'] || k['ShiftRight'] ? 17 : 8.5) * Math.min(dt, 0.05);
+    camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+    right.crossVectors(fwd, camera.up).normalize();
+    if (k['KeyW'] || k['ArrowUp']) camera.position.addScaledVector(fwd, sp);
+    if (k['KeyS'] || k['ArrowDown']) camera.position.addScaledVector(fwd, -sp);
+    if (k['KeyD'] || k['ArrowRight']) camera.position.addScaledVector(right, sp);
+    if (k['KeyA'] || k['ArrowLeft']) camera.position.addScaledVector(right, -sp);
+    const lim = SIZE / 2 - 1.5;
+    camera.position.x = THREE.MathUtils.clamp(camera.position.x, -lim, lim);
+    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -lim, lim);
+    const s = sampleRef.current;
+    if (s) {
+      const g = Math.max(s(camera.position.x, camera.position.z), -0.05); // don't sink below the water line
+      camera.position.y += (g + EYE - camera.position.y) * Math.min(1, dt * 12); // smooth step over terrain
+    }
+  });
+  return <PointerLockControls />;
+}
+
 // cinematic drone flyover — sweeps low across the world, banking, looking ahead
 function CinematicFly() {
   useFrame((state) => {
@@ -217,10 +268,11 @@ export default function ProceduralTerrain() {
   const [freq, setFreq] = useState(0.05);
   const [octaves, setOctaves] = useState(5);
   const [seed, setSeed] = useState(1);
-  const [fly, setFly] = useState(false);
+  const [mode, setMode] = useState<'orbit' | 'fly' | 'walk'>('orbit');
   const [timeAuto, setTimeAuto] = useState(true);
   const [timeManual, setTimeManual] = useState(0.5);
   const dayRef = useRef(0.5);
+  const sampleRef = useRef<((x: number, z: number) => number) | null>(null);
 
   return (
     <div className="pt-stage">
@@ -231,8 +283,10 @@ export default function ProceduralTerrain() {
           <Cloud seed={seed} segments={30} bounds={[40, 4, 40]} volume={9} color="#ffffff" opacity={0.55} position={[0, 30, -10]} />
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
         </Clouds>
-        <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} />
-        {fly ? <CinematicFly /> : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
+        <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
+        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} />
+          : mode === 'fly' ? <CinematicFly />
+          : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
           <Bloom intensity={0.3} luminanceThreshold={0.75} mipmapBlur />
           <Vignette eskil={false} offset={0.2} darkness={0.65} />
@@ -243,7 +297,7 @@ export default function ProceduralTerrain() {
         <div className="pt-top">
           <Link href="/world" className="pt-back">← world</Link>
           <div className="pt-title">PROCEDURAL WORLD</div>
-          <div className="pt-sub">FBM terrain · biomes · carved rivers · day/night cycle · shader water</div>
+          <div className="pt-sub">FBM terrain · biomes · carved rivers · day/night · walk it in first person</div>
         </div>
         <div className="pt-panel">
           <Slider label="Amplitude" v={amp} min={3} max={18} step={0.5} onChange={setAmp} hint="height of the mountains" />
@@ -252,13 +306,21 @@ export default function ProceduralTerrain() {
           <Slider label="Time of day" v={timeManual} min={0} max={1} step={0.01} disabled={timeAuto}
             onChange={(x) => { setTimeAuto(false); setTimeManual(x); }} hint={timeAuto ? 'cycling automatically' : 'drag to set the sun'}
             fmt={() => (timeAuto ? 'auto ☀→🌙' : TIME_LABEL(timeManual))} />
-          <div className="pt-btns">
-            <button className="pt-seed" onClick={() => setSeed((s) => s + 1)}>↻ new world</button>
-            <button className={'pt-fly' + (fly ? ' pt-fly-on' : '')} onClick={() => setFly((f) => !f)}>{fly ? '⊙ orbit' : '🎥 fly over'}</button>
+          <button className="pt-seed" style={{ width: '100%' }} onClick={() => setSeed((s) => s + 1)}>↻ generate a new world</button>
+          <div className="pt-modes">
+            {(['orbit', 'fly', 'walk'] as const).map((m) => (
+              <button key={m} className={'pt-mode' + (mode === m ? ' pt-mode-on' : '')} onClick={() => setMode(m)}>
+                {m === 'orbit' ? '⊙ orbit' : m === 'fly' ? '🎥 fly' : '🚶 walk'}
+              </button>
+            ))}
           </div>
           <button className={'pt-fly' + (timeAuto ? ' pt-fly-on' : '')} style={{ width: '100%' }} onClick={() => setTimeAuto((a) => !a)}>{timeAuto ? '🌗 day/night: auto' : '🌗 day/night: manual'}</button>
         </div>
       </div>
+
+      {mode === 'walk' && (
+        <div className="pt-walkhint">click to look around · <b>WASD</b> to move · <b>shift</b> to run · <b>esc</b> to release</div>
+      )}
 
       <style dangerouslySetInnerHTML={{ __html: `
         .pt-stage{position:fixed;inset:0;background:#c3d7e8}
@@ -276,6 +338,12 @@ export default function ProceduralTerrain() {
         .pt-seed{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.05em;color:#04140d;background:linear-gradient(135deg,#3affb0,#12c98a);border:none;border-radius:9px;padding:10px;cursor:pointer}
         .pt-fly{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.05em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:10px;cursor:pointer}
         .pt-fly-on{background:#7fd0ff;color:#04140d;border-color:#7fd0ff}
+        .pt-modes{display:flex;gap:8px}
+        .pt-mode{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.04em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:10px 4px;cursor:pointer;transition:all 0.18s}
+        .pt-mode:hover{border-color:rgba(127,208,255,0.6)}
+        .pt-mode-on{background:#7fd0ff;color:#04140d;border-color:#7fd0ff;font-weight:700}
+        .pt-walkhint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.06em;color:#fff;background:rgba(10,16,28,0.6);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:9px 18px;backdrop-filter:blur(8px)}
+        .pt-walkhint b{color:#7fd0ff}
       ` }} />
     </div>
   );
