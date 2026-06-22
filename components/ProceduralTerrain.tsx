@@ -3,17 +3,16 @@
 // layer paints biomes (desert / savanna / forest / snow); shader water ripples; clouds
 // drift; trees, rocks and cacti scatter by a jittered (Poisson-ish) grid. All live.
 import * as THREE from 'three';
-import { useMemo, useRef, useState, useEffect, Suspense } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, PointerLockControls, Sky, Clouds, Cloud, Billboard, Html, useTexture } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Sky, Clouds, Cloud } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
-import { FIGURES } from '@/lib/figures';
-import { ENCOUNTERS, lineAudioId } from '@/lib/encounters';
 import { useChoices } from '@/lib/choices';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
+import { FirstPerson, WorldFigures, EncounterPanel, buildField, ENCOUNTER_CSS } from '@/components/WorldEncounter';
 
 const SIZE = 70;
 const SEG = 170;
@@ -167,119 +166,16 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
   );
 }
 
-// first-person walk — click to capture the mouse (look around), WASD to move, Shift to
-// run, Esc to release. The camera follows the ground so you walk up and over the hills.
-const EYE = 1.7;
-function FirstPerson({ sampleRef, pausedRef }: { sampleRef: { current: ((x: number, z: number) => number) | null }; pausedRef: { current: boolean } }) {
-  const camera = useThree((s) => s.camera);
-  const keys = useRef<Record<string, boolean>>({});
-  const fwd = useMemo(() => new THREE.Vector3(), []);
-  const right = useMemo(() => new THREE.Vector3(), []);
-
-  useEffect(() => {
-    const s = sampleRef.current;
-    const g = s ? s(0, 8) : 2;
-    camera.position.set(0, g + EYE, 8);             // spawn near the middle, on the ground
-    camera.lookAt(0, g + EYE, 0);
-    const down = (e: KeyboardEvent) => { keys.current[e.code] = true; };
-    const up = (e: KeyboardEvent) => { keys.current[e.code] = false; };
-    window.addEventListener('keydown', down); window.addEventListener('keyup', up);
-    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); keys.current = {}; };
-  }, [camera, sampleRef]);
-
-  useFrame((_, dt) => {
-    if (pausedRef.current) return;   // frozen while an encounter is open
-    const k = keys.current;
-    const sp = (k['ShiftLeft'] || k['ShiftRight'] ? 17 : 8.5) * Math.min(dt, 0.05);
-    camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
-    right.crossVectors(fwd, camera.up).normalize();
-    if (k['KeyW'] || k['ArrowUp']) camera.position.addScaledVector(fwd, sp);
-    if (k['KeyS'] || k['ArrowDown']) camera.position.addScaledVector(fwd, -sp);
-    if (k['KeyD'] || k['ArrowRight']) camera.position.addScaledVector(right, sp);
-    if (k['KeyA'] || k['ArrowLeft']) camera.position.addScaledVector(right, -sp);
-    const lim = SIZE / 2 - 1.5;
-    camera.position.x = THREE.MathUtils.clamp(camera.position.x, -lim, lim);
-    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -lim, lim);
-    const s = sampleRef.current;
-    if (s) {
-      const g = Math.max(s(camera.position.x, camera.position.z), -0.05); // don't sink below the water line
-      camera.position.y += (g + EYE - camera.position.y) * Math.min(1, dt * 12); // smooth step over terrain
-    }
-  });
-  return <PointerLockControls />;
-}
-
-// ── The people who run the chip world, standing out IN the world. Walk up to one
-// and their real decision triggers in-scene; your call moves the live world-meters. ──
-const FIELD = ([
+// ── The people who run the chip world, standing out IN the world (walk up + press E).
+// Figures, hologram rendering, proximity and the encounter card all live in WorldEncounter. ──
+const FIELD = buildField([
   { node: 'Nvidia', pos: [0, -20] },
   { node: 'TSMC', pos: [18, -11] },
   { node: 'Copper', pos: [21, 8] },
   { node: 'Power', pos: [5, 21] },
   { node: 'Oil', pos: [-17, 14] },
   { node: 'RareEarth', pos: [-21, -6] },
-] as { node: string; pos: [number, number] }[])
-  .filter((f) => FIGURES[f.node] && ENCOUNTERS[f.node])
-  .map((f) => ({ ...f, fig: FIGURES[f.node], enc: ENCOUNTERS[f.node] }));
-
-function WorldHologram({ fig, enc, met, near, grpRef }: { fig: { image: string; accent: string }; enc: any; met: boolean; near: boolean; grpRef: (el: THREE.Group | null) => void }) {
-  const tex = useTexture(fig.image);
-  return (
-    <group ref={grpRef}>
-      {/* beacon — a column of light so you can see them from across the world */}
-      <mesh position={[0, 16, 0]}>
-        <cylinderGeometry args={[0.13, 0.13, 32, 8, 1, true]} />
-        <meshBasicMaterial color={fig.accent} transparent opacity={met ? 0.07 : 0.16} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
-      </mesh>
-      {/* base ring on the ground */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.07, 0]}>
-        <ringGeometry args={[1.0, 1.35, 44]} />
-        <meshBasicMaterial color={fig.accent} transparent opacity={near ? 0.95 : met ? 0.4 : 0.7} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
-      </mesh>
-      {/* portrait hologram, billboarded upright */}
-      <Billboard follow lockX lockZ position={[0, 1.95, 0]}>
-        <mesh position={[0, 0, -0.05]}>
-          <planeGeometry args={[2.35, 2.95]} />
-          <meshBasicMaterial color={fig.accent} transparent opacity={near ? 0.28 : 0.16} blending={THREE.AdditiveBlending} depthWrite={false} />
-        </mesh>
-        <mesh>
-          <planeGeometry args={[2.0, 2.6]} />
-          <meshBasicMaterial map={tex} transparent opacity={met ? 0.78 : 0.96} depthWrite={false} toneMapped={false} />
-        </mesh>
-      </Billboard>
-      <Html position={[0, 3.5, 0]} center distanceFactor={16} occlude={false} pointerEvents="none">
-        <div className="pt-fig-tag" style={{ borderColor: fig.accent, color: '#fff' }}>
-          <b style={{ color: fig.accent }}>✦ {enc.name}</b>
-          <span>{enc.role}</span>
-          <em>{met ? '✓ spoken' : 'walk up · press E'}</em>
-        </div>
-      </Html>
-    </group>
-  );
-}
-
-function WorldFigures({ sampleRef, walking, choices, nearRef, setNear }: { sampleRef: { current: ((x: number, z: number) => number) | null }; walking: boolean; choices: Record<string, string>; nearRef: { current: number }; setNear: (n: number) => void }) {
-  const camera = useThree((s) => s.camera);
-  const groups = useRef<(THREE.Group | null)[]>([]);
-  useFrame(() => {
-    let nearest = -1, nd = 36; // within 6 units
-    for (let i = 0; i < FIELD.length; i++) {
-      const g = groups.current[i]; if (!g) continue;
-      const [x, z] = FIELD[i].pos;
-      const gy = sampleRef.current ? Math.max(sampleRef.current(x, z), 0) : 0;
-      g.position.set(x, gy, z);
-      if (walking) { const dx = camera.position.x - x, dz = camera.position.z - z; const d2 = dx * dx + dz * dz; if (d2 < nd) { nd = d2; nearest = i; } }
-    }
-    if (nearest !== nearRef.current) { nearRef.current = nearest; setNear(nearest); }
-  });
-  return (
-    <Suspense fallback={null}>
-      {FIELD.map((f, i) => (
-        <WorldHologram key={f.node} fig={f.fig} enc={f.enc} met={!!choices[f.node]} near={nearRef.current === i} grpRef={(el) => { groups.current[i] = el; }} />
-      ))}
-    </Suspense>
-  );
-}
+]);
 
 // cinematic drone flyover — sweeps low across the world, banking, looking ahead
 function CinematicFly() {
@@ -385,8 +281,8 @@ export default function ProceduralTerrain() {
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
         </Clouds>
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
-        <WorldFigures sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
-        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} />
+        <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
+        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : mode === 'fly' ? <CinematicFly />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
@@ -470,11 +366,7 @@ export default function ProceduralTerrain() {
         .pt-mode-on{background:#7fd0ff;color:#04140d;border-color:#7fd0ff;font-weight:700}
         .pt-walkhint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.06em;color:#fff;background:rgba(10,16,28,0.6);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:9px 18px;backdrop-filter:blur(8px)}
         .pt-walkhint b{color:#7fd0ff}
-
-        .pt-fig-tag{display:flex;flex-direction:column;align-items:center;gap:1px;white-space:nowrap;font-family:var(--font-mono);background:rgba(8,12,22,0.6);border:1px solid;border-radius:8px;padding:5px 11px;backdrop-filter:blur(4px)}
-        .pt-fig-tag b{font-size:0.82rem;letter-spacing:0.04em}
-        .pt-fig-tag span{font-size:0.6rem;color:rgba(255,255,255,0.62)}
-        .pt-fig-tag em{font-size:0.56rem;font-style:normal;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin-top:2px}
+        ${ENCOUNTER_CSS}
 
         .pt-quest{position:absolute;top:90px;right:24px;z-index:6;width:240px;padding:14px 16px 12px;background:linear-gradient(160deg,rgba(20,25,44,0.85),rgba(12,15,31,0.9));border:1px solid rgba(255,255,255,0.1);border-radius:14px;backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,0.4)}
         .pt-quest-head{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.18em;color:#7fd0ff;margin-bottom:10px}
@@ -484,36 +376,6 @@ export default function ProceduralTerrain() {
         .pt-prompt .pt-key{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:9px;border-radius:5px;background:#7fd0ff;color:#04140d;font-weight:700;font-size:0.66rem;vertical-align:middle}
 
         .pt-complete{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:auto;text-decoration:none;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.04em;color:#04140d;background:linear-gradient(135deg,#7fd0ff,#3affb0);border-radius:999px;padding:12px 22px;box-shadow:0 10px 34px rgba(127,208,255,0.4)}
-
-        .pt-enc{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 50% 50%,rgba(6,9,18,0.55),rgba(5,7,14,0.86));backdrop-filter:blur(3px)}
-        .pt-enc-card{position:relative;width:min(94vw,460px);background:rgba(13,18,32,0.92);border:1px solid;border-radius:18px;padding:26px 26px 24px;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
-        .pt-enc-x{position:absolute;top:12px;right:15px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;line-height:1;cursor:pointer}
-        .pt-enc-x:hover{color:#fff}
-        .pt-enc-loc{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px}
-        .pt-enc-name{font-family:var(--font-mono);font-size:1.15rem;font-weight:700;color:#fff}
-        .pt-enc-role{font-family:var(--font-sans);font-size:0.74rem;color:rgba(255,255,255,0.55);margin-bottom:18px}
-        .pt-enc-speak{float:right;font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.16em;animation:ptSpeak 1.1s ease-in-out infinite}
-        @keyframes ptSpeak{0%,100%{opacity:0.35}50%{opacity:1}}
-        .pt-enc-line{font-family:var(--font-serif);font-size:1.16rem;line-height:1.5;color:#fff;margin-bottom:20px;min-height:84px}
-        .pt-enc-narr{font-style:italic;font-size:0.92rem;color:rgba(255,255,255,0.6)}
-        .pt-enc-introbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
-        .pt-enc-skip{background:none;border:none;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;color:rgba(255,255,255,0.4);cursor:pointer}
-        .pt-enc-skip:hover{color:rgba(255,255,255,0.8)}
-        .pt-enc-dots{display:flex;gap:5px}
-        .pt-enc-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2)}
-        .pt-enc-dot.on{transform:scale(1.25)}
-        .pt-enc-next{border:none;border-radius:9px;padding:10px 16px;font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.06em;font-weight:700;color:#04140d;cursor:pointer;transition:filter 0.2s}
-        .pt-enc-next:hover{filter:brightness(1.1)}
-        .pt-enc-prompt{font-family:var(--font-serif);font-size:1.12rem;line-height:1.4;color:#fff;margin-bottom:18px}
-        .pt-enc-opts{display:flex;flex-direction:column;gap:10px}
-        .pt-enc-opt{text-align:left;background:rgba(255,255,255,0.04);border:1px solid;border-radius:12px;padding:13px 15px;cursor:pointer;transition:all 0.18s;display:flex;flex-direction:column;gap:3px}
-        .pt-enc-opt:hover{background:rgba(255,255,255,0.09);transform:translateY(-1px)}
-        .pt-enc-opt b{font-family:var(--font-mono);font-size:0.82rem;color:#fff;letter-spacing:0.02em}
-        .pt-enc-opt span{font-family:var(--font-sans);font-size:0.72rem;color:rgba(255,255,255,0.58);line-height:1.4}
-        .pt-enc-verdict{font-family:var(--font-mono);font-size:0.95rem;font-weight:700;margin-bottom:12px;letter-spacing:0.02em}
-        .pt-enc-text{font-family:var(--font-sans);font-size:0.85rem;line-height:1.65;color:rgba(255,255,255,0.78);margin-bottom:20px}
-        .pt-enc-go{width:100%;border:none;border-radius:10px;padding:13px;font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.08em;font-weight:700;color:#04140d;cursor:pointer;transition:filter 0.2s}
-        .pt-enc-go:hover{filter:brightness(1.1)}
       ` }} />
     </div>
   );
@@ -529,80 +391,3 @@ function Slider({ label, v, min, max, step, onChange, hint, fmt, disabled }: { l
   );
 }
 
-// The diegetic encounter — the figure speaks (their real voice), then makes their call.
-// Choosing writes the shared choice store (so the globe's meters + report see it) and
-// reveals what actually happened. Walking up to someone now feels like meeting them.
-function EncounterPanel({ f, prior, onPick, onClose }: { f: { node: string; fig: { accent: string }; enc: any }; prior?: string; onPick: (id: string) => void; onClose: () => void }) {
-  const enc = f.enc;
-  const intro: { who: string; text: string }[] = enc.intro || [];
-  // already decided → skip straight to the reveal; otherwise play the intro first
-  const [stage, setStage] = useState<'intro' | 'decide' | 'result'>(prior ? 'result' : intro.length ? 'intro' : 'decide');
-  const [idx, setIdx] = useState(0);
-  const [picked, setPicked] = useState<string | null>(prior ?? null);
-  const [speaking, setSpeaking] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const stopAudio = () => { const a = audioRef.current; if (a) { a.onended = null; a.onerror = null; try { a.pause(); } catch {} } audioRef.current = null; setSpeaking(false); };
-  const play = (text: string) => {
-    stopAudio();
-    if (!enc.voiceId || !text) return;
-    const audio = new Audio(`/audio/${lineAudioId(enc.voiceId, text)}.mp3`);
-    audioRef.current = audio;
-    setSpeaking(true);
-    audio.onended = () => { if (audioRef.current === audio) { audioRef.current = null; setSpeaking(false); } };
-    audio.onerror = () => { if (audioRef.current === audio) { audioRef.current = null; setSpeaking(false); } };
-    audio.play().catch(() => {});
-  };
-
-  // speak each intro line as it appears; stop on close/unmount
-  useEffect(() => { if (stage === 'intro' && intro[idx]) play(intro[idx].text); return stopAudio; /* eslint-disable-next-line */ }, [stage, idx]);
-
-  const nextLine = () => { if (idx < intro.length - 1) setIdx(idx + 1); else { stopAudio(); setStage('decide'); } };
-  const choose = (id: string) => { stopAudio(); onPick(id); setPicked(id); setStage('result'); };
-  const close = () => { stopAudio(); onClose(); };
-  const out = picked ? enc.outcomes?.[picked] : null;
-  const reveal = picked ? (enc.reality?.[picked] || out?.text) : null;
-  const line = intro[idx];
-
-  return (
-    <div className="pt-enc" onClick={close}>
-      <div className="pt-enc-card" style={{ borderColor: f.fig.accent + '66' }} onClick={(e) => e.stopPropagation()}>
-        <button className="pt-enc-x" onClick={close} aria-label="Close">×</button>
-        <div className="pt-enc-loc" style={{ color: f.fig.accent }}>
-          {enc.locationTag}
-          {speaking && <span className="pt-enc-speak" style={{ color: f.fig.accent }}>● speaking</span>}
-        </div>
-        <div className="pt-enc-name">{enc.name}</div>
-        <div className="pt-enc-role">{enc.role}</div>
-
-        {stage === 'intro' ? (
-          <>
-            <div className={'pt-enc-line' + (line?.who === 'narration' ? ' pt-enc-narr' : '')}>{line?.who === 'narration' ? line.text : `“${line?.text}”`}</div>
-            <div className="pt-enc-introbar">
-              <button className="pt-enc-skip" onClick={() => { stopAudio(); setStage('decide'); }}>skip ▸▸</button>
-              <div className="pt-enc-dots">{intro.map((_, i) => <span key={i} className={'pt-enc-dot' + (i === idx ? ' on' : '')} style={i === idx ? { background: f.fig.accent } : undefined} />)}</div>
-              <button className="pt-enc-next" style={{ background: f.fig.accent }} onClick={nextLine}>{idx < intro.length - 1 ? 'next ▸' : 'the call ▸'}</button>
-            </div>
-          </>
-        ) : stage === 'decide' ? (
-          <>
-            <div className="pt-enc-prompt">{enc.decision.prompt}</div>
-            <div className="pt-enc-opts">
-              {enc.decision.options.map((o: any) => (
-                <button key={o.id} className="pt-enc-opt" style={{ borderColor: f.fig.accent + '55' }} onClick={() => choose(o.id)}>
-                  <b>{o.label}</b><span>{o.sub}</span>
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="pt-enc-verdict" style={{ color: f.fig.accent }}>{out?.verdict}</div>
-            <div className="pt-enc-text">{reveal}</div>
-            <button className="pt-enc-go" style={{ background: f.fig.accent }} onClick={close}>walk on&nbsp;&nbsp;→</button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
