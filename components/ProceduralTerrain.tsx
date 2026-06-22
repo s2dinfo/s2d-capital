@@ -134,11 +134,26 @@ function Terrain({ amp, freq, octaves, seed }: { amp: number; freq: number; octa
   );
 }
 
+// cinematic drone flyover — sweeps low across the world, banking, looking ahead
+function CinematicFly() {
+  useFrame((state) => {
+    const t = state.clock.elapsedTime * 0.1;
+    const R = 32 + Math.sin(t * 0.5) * 8;
+    const y = 10 + Math.sin(t * 0.85) * 6;
+    const cam = state.camera;
+    cam.position.set(Math.cos(t) * R, y, Math.sin(t) * R);
+    const ahead = t + 0.5;
+    cam.lookAt(Math.cos(ahead) * (R * 0.35), 2, Math.sin(ahead) * (R * 0.35));
+  });
+  return null;
+}
+
 export default function ProceduralTerrain() {
   const [amp, setAmp] = useState(10);
   const [freq, setFreq] = useState(0.05);
   const [octaves, setOctaves] = useState(5);
   const [seed, setSeed] = useState(1);
+  const [fly, setFly] = useState(false);
 
   return (
     <div className="pt-stage">
@@ -153,7 +168,7 @@ export default function ProceduralTerrain() {
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
         </Clouds>
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} />
-        <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />
+        {fly ? <CinematicFly /> : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
           <Bloom intensity={0.3} luminanceThreshold={0.75} mipmapBlur />
           <Vignette eskil={false} offset={0.2} darkness={0.65} />
@@ -170,7 +185,10 @@ export default function ProceduralTerrain() {
           <Slider label="Amplitude" v={amp} min={3} max={18} step={0.5} onChange={setAmp} hint="height of the mountains" />
           <Slider label="Frequency" v={freq} min={0.018} max={0.095} step={0.002} onChange={setFreq} hint="ruggedness of the land" fmt={(x) => x.toFixed(3)} />
           <Slider label="Octaves" v={octaves} min={1} max={6} step={1} onChange={(x) => setOctaves(Math.round(x))} hint="layers of detail" />
-          <button className="pt-seed" onClick={() => setSeed((s) => s + 1)}>↻ generate new world (seed {seed})</button>
+          <div className="pt-btns">
+            <button className="pt-seed" onClick={() => setSeed((s) => s + 1)}>↻ new world</button>
+            <button className={'pt-fly' + (fly ? ' pt-fly-on' : '')} onClick={() => setFly((f) => !f)}>{fly ? '⊙ orbit' : '🎥 fly over'}</button>
+          </div>
         </div>
       </div>
 
@@ -186,7 +204,10 @@ export default function ProceduralTerrain() {
         .pt-row label span{color:#7fd0ff}
         .pt-row input{width:100%;accent-color:#3affb0}
         .pt-row .pt-hint{font-family:var(--font-sans);font-size:0.6rem;color:rgba(255,255,255,0.42);margin-top:3px}
-        .pt-seed{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.05em;color:#04140d;background:linear-gradient(135deg,#3affb0,#12c98a);border:none;border-radius:9px;padding:10px;cursor:pointer;margin-top:2px}
+        .pt-btns{display:flex;gap:8px;margin-top:2px}
+        .pt-seed{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.05em;color:#04140d;background:linear-gradient(135deg,#3affb0,#12c98a);border:none;border-radius:9px;padding:10px;cursor:pointer}
+        .pt-fly{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.05em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:10px;cursor:pointer}
+        .pt-fly-on{background:#7fd0ff;color:#04140d;border-color:#7fd0ff}
       ` }} />
     </div>
   );
