@@ -280,6 +280,90 @@ function CinematicIntro({ onDone }: { onDone: () => void }) {
   return null;
 }
 
+// ── The fabrics: each company's actual industrial site, low-poly + stylized, themed by
+// its accent. Datacenter / fab / oil derrick / mine headframe / power plant. ──
+function Datacenter({ accent }: { accent: string }) {
+  return (
+    <group>
+      {[-1.1, 0, 1.1].map((x, i) => (
+        <mesh key={i} position={[x, 0.5, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.85, 1, 2.4]} /><meshStandardMaterial color="#2a3340" roughness={0.6} metalness={0.3} />
+        </mesh>
+      ))}
+      {[-1.1, 0, 1.1].map((x, i) => (
+        <mesh key={'w' + i} position={[x, 0.62, 1.21]}><boxGeometry args={[0.86, 0.16, 0.03]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+      ))}
+      <mesh position={[0, 1.12, -0.9]} castShadow><boxGeometry args={[2.9, 0.28, 0.5]} /><meshStandardMaterial color="#1c2430" /></mesh>
+    </group>
+  );
+}
+function Fab({ accent }: { accent: string }) {
+  return (
+    <group>
+      <mesh position={[0, 0.7, 0]} castShadow receiveShadow><boxGeometry args={[3.4, 1.4, 2.4]} /><meshStandardMaterial color="#d6dce3" roughness={0.4} metalness={0.2} /></mesh>
+      <mesh position={[1.2, 2.0, 0.6]} castShadow><cylinderGeometry args={[0.24, 0.3, 2.6, 12]} /><meshStandardMaterial color="#b3bcc8" metalness={0.5} roughness={0.4} /></mesh>
+      <mesh position={[1.2, 3.45, 0.6]}><sphereGeometry args={[0.32, 16, 12]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+      <mesh position={[0, 1.42, 1.21]}><boxGeometry args={[3.0, 0.12, 0.03]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+    </group>
+  );
+}
+function Derrick({ accent }: { accent: string }) {
+  return (
+    <group>
+      <mesh position={[0, 0.25, 0]} castShadow><boxGeometry args={[2, 0.5, 2]} /><meshStandardMaterial color="#34291d" /></mesh>
+      <mesh position={[0, 1.9, 0]}><coneGeometry args={[0.95, 3.4, 4, 1, true]} /><meshStandardMaterial color="#6a5640" wireframe /></mesh>
+      <mesh position={[0, 3.7, 0]} castShadow><boxGeometry args={[0.5, 0.4, 0.5]} /><meshStandardMaterial color="#5a4a38" /></mesh>
+      <mesh position={[0, 4.0, 0]}><sphereGeometry args={[0.16, 10, 8]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+    </group>
+  );
+}
+function Mine({ accent }: { accent: string }) {
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} receiveShadow><ringGeometry args={[0.9, 2.4, 32]} /><meshStandardMaterial color="#2a2018" side={THREE.DoubleSide} /></mesh>
+      <mesh position={[0, 1.7, 0]}><coneGeometry args={[0.7, 3.3, 4, 1, true]} /><meshStandardMaterial color="#4a4038" wireframe /></mesh>
+      <mesh position={[0, 3.35, 0.3]} rotation={[Math.PI / 2, 0, 0]}><torusGeometry args={[0.32, 0.06, 8, 20]} /><meshBasicMaterial color={accent} toneMapped={false} /></mesh>
+      {[[-1.5, 1.5], [1.6, -1.1]].map(([x, z], i) => (
+        <mesh key={i} position={[x, 0.22, z]} castShadow><boxGeometry args={[0.6, 0.4, 0.95]} /><meshStandardMaterial color="#6a5a3a" /></mesh>
+      ))}
+    </group>
+  );
+}
+function Plant({ accent }: { accent: string }) {
+  return (
+    <group>
+      {[-0.95, 0.95].map((x, i) => (
+        <mesh key={i} position={[x, 1.2, 0]} castShadow receiveShadow><cylinderGeometry args={[0.62, 0.92, 2.4, 18]} /><meshStandardMaterial color="#9aa0a6" roughness={0.7} /></mesh>
+      ))}
+      {[-0.95, 0.95].map((x, i) => (
+        <mesh key={'s' + i} position={[x, 2.45, 0]}><cylinderGeometry args={[0.62, 0.62, 0.12, 18]} /><meshBasicMaterial color={accent} transparent opacity={0.5} toneMapped={false} /></mesh>
+      ))}
+      <mesh position={[2.1, 1.5, 0]}><coneGeometry args={[0.45, 3, 4, 1, true]} /><meshStandardMaterial color="#7a8088" wireframe /></mesh>
+    </group>
+  );
+}
+const STRUCT: Record<string, 'datacenter' | 'fab' | 'derrick' | 'mine' | 'plant'> = {
+  Nvidia: 'datacenter', OpenAI: 'datacenter', Microsoft: 'datacenter', TSMC: 'fab', ASML: 'fab', Oil: 'derrick', Copper: 'mine', RareEarth: 'mine', Power: 'plant',
+};
+function structFor(type: string, accent: string) {
+  return type === 'datacenter' ? <Datacenter accent={accent} /> : type === 'fab' ? <Fab accent={accent} /> : type === 'derrick' ? <Derrick accent={accent} /> : type === 'mine' ? <Mine accent={accent} /> : <Plant accent={accent} />;
+}
+function WorldStructures({ sampleRef }: { sampleRef: { current: ((x: number, z: number) => number) | null } }) {
+  const placed = useMemo(() => FIELD.map((f) => {
+    const [fx, fz] = f.pos; const len = Math.hypot(fx, fz) || 1;
+    // offset to the SIDE of the figure (perpendicular to the radius) so the site sits beside it
+    const px = -fz / len, pz = fx / len;
+    return { x: fx + px * 5, z: fz + pz * 5, type: STRUCT[f.node], accent: f.fig.accent };
+  }).filter((p) => p.type), []);
+  const groups = useRef<(THREE.Group | null)[]>([]);
+  useFrame(() => {
+    for (let i = 0; i < placed.length; i++) { const g = groups.current[i]; if (g) g.position.y = sampleRef.current ? Math.max(sampleRef.current(placed[i].x, placed[i].z), -0.05) : 0; }
+  });
+  return <>{placed.map((p, i) => (
+    <group key={i} ref={(el) => { groups.current[i] = el; }} position={[p.x, 0, p.z]} rotation={[0, Math.atan2(-p.x, -p.z), 0]}>{structFor(p.type, p.accent)}</group>
+  ))}</>;
+}
+
 // drives a full day/night cycle — the sun arcs overhead, light warms at dawn/dusk,
 // the sky + fog shift toward night, and the day value is published to dayRef so the
 // water can dim in step. day: 0/1 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk.
@@ -372,6 +456,7 @@ export default function ProceduralTerrain() {
         </Clouds>
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
+        <WorldStructures sampleRef={sampleRef} />
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
           : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
