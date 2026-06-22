@@ -137,6 +137,69 @@ export function WorldFigures({ field, sampleRef, walking, choices, nearRef, setN
   );
 }
 
+export type Portal = { pos: [number, number]; dest: string; title: string; label: string; color: string };
+
+function WorldPortal({ portal, grpRef }: { portal: Portal; grpRef: (el: THREE.Group | null) => void }) {
+  const spin = useRef<THREE.Group>(null);
+  useFrame((s) => { if (spin.current) { spin.current.rotation.y = s.clock.elapsedTime * 0.6; spin.current.position.y = 1.4 + Math.sin(s.clock.elapsedTime * 1.5) * 0.5; } });
+  return (
+    <group ref={grpRef}>
+      {/* column of light you walk into */}
+      <mesh position={[0, 3, 0]}>
+        <cylinderGeometry args={[1.35, 1.35, 6, 32, 1, true]} />
+        <meshBasicMaterial color={portal.color} transparent opacity={0.16} blending={THREE.AdditiveBlending} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
+      <mesh position={[0, 8, 0]}>
+        <cylinderGeometry args={[0.1, 0.1, 16, 8, 1, true]} />
+        <meshBasicMaterial color={portal.color} transparent opacity={0.25} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+      {/* bright base ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
+        <ringGeometry args={[1.3, 1.75, 48]} />
+        <meshBasicMaterial color={portal.color} transparent opacity={0.9} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+      {/* a halo ring that bobs + spins */}
+      <group ref={spin}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[1.15, 0.05, 8, 40]} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.6} blending={THREE.AdditiveBlending} toneMapped={false} depthWrite={false} />
+        </mesh>
+      </group>
+      <Html position={[0, 4.4, 0]} center occlude={false} pointerEvents="none" zIndexRange={[10, 0]}>
+        <div className="we-portal" style={{ borderColor: portal.color }}>
+          <b style={{ color: portal.color }}>▸ {portal.title}</b>
+          <span>walk through</span>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// places gateways in the world; walking into one (within ~2 units) fires onEnter once
+export function WorldPortals({ portals, sampleRef, walking, onEnter }: {
+  portals: Portal[];
+  sampleRef: { current: ((x: number, z: number) => number) | null };
+  walking: boolean;
+  onEnter: (p: Portal) => void;
+}) {
+  const camera = useThree((s) => s.camera);
+  const groups = useRef<(THREE.Group | null)[]>([]);
+  const fired = useRef(false);
+  useFrame(() => {
+    for (let i = 0; i < portals.length; i++) {
+      const g = groups.current[i]; if (!g) continue;
+      const [x, z] = portals[i].pos;
+      const gy = sampleRef.current ? Math.max(sampleRef.current(x, z), 0) : 0;
+      g.position.set(x, gy, z);
+      if (walking && !fired.current) {
+        const dx = camera.position.x - x, dz = camera.position.z - z;
+        if (dx * dx + dz * dz < 4.2) { fired.current = true; onEnter(portals[i]); }
+      }
+    }
+  });
+  return <>{portals.map((p, i) => <WorldPortal key={p.dest + i} portal={p} grpRef={(el) => { groups.current[i] = el; }} />)}</>;
+}
+
 // the diegetic encounter card: the figure speaks (real voice), then makes their call
 export function EncounterPanel({ f, prior, onPick, onClose }: { f: FieldEntry; prior?: string; onPick: (id: string) => void; onClose: () => void }) {
   const enc = f.enc;
@@ -216,6 +279,9 @@ export const ENCOUNTER_CSS = `
   .we-tag b{font-size:0.82rem;letter-spacing:0.04em}
   .we-tag span{font-size:0.6rem;color:rgba(255,255,255,0.62)}
   .we-tag em{font-size:0.56rem;font-style:normal;letter-spacing:0.12em;color:rgba(255,255,255,0.5);margin-top:2px}
+  .we-portal{display:flex;flex-direction:column;align-items:center;gap:1px;white-space:nowrap;font-family:var(--font-mono);background:rgba(8,12,22,0.7);border:1px solid;border-radius:8px;padding:6px 13px;backdrop-filter:blur(4px)}
+  .we-portal b{font-size:0.78rem;letter-spacing:0.08em}
+  .we-portal span{font-size:0.55rem;letter-spacing:0.14em;color:rgba(255,255,255,0.5);text-transform:uppercase}
   .we-enc{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 50% 50%,rgba(6,9,18,0.55),rgba(5,7,14,0.86));backdrop-filter:blur(3px)}
   .we-card{position:relative;width:min(94vw,460px);background:rgba(13,18,32,0.92);border:1px solid;border-radius:18px;padding:26px 26px 24px;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
   .we-x{position:absolute;top:12px;right:15px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;line-height:1;cursor:pointer}

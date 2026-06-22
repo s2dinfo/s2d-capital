@@ -10,8 +10,10 @@ import { OrbitControls } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { generateWFC, type WfcTile } from '@/lib/wfc';
 import { useChoices } from '@/lib/choices';
+import { useFade } from '@/lib/useFade';
+import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
-import { FirstPerson, WorldFigures, EncounterPanel, buildField, ENCOUNTER_CSS } from '@/components/WorldEncounter';
+import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
 
 const W = 22, H = 22, TS = 1.5;
 const TILES: WfcTile[] = [
@@ -99,6 +101,10 @@ const CITY_FIELD = buildField([
 ]);
 const SPAWN: [number, number, number] = [-15, 0, 0];
 const BOUND = (W / 2) * TS - 1;
+// at the far end of the avenue, past the trio — walk through it to return to the globe
+const CITY_PORTALS: Portal[] = [
+  { pos: [14, 0], dest: '/world', title: 'BACK TO THE WORLD', label: 'returning to the world', color: '#39e0ff' },
+];
 
 export default function CityGenerator() {
   const [seed, setSeed] = useState(1);
@@ -133,6 +139,7 @@ export default function CityGenerator() {
   const walking = mode === 'walk';
   const metCount = CITY_FIELD.filter((f) => choices[f.node]).length;
   const meters = worldMeters(choices);
+  const { go, out: leaving, label: leaveLabel } = useFade();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === 'Escape') { setActive(-1); return; }
@@ -155,6 +162,7 @@ export default function CityGenerator() {
         <directionalLight position={[20, 30, 14]} intensity={1.5} color="#bcd4f2" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
         <City grid={grid} seed={seed} />
         <WorldFigures field={CITY_FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} radius={5} />
+        <WorldPortals portals={CITY_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />
         {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} blockedRef={blockedRef} spawn={SPAWN} bound={BOUND} />
           : mode === 'orbit' ? <OrbitControls makeDefault enablePan={false} minDistance={18} maxDistance={80} maxPolarAngle={1.45} target={[0, 1, 0]} />
           : <Spin />}
@@ -196,6 +204,8 @@ export default function CityGenerator() {
       {walking && (
         <div className="cy-walkhint">click to look · <b>WASD</b> move · <b>shift</b> run · <b>esc</b> release</div>
       )}
+
+      <Fader out={leaving} label={leaveLabel} />
 
       <style dangerouslySetInnerHTML={{ __html: `
         .cy-stage{position:fixed;inset:0;background:#05080f}

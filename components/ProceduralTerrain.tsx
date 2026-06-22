@@ -11,8 +11,10 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
 import { useChoices } from '@/lib/choices';
+import { useFade } from '@/lib/useFade';
+import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
-import { FirstPerson, WorldFigures, EncounterPanel, buildField, ENCOUNTER_CSS } from '@/components/WorldEncounter';
+import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
 
 const SIZE = 70;
 const SEG = 170;
@@ -177,6 +179,11 @@ const FIELD = buildField([
   { node: 'RareEarth', pos: [-21, -6] },
 ]);
 
+// gateway out of the landscape and into the datacenter city — walk through it
+const TERRAIN_PORTALS: Portal[] = [
+  { pos: [-11, 3], dest: '/city', title: 'THE DATACENTER CITY', label: 'entering the datacenter city', color: '#39e0ff' },
+];
+
 // cinematic drone flyover — sweeps low across the world, banking, looking ahead
 function CinematicFly() {
   useFrame((state) => {
@@ -257,6 +264,7 @@ export default function ProceduralTerrain() {
   const walking = mode === 'walk';
   const metCount = FIELD.filter((f) => choices[f.node]).length;
   const meters = worldMeters(choices);
+  const { go, out: leaving, label: leaveLabel } = useFade();
 
   // press E near a figure to speak; Esc closes the panel
   useEffect(() => {
@@ -282,6 +290,7 @@ export default function ProceduralTerrain() {
         </Clouds>
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
+        <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />
         {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : mode === 'fly' ? <CinematicFly />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
@@ -343,6 +352,8 @@ export default function ProceduralTerrain() {
       {walking && active < 0 && metCount === FIELD.length && (
         <Link href="/world" className="pt-complete">⚖ You walked the whole chain — see the world you built →</Link>
       )}
+
+      <Fader out={leaving} label={leaveLabel} />
 
       <style dangerouslySetInnerHTML={{ __html: `
         .pt-stage{position:fixed;inset:0;background:#c3d7e8}
