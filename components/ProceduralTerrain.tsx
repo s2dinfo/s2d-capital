@@ -11,7 +11,7 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
 import { FIGURES } from '@/lib/figures';
-import { ENCOUNTERS } from '@/lib/encounters';
+import { ENCOUNTERS, lineAudioId } from '@/lib/encounters';
 import { useChoices } from '@/lib/choices';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
 
@@ -492,6 +492,18 @@ export default function ProceduralTerrain() {
         .pt-enc-loc{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px}
         .pt-enc-name{font-family:var(--font-mono);font-size:1.15rem;font-weight:700;color:#fff}
         .pt-enc-role{font-family:var(--font-sans);font-size:0.74rem;color:rgba(255,255,255,0.55);margin-bottom:18px}
+        .pt-enc-speak{float:right;font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.16em;animation:ptSpeak 1.1s ease-in-out infinite}
+        @keyframes ptSpeak{0%,100%{opacity:0.35}50%{opacity:1}}
+        .pt-enc-line{font-family:var(--font-serif);font-size:1.16rem;line-height:1.5;color:#fff;margin-bottom:20px;min-height:84px}
+        .pt-enc-narr{font-style:italic;font-size:0.92rem;color:rgba(255,255,255,0.6)}
+        .pt-enc-introbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .pt-enc-skip{background:none;border:none;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.1em;color:rgba(255,255,255,0.4);cursor:pointer}
+        .pt-enc-skip:hover{color:rgba(255,255,255,0.8)}
+        .pt-enc-dots{display:flex;gap:5px}
+        .pt-enc-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2)}
+        .pt-enc-dot.on{transform:scale(1.25)}
+        .pt-enc-next{border:none;border-radius:9px;padding:10px 16px;font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.06em;font-weight:700;color:#04140d;cursor:pointer;transition:filter 0.2s}
+        .pt-enc-next:hover{filter:brightness(1.1)}
         .pt-enc-prompt{font-family:var(--font-serif);font-size:1.12rem;line-height:1.4;color:#fff;margin-bottom:18px}
         .pt-enc-opts{display:flex;flex-direction:column;gap:10px}
         .pt-enc-opt{text-align:left;background:rgba(255,255,255,0.04);border:1px solid;border-radius:12px;padding:13px 15px;cursor:pointer;transition:all 0.18s;display:flex;flex-direction:column;gap:3px}
@@ -517,22 +529,62 @@ function Slider({ label, v, min, max, step, onChange, hint, fmt, disabled }: { l
   );
 }
 
-// The diegetic decision — the figure's real call. Choosing writes to the shared choice
-// store (so the globe's meters + report see it) and reveals what actually happened.
+// The diegetic encounter — the figure speaks (their real voice), then makes their call.
+// Choosing writes the shared choice store (so the globe's meters + report see it) and
+// reveals what actually happened. Walking up to someone now feels like meeting them.
 function EncounterPanel({ f, prior, onPick, onClose }: { f: { node: string; fig: { accent: string }; enc: any }; prior?: string; onPick: (id: string) => void; onClose: () => void }) {
   const enc = f.enc;
+  const intro: { who: string; text: string }[] = enc.intro || [];
+  // already decided → skip straight to the reveal; otherwise play the intro first
+  const [stage, setStage] = useState<'intro' | 'decide' | 'result'>(prior ? 'result' : intro.length ? 'intro' : 'decide');
+  const [idx, setIdx] = useState(0);
   const [picked, setPicked] = useState<string | null>(prior ?? null);
-  const choose = (id: string) => { onPick(id); setPicked(id); };
+  const [speaking, setSpeaking] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const stopAudio = () => { const a = audioRef.current; if (a) { a.onended = null; a.onerror = null; try { a.pause(); } catch {} } audioRef.current = null; setSpeaking(false); };
+  const play = (text: string) => {
+    stopAudio();
+    if (!enc.voiceId || !text) return;
+    const audio = new Audio(`/audio/${lineAudioId(enc.voiceId, text)}.mp3`);
+    audioRef.current = audio;
+    setSpeaking(true);
+    audio.onended = () => { if (audioRef.current === audio) { audioRef.current = null; setSpeaking(false); } };
+    audio.onerror = () => { if (audioRef.current === audio) { audioRef.current = null; setSpeaking(false); } };
+    audio.play().catch(() => {});
+  };
+
+  // speak each intro line as it appears; stop on close/unmount
+  useEffect(() => { if (stage === 'intro' && intro[idx]) play(intro[idx].text); return stopAudio; /* eslint-disable-next-line */ }, [stage, idx]);
+
+  const nextLine = () => { if (idx < intro.length - 1) setIdx(idx + 1); else { stopAudio(); setStage('decide'); } };
+  const choose = (id: string) => { stopAudio(); onPick(id); setPicked(id); setStage('result'); };
+  const close = () => { stopAudio(); onClose(); };
   const out = picked ? enc.outcomes?.[picked] : null;
   const reveal = picked ? (enc.reality?.[picked] || out?.text) : null;
+  const line = intro[idx];
+
   return (
-    <div className="pt-enc" onClick={onClose}>
+    <div className="pt-enc" onClick={close}>
       <div className="pt-enc-card" style={{ borderColor: f.fig.accent + '66' }} onClick={(e) => e.stopPropagation()}>
-        <button className="pt-enc-x" onClick={onClose} aria-label="Close">×</button>
-        <div className="pt-enc-loc" style={{ color: f.fig.accent }}>{enc.locationTag}</div>
+        <button className="pt-enc-x" onClick={close} aria-label="Close">×</button>
+        <div className="pt-enc-loc" style={{ color: f.fig.accent }}>
+          {enc.locationTag}
+          {speaking && <span className="pt-enc-speak" style={{ color: f.fig.accent }}>● speaking</span>}
+        </div>
         <div className="pt-enc-name">{enc.name}</div>
         <div className="pt-enc-role">{enc.role}</div>
-        {!picked ? (
+
+        {stage === 'intro' ? (
+          <>
+            <div className={'pt-enc-line' + (line?.who === 'narration' ? ' pt-enc-narr' : '')}>{line?.who === 'narration' ? line.text : `“${line?.text}”`}</div>
+            <div className="pt-enc-introbar">
+              <button className="pt-enc-skip" onClick={() => { stopAudio(); setStage('decide'); }}>skip ▸▸</button>
+              <div className="pt-enc-dots">{intro.map((_, i) => <span key={i} className={'pt-enc-dot' + (i === idx ? ' on' : '')} style={i === idx ? { background: f.fig.accent } : undefined} />)}</div>
+              <button className="pt-enc-next" style={{ background: f.fig.accent }} onClick={nextLine}>{idx < intro.length - 1 ? 'next ▸' : 'the call ▸'}</button>
+            </div>
+          </>
+        ) : stage === 'decide' ? (
           <>
             <div className="pt-enc-prompt">{enc.decision.prompt}</div>
             <div className="pt-enc-opts">
@@ -547,7 +599,7 @@ function EncounterPanel({ f, prior, onPick, onClose }: { f: { node: string; fig:
           <>
             <div className="pt-enc-verdict" style={{ color: f.fig.accent }}>{out?.verdict}</div>
             <div className="pt-enc-text">{reveal}</div>
-            <button className="pt-enc-go" style={{ background: f.fig.accent }} onClick={onClose}>walk on&nbsp;&nbsp;→</button>
+            <button className="pt-enc-go" style={{ background: f.fig.accent }} onClick={close}>walk on&nbsp;&nbsp;→</button>
           </>
         )}
       </div>
