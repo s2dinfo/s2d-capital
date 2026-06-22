@@ -9,11 +9,15 @@ export interface JourneyStop {
   location: [number, number]; // [lat, lng]
   active?: boolean;
   index?: number; // chapter index for click navigation
+  binding?: boolean; // game: this node is the bottleneck (red ring)
 }
 
 export interface JourneyArc {
   from: [number, number];
   to: [number, number];
+  color?: string[]; // per-arc gradient [tail, head, tail]
+  stroke?: number;
+  animate?: number; // dash animate time (ms); lower = faster
 }
 
 export interface JourneyChokepointMarker {
@@ -203,15 +207,16 @@ function JourneyGlobeGL({
   const ringsData = useMemo(() => {
     const rings: any[] = [];
     if (activeStop) rings.push({ lat: activeStop.location[0], lng: activeStop.location[1], danger: false });
+    for (const s of stops) if (s.binding) rings.push({ lat: s.location[0], lng: s.location[1], danger: true });
     for (const c of chokepoints) rings.push({ lat: c.location[0], lng: c.location[1], danger: true });
     for (const h of hotspots) rings.push({ lat: h.location[0], lng: h.location[1], hot: true, rgb: hexToRgb(h.color), intensity: h.intensity ?? 0.6 });
     return rings;
-  }, [activeStop, chokepoints, hotspots]);
+  }, [activeStop, chokepoints, hotspots, stops]);
 
   // stop labels + red chokepoint labels + coloured hotspot labels
   const labelsData = useMemo(() => {
     return [
-      ...stops.map((s) => ({ lat: s.location[0], lng: s.location[1], text: s.place, active: !!s.active, danger: false, index: s.index })),
+      ...stops.map((s) => ({ lat: s.location[0], lng: s.location[1], text: s.place, active: !!s.active, danger: !!s.binding, index: s.index })),
       ...chokepoints.map((c) => ({ lat: c.location[0], lng: c.location[1], text: '⚠ ' + c.label, active: false, danger: true, index: null })),
       ...hotspots.map((h) => ({ lat: h.location[0], lng: h.location[1], text: h.label, active: false, danger: false, hot: true, color: h.color, index: null })),
     ];
@@ -262,14 +267,15 @@ function JourneyGlobeGL({
           arcStartLng={(a: any) => a.from[1]}
           arcEndLat={(a: any) => a.to[0]}
           arcEndLng={(a: any) => a.to[1]}
-          arcColor={() => {
+          arcColor={(a: any) => {
+            if (a.color) return a.color;
             const tail = rgba(accent, 0.3 + arcEnergy * 0.25);
             return [tail, accentBright, tail];
           }}
-          arcStroke={arcStyle === 'stream' ? 0.5 : 0.55 + arcEnergy * 0.5}
+          arcStroke={(a: any) => a.stroke ?? (arcStyle === 'stream' ? 0.5 : 0.55 + arcEnergy * 0.5)}
           arcDashLength={arcStyle === 'stream' ? 0.04 : 0.35}
           arcDashGap={arcStyle === 'stream' ? 0.055 : 0.9}
-          arcDashAnimateTime={arcStyle === 'stream' ? 1500 : Math.round(3200 - arcEnergy * 2000)}
+          arcDashAnimateTime={(a: any) => a.animate ?? (arcStyle === 'stream' ? 1500 : Math.round(3200 - arcEnergy * 2000))}
           ringsData={ringsData}
           ringLat={(r: any) => r.lat}
           ringLng={(r: any) => r.lng}
@@ -285,8 +291,8 @@ function JourneyGlobeGL({
           labelLat={(l: any) => l.lat}
           labelLng={(l: any) => l.lng}
           labelText={(l: any) => l.text}
-          labelSize={(l: any) => (l.active ? 1.6 : l.danger ? 1.05 : l.hot ? 1.1 : 1.25) + (labelKey(l) === hoverLabel ? 0.35 : 0)}
-          labelDotRadius={(l: any) => (l.active ? 0.6 : l.hot ? 0.48 : l.danger ? 0.3 : 0.4)}
+          labelSize={(l: any) => (l.active ? 1.7 : l.danger ? 1.85 : l.hot ? 1.1 : 1.4) + (labelKey(l) === hoverLabel ? 0.4 : 0)}
+          labelDotRadius={(l: any) => (l.danger ? 0.75 : l.active ? 0.62 : l.hot ? 0.48 : 0.5)}
           labelColor={(l: any) =>
             labelKey(l) === hoverLabel ? GOLD_LIGHT : l.active ? accentBright : l.color ? l.color : l.danger ? RED : 'rgba(255,255,255,0.92)'
           }
