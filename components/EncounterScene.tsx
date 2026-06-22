@@ -8,7 +8,7 @@
 import * as THREE from 'three';
 import { useRef, useMemo, useState, useEffect, useCallback, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, MeshReflectorMaterial, Sparkles, Billboard, useTexture } from '@react-three/drei';
+import { OrbitControls, MeshReflectorMaterial, Sparkles, Billboard, useTexture, Html } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
 import { ENCOUNTERS, lineAudioId } from '@/lib/encounters';
 import { FIGURES, FACTS, resolveFigureId, PRIOR } from '@/lib/figures';
@@ -425,35 +425,46 @@ function Refinery({ accent }: { accent: string }) {
   );
 }
 
-// A clickable, pulsing insight-orb floating in the scene.
+// A big, clearly-clickable insight-orb floating out front (core + glow halo + ring + label).
 function InfoSpot({ pos, accent, found, onClick }: { pos: [number, number, number]; accent: string; found: boolean; onClick: () => void }) {
-  const ref = useRef<THREE.Mesh>(null);
+  const core = useRef<THREE.Mesh>(null);
+  const glow = useRef<THREE.Mesh>(null);
   useFrame((s) => {
-    if (ref.current) {
-      const k = found ? 0.65 : 1 + Math.sin(s.clock.elapsedTime * 3 + pos[0]) * 0.14;
-      ref.current.scale.setScalar(k);
-    }
+    const t = s.clock.elapsedTime + pos[0];
+    if (core.current) core.current.scale.setScalar(found ? 0.7 : 1 + Math.sin(t * 3) * 0.18);
+    if (glow.current) glow.current.scale.setScalar(found ? 1 : 1 + Math.sin(t * 3) * 0.3);
   });
+  const handlers = {
+    onClick: (e: any) => { e.stopPropagation(); onClick(); },
+    onPointerOver: (e: any) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; },
+    onPointerOut: () => { document.body.style.cursor = 'default'; },
+  };
   return (
     <group position={pos}>
-      <mesh
-        ref={ref}
-        onClick={(e) => { e.stopPropagation(); onClick(); }}
-        onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; }}
-        onPointerOut={() => { document.body.style.cursor = 'default'; }}
-      >
-        <sphereGeometry args={[0.17, 20, 20]} />
-        <meshBasicMaterial color={found ? '#ffffff' : accent} toneMapped={false} transparent opacity={found ? 0.5 : 0.95} />
+      {/* big invisible-ish glow = easy click target */}
+      <mesh ref={glow} {...handlers}>
+        <sphereGeometry args={[0.5, 16, 16]} />
+        <meshBasicMaterial color={accent} toneMapped={false} transparent opacity={found ? 0.05 : 0.16} depthWrite={false} />
+      </mesh>
+      <mesh ref={core} {...handlers}>
+        <sphereGeometry args={[0.24, 24, 24]} />
+        <meshBasicMaterial color={found ? '#ffffff' : accent} toneMapped={false} transparent opacity={found ? 0.55 : 1} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.26, 0.32, 28]} />
-        <meshBasicMaterial color={accent} toneMapped={false} transparent opacity={0.6} side={THREE.DoubleSide} />
+        <ringGeometry args={[0.36, 0.46, 36]} />
+        <meshBasicMaterial color={accent} toneMapped={false} transparent opacity={0.75} side={THREE.DoubleSide} />
       </mesh>
+      <Html center distanceFactor={9} position={[0, 0.62, 0]} pointerEvents="none" style={{ pointerEvents: 'none' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', letterSpacing: '0.14em', color: found ? 'rgba(255,255,255,0.45)' : accent, whiteSpace: 'nowrap', textShadow: `0 0 10px ${accent}`, opacity: found ? 0.5 : 1 }}>
+          {found ? '✓ found' : '◇ click'}
+        </div>
+      </Html>
     </group>
   );
 }
 
-const SPOT_POS: [number, number, number][] = [[-3.2, 2.0, 0.8], [3.2, 2.0, 0.8], [0, 3.5, -0.4]];
+// floating out in front of the figure, in open space, clear of the environment
+const SPOT_POS: [number, number, number][] = [[-2.0, 2.3, 1.2], [2.0, 2.3, 1.2], [0, 3.4, 0.8]];
 
 function InfoSpots({ facts, accent, found, onReveal }: { facts: { label: string; text: string }[]; accent: string; found: Set<number>; onReveal: (i: number) => void }) {
   return (
@@ -651,9 +662,14 @@ export default function EncounterScene({ id }: { id: string }) {
         {/* dialogue + gameplay (bottom) */}
         <div className="es-panel-wrap">
           {!started && (
-            <button className="es-cta" style={{ background: `linear-gradient(135deg, ${fig.accent}, ${fig.accent}bb)` }} onClick={() => { setStarted(true); setStage('intro'); setIdx(0); }}>
-              ▶ speak with {firstName}
-            </button>
+            <>
+              <button className="es-cta" style={{ background: `linear-gradient(135deg, ${fig.accent}, ${fig.accent}bb)` }} onClick={() => { setStarted(true); setStage('intro'); setIdx(0); }}>
+                ▶ speak with {firstName}
+              </button>
+              {facts.length > 0 && (
+                <div className="es-explore-hint">drag to look around · <span style={{ color: fig.accent }}>◇ click the glowing orbs</span> to explore</div>
+              )}
+            </>
           )}
 
           {started && (stage === 'intro' || stage === 'outro') && line && (
@@ -727,6 +743,7 @@ export default function EncounterScene({ id }: { id: string }) {
         .es-panel-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
         .es-cta{pointer-events:auto;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#04140d;border:none;padding:14px 30px;border-radius:999px;cursor:pointer;transition:transform 0.2s}
         .es-cta:hover{transform:translateY(-2px)}
+        .es-explore-hint{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.08em;color:rgba(255,255,255,0.45)}
         .es-card{pointer-events:auto;width:min(94vw,620px);background:linear-gradient(160deg,rgba(16,20,34,0.86),rgba(9,12,24,0.9));border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 22px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
         .es-speaker{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.18em;margin-bottom:9px}
         .es-narr{color:rgba(255,255,255,0.4)}
