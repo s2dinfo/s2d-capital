@@ -79,6 +79,37 @@ function Water({ dayRef }: { dayRef: { current: number } }) {
 
 function rngAng(n: number) { return ((Math.sin(n * 127.1) * 43758.5453) % 1) * Math.PI * 2; }
 
+// Bridson Poisson-disc sampling — scatter points with a guaranteed minimum spacing r, so
+// trees/rocks place naturally (never overlapping, never gridded). Returns points in [0,w]×[0,h].
+function poissonDisc(w: number, h: number, r: number, k: number, rng: () => number): [number, number][] {
+  const cell = r / Math.SQRT2;
+  const gw = Math.ceil(w / cell), gh = Math.ceil(h / cell);
+  const grid: number[] = new Array(gw * gh).fill(-1);
+  const pts: [number, number][] = [];
+  const active: number[] = [];
+  const add = (p: [number, number]) => { grid[((p[1] / cell) | 0) * gw + ((p[0] / cell) | 0)] = pts.length; active.push(pts.length); pts.push(p); };
+  add([rng() * w, rng() * h]);
+  while (active.length) {
+    const ai = (rng() * active.length) | 0, p = pts[active[ai]];
+    let placed = false;
+    for (let i = 0; i < k; i++) {
+      const ang = rng() * Math.PI * 2, rad = r * (1 + rng());
+      const nx = p[0] + Math.cos(ang) * rad, ny = p[1] + Math.sin(ang) * rad;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      const gx = (nx / cell) | 0, gy = (ny / cell) | 0;
+      let ok = true;
+      for (let yy = Math.max(0, gy - 2); yy <= Math.min(gh - 1, gy + 2) && ok; yy++)
+        for (let xx = Math.max(0, gx - 2); xx <= Math.min(gw - 1, gx + 2) && ok; xx++) {
+          const idx = grid[yy * gw + xx];
+          if (idx >= 0) { const q = pts[idx], dx = q[0] - nx, dy = q[1] - ny; if (dx * dx + dy * dy < r * r) ok = false; }
+        }
+      if (ok) { add([nx, ny]); placed = true; break; }
+    }
+    if (!placed) active.splice(ai, 1);
+  }
+  return pts;
+}
+
 function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number; freq: number; octaves: number; seed: number; dayRef: { current: number }; sampleRef: { current: ((x: number, z: number) => number) | null } }) {
   const elev = useMemo(() => createNoise2D(alea('e' + seed)), [seed]);
   const moist = useMemo(() => createNoise2D(alea('m' + seed)), [seed]);
@@ -106,6 +137,10 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
     const g = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
     const pos = g.attributes.position as THREE.BufferAttribute;
     const colors = new Float32Array(pos.count * 3);
+    // Voronoi commodity territories: each company owns the ground nearest to it; tint the
+    // land faintly toward that company's accent so the world divides into the commodities.
+    const terr = FIELD.map((f) => new THREE.Color(f.fig.accent));
+    const tmp = new THREE.Color();
     for (let i = 0; i < pos.count; i++) {
       const px = pos.getX(i), py = pos.getY(i);
       const h0 = fbm(elev, px, py, octaves, freq) * amp + amp * LAND_BIAS;
@@ -113,8 +148,16 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
       const rt = riverMask(px, py, h0);
       const h = THREE.MathUtils.lerp(h0, RIVER_BED, rt);   // carve the channel down to the bed
       pos.setZ(i, h);
-      const c = rt > 0.45 ? C.riverbed : rt > 0.12 ? C.bank : biomeColor(h0, mo, amp);
-      colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+      const base = rt > 0.45 ? C.riverbed : rt > 0.12 ? C.bank : biomeColor(h0, mo, amp);
+      tmp.copy(base);
+      if (rt <= 0.12 && terr.length) {                     // land only — wash with its territory accent
+        const wz = -py; let best = 0, bd = Infinity, second = Infinity;
+        for (let k = 0; k < FIELD.length; k++) { const dx = px - FIELD[k].pos[0], dz = wz - FIELD[k].pos[1]; const d = dx * dx + dz * dz; if (d < bd) { second = bd; bd = d; best = k; } else if (d < second) { second = d; } }
+        // stronger wash near a company, easing off toward the border with its neighbour
+        const edge = sstep(Math.sqrt(second) - Math.sqrt(bd), 0, 6); // 0 at the border, 1 deep inside
+        tmp.lerp(terr[best], 0.12 + edge * 0.16);
+      }
+      colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
     }
     g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     g.computeVertexNormals();
@@ -124,20 +167,19 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
   const scatter = useMemo(() => {
     const rng = alea('s' + seed);
     const trees: any[] = [], rocks: any[] = [], cacti: any[] = [];
-    const cells = 54, cell = SIZE / cells;
-    for (let i = 0; i < cells; i++) for (let j = 0; j < cells; j++) {
-      const px = -SIZE / 2 + (i + 0.15 + rng() * 0.7) * cell;
-      const py = -SIZE / 2 + (j + 0.15 + rng() * 0.7) * cell;
+    // Poisson-disc candidate positions (min spacing 1.9) → natural, non-overlapping scatter
+    for (const p of poissonDisc(SIZE, SIZE, 1.9, 22, rng)) {
+      const px = p[0] - SIZE / 2, py = p[1] - SIZE / 2;
       const h = fbm(elev, px, py, octaves, freq) * amp + amp * LAND_BIAS;
       const mo = fbm(moist, px, py, 2, freq * 0.5);
       const t = h / amp;
       if (t < 0.04 || t > 0.85) continue;
       if (riverMask(px, py, h) > 0.2) continue;   // don't plant in the river
       const w: any = [px, h, -py, 0.5 + rng() * 0.7];
-      if (mo > 0.35 && rng() > 0.3) trees.push(w);
-      else if (mo > 0.0 && rng() > 0.62) trees.push(w);
-      else if (mo < -0.3 && rng() > 0.58) cacti.push(w);
-      else if (rng() > 0.82) rocks.push(w);
+      if (mo > 0.35 && rng() > 0.22) trees.push(w);
+      else if (mo > 0.0 && rng() > 0.5) trees.push(w);
+      else if (mo < -0.3 && rng() > 0.5) cacti.push(w);
+      else if (rng() > 0.78) rocks.push(w);
     }
     return { trees, rocks, cacti };
   }, [elev, moist, river, amp, freq, octaves, seed]);
