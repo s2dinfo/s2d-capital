@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Sky, Clouds, Cloud } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
@@ -173,10 +173,13 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
 const FIELD = buildField([
   { node: 'Nvidia', pos: [0, -20] },
   { node: 'TSMC', pos: [18, -11] },
-  { node: 'Copper', pos: [21, 8] },
-  { node: 'Power', pos: [5, 21] },
-  { node: 'Oil', pos: [-17, 14] },
-  { node: 'RareEarth', pos: [-21, -6] },
+  { node: 'ASML', pos: [-9, -18] },
+  { node: 'Copper', pos: [22, 9] },
+  { node: 'Power', pos: [6, 22] },
+  { node: 'Oil', pos: [-18, 15] },
+  { node: 'RareEarth', pos: [-23, -7] },
+  { node: 'OpenAI', pos: [13, 20] },
+  { node: 'Microsoft', pos: [-26, 4] },
 ]);
 
 // gateway out of the landscape and into the datacenter city — walk through it
@@ -194,6 +197,43 @@ function CinematicFly() {
     cam.position.set(Math.cos(t) * R, y, Math.sin(t) * R);
     const ahead = t + 0.5;
     cam.lookAt(Math.cos(ahead) * (R * 0.35), 2, Math.sin(ahead) * (R * 0.35));
+  });
+  return null;
+}
+
+// easeInOutCubic — accelerate then decelerate, so the move has cinematic weight (not linear)
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+// The establishing shot: open on a big high orbit of the whole world, then ease + swoop DOWN
+// into it. Camera POSITION eases (easeInOutCubic); ORIENTATION uses quaternion SLERP between
+// keyframes — no gimbal lock, smooth cinematic rotation. Hands off to orbit when it lands.
+const TOUR_KEYS: { pos: [number, number, number]; tgt: [number, number, number]; dur: number }[] = [
+  { pos: [0, 56, 40], tgt: [0, 0, -3], dur: 0 },       // establishing — high angle, world fills frame
+  { pos: [46, 38, 46], tgt: [0, 3, 0], dur: 4.4 },     // grand slow orbit around it
+  { pos: [-40, 27, 36], tgt: [0, 2, -2], dur: 4.2 },   // swing around and descend
+  { pos: [18, 14, 32], tgt: [0, 2, 0], dur: 3.2 },     // sweep down toward the land
+  { pos: [8, 9, 22], tgt: [0, 2, 0], dur: 2.8 },       // settle to a hero 3/4 view
+];
+function CinematicIntro({ onDone }: { onDone: () => void }) {
+  const camera = useThree((s) => s.camera);
+  const frames = useMemo(() => {
+    const d = new THREE.PerspectiveCamera(); // a camera dummy so lookAt orients -Z toward target
+    return TOUR_KEYS.map((k) => { d.position.set(...k.pos); d.lookAt(...k.tgt); return { pos: new THREE.Vector3(...k.pos), quat: d.quaternion.clone(), dur: k.dur }; });
+  }, []);
+  const seg = useRef(0);
+  const segStart = useRef(-1);
+  const done = useRef(false);
+  useFrame((s) => {
+    if (done.current) return;
+    const i = seg.current;
+    if (i >= frames.length - 1) { done.current = true; onDone(); return; }
+    if (segStart.current < 0) { segStart.current = s.clock.elapsedTime; camera.position.copy(frames[0].pos); camera.quaternion.copy(frames[0].quat); }
+    const a = frames[i], b = frames[i + 1];
+    const u = Math.min(1, (s.clock.elapsedTime - segStart.current) / b.dur);
+    const e = easeInOutCubic(u);
+    camera.position.lerpVectors(a.pos, b.pos, e);
+    camera.quaternion.copy(a.quat).slerp(b.quat, e); // SLERP — smooth, gimbal-lock-free rotation
+    if (u >= 1) { seg.current = i + 1; segStart.current = s.clock.elapsedTime; }
   });
   return null;
 }
@@ -248,7 +288,7 @@ export default function ProceduralTerrain() {
   const [freq, setFreq] = useState(0.05);
   const [octaves, setOctaves] = useState(5);
   const [seed, setSeed] = useState(1);
-  const [mode, setMode] = useState<'orbit' | 'fly' | 'walk'>('orbit');
+  const [mode, setMode] = useState<'tour' | 'orbit' | 'fly' | 'walk'>('tour');
   const [timeAuto, setTimeAuto] = useState(true);
   const [timeManual, setTimeManual] = useState(0.5);
   const dayRef = useRef(0.5);
@@ -291,7 +331,8 @@ export default function ProceduralTerrain() {
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />
-        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
+        {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
+          : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : mode === 'fly' ? <CinematicFly />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
@@ -315,9 +356,9 @@ export default function ProceduralTerrain() {
             fmt={() => (timeAuto ? 'auto ☀→🌙' : TIME_LABEL(timeManual))} />
           <button className="pt-seed" style={{ width: '100%' }} onClick={() => setSeed((s) => s + 1)}>↻ generate a new world</button>
           <div className="pt-modes">
-            {(['orbit', 'fly', 'walk'] as const).map((m) => (
+            {(['tour', 'orbit', 'fly', 'walk'] as const).map((m) => (
               <button key={m} className={'pt-mode' + (mode === m ? ' pt-mode-on' : '')} onClick={() => setMode(m)}>
-                {m === 'orbit' ? '⊙ orbit' : m === 'fly' ? '🎥 fly' : '🚶 walk'}
+                {m === 'tour' ? '🎬 tour' : m === 'orbit' ? '⊙ orbit' : m === 'fly' ? '🎥 fly' : '🚶 walk'}
               </button>
             ))}
           </div>
@@ -327,6 +368,10 @@ export default function ProceduralTerrain() {
 
       {mode === 'walk' && (
         <div className="pt-walkhint">click to look around · <b>WASD</b> to move · <b>shift</b> to run · <b>esc</b> to release</div>
+      )}
+
+      {mode === 'tour' && (
+        <button className="pt-skip" onClick={() => setMode('orbit')}>skip intro ▸</button>
       )}
 
       {/* objective + the live world you're building, on foot */}
@@ -371,10 +416,12 @@ export default function ProceduralTerrain() {
         .pt-seed{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.05em;color:#04140d;background:linear-gradient(135deg,#3affb0,#12c98a);border:none;border-radius:9px;padding:10px;cursor:pointer}
         .pt-fly{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.05em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:10px;cursor:pointer}
         .pt-fly-on{background:#7fd0ff;color:#04140d;border-color:#7fd0ff}
-        .pt-modes{display:flex;gap:8px}
-        .pt-mode{flex:1;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.04em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:10px 4px;cursor:pointer;transition:all 0.18s}
+        .pt-modes{display:flex;gap:6px}
+        .pt-mode{flex:1;font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.02em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:9px 2px;cursor:pointer;transition:all 0.18s}
         .pt-mode:hover{border-color:rgba(127,208,255,0.6)}
         .pt-mode-on{background:#7fd0ff;color:#04140d;border-color:#7fd0ff;font-weight:700}
+        .pt-skip{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:auto;font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.1em;color:#fff;background:rgba(10,16,28,0.6);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:9px 20px;cursor:pointer;backdrop-filter:blur(8px)}
+        .pt-skip:hover{border-color:rgba(127,208,255,0.7);color:#7fd0ff}
         .pt-walkhint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.06em;color:#fff;background:rgba(10,16,28,0.6);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:9px 18px;backdrop-filter:blur(8px)}
         .pt-walkhint b{color:#7fd0ff}
         ${ENCOUNTER_CSS}
