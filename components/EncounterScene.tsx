@@ -16,6 +16,14 @@ import { useChoices } from '@/lib/choices';
 import { useFade } from '@/lib/useFade';
 import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
+import { createNoise2D } from 'simplex-noise';
+import alea from 'alea';
+
+function fbm2(n: (x: number, y: number) => number, x: number, y: number, oct: number, freq: number) {
+  let amp = 1, f = freq, s = 0, nm = 0;
+  for (let o = 0; o < oct; o++) { s += amp * n(x * f, y * f); nm += amp; amp *= 0.5; f *= 2; }
+  return s / nm;
+}
 
 const VERT = `
   varying vec2 vUv;
@@ -196,61 +204,64 @@ function DataCenter({ accent }: { accent: string }) {
 
 // Procedurally-terraced open-pit copper mine descending behind the figure, with
 // haul trucks parked on the benches and a warm fill light. Fully deterministic.
+// Procedurally-carved open-pit mine: a noise desert with a terraced pit cut into it.
 function AtacamaPit({ accent }: { accent: string }) {
-  const cz = -9;
-  const levels = 10;
-  const benches = [] as { i: number; rOut: number; rIn: number; y: number; yNext: number }[];
-  for (let i = 0; i < levels; i++) {
-    const rIn = 2.6 + i * 1.5;
-    const rOut = rIn + 1.5;
-    const y = -0.4 + i * 0.95;          // terraces RISE going outward (far pit wall)
-    const yNext = -0.4 + (i + 1) * 0.95;
-    benches.push({ i, rOut, rIn, y, yNext });
-  }
-  const trucks = [{ i: 4, a: -1.2 }, { i: 6, a: -1.9 }, { i: 5, a: -2.5 }, { i: 7, a: -0.7 }];
+  const PIT = { cx: 0, cy: 15, R: 11, stepW: 1.6, stepD: 0.9 };
+  const geo = useMemo(() => {
+    const SIZE = 50, SEG = 150;
+    const g = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
+    const pos = g.attributes.position as THREE.BufferAttribute;
+    const noise = createNoise2D(alea('atacama'));
+    const colors = new Float32Array(pos.count * 3);
+    const acc = new THREE.Color(accent);
+    const SAND = new THREE.Color('#cdb072'), DUNE = new THREE.Color('#dcc38b'), WALL = new THREE.Color('#8a6038'), DEEP = new THREE.Color('#4a3320');
+    for (let i = 0; i < pos.count; i++) {
+      const px = pos.getX(i), py = pos.getY(i);
+      let h = fbm2(noise, px, py, 4, 0.07) * 1.3;
+      const dist = Math.hypot(px - PIT.cx, py - PIT.cy);
+      let depth = 0;
+      if (dist < PIT.R) { depth = Math.floor((PIT.R - dist) / PIT.stepW) * PIT.stepD; h -= depth; }
+      pos.setZ(i, h);
+      let c: THREE.Color;
+      if (depth > 0.1) { const f = Math.min(1, depth / 8); c = WALL.clone().lerp(DEEP, f).lerp(acc, 0.12 * f); }
+      else c = h > 0.6 ? DUNE : SAND;
+      colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    g.computeVertexNormals();
+    return g;
+  }, [accent]);
+
+  const trucks = useMemo(() => {
+    const out: [number, number, number, number][] = [];
+    for (const [ang, r] of [[-1.4, 9], [1.1, 7], [-2.2, 5.5], [0.6, 10]] as [number, number][]) {
+      const px = Math.sin(ang) * r;
+      const py = PIT.cy - Math.cos(ang) * r;
+      const depth = Math.floor((PIT.R - r) / PIT.stepW) * PIT.stepD;
+      out.push([px, -depth + 0.22, -py, ang]);
+    }
+    return out;
+  }, []);
+
   return (
     <group>
+      <mesh geometry={geo} rotation={[-Math.PI / 2, 0, 0]} receiveShadow castShadow>
+        <meshStandardMaterial vertexColors flatShading roughness={0.97} metalness={0.03} />
+      </mesh>
       {/* figure rim platform */}
-      <mesh position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <cylinderGeometry args={[1.7, 1.8, 0.1, 64]} />
-        <meshStandardMaterial color="#2a1d14" metalness={0.25} roughness={0.85} />
-      </mesh>
-      <mesh position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[1.55, 1.7, 64]} />
-        <meshBasicMaterial color={accent} toneMapped={false} side={THREE.DoubleSide} />
-      </mesh>
-      <group position={[0, 0, cz]}>
-        {benches.map((b) => (
-          <group key={b.i}>
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, b.y, 0]} receiveShadow>
-              <ringGeometry args={[b.rIn, b.rOut, 96]} />
-              <meshStandardMaterial color={b.i % 2 ? '#5c4231' : '#6b4d39'} roughness={0.97} metalness={0.04} side={THREE.DoubleSide} />
-            </mesh>
-            <mesh position={[0, (b.y + b.yNext) / 2, 0]}>
-              <cylinderGeometry args={[b.rOut, b.rOut, b.yNext - b.y, 96, 1, true]} />
-              <meshStandardMaterial color="#3c2a1d" roughness={1} metalness={0.04} side={THREE.DoubleSide} />
-            </mesh>
-          </group>
-        ))}
-        {trucks.map((t, k) => {
-          const b = benches[t.i];
-          const r = (b.rIn + b.rOut) / 2;
-          return (
-            <group key={`t${k}`} position={[r * Math.cos(t.a), b.y + 0.25, r * Math.sin(t.a)]} rotation={[0, -t.a, 0]}>
-              <mesh><boxGeometry args={[0.9, 0.45, 0.5]} /><meshStandardMaterial color="#caa23a" roughness={0.7} metalness={0.3} /></mesh>
-              <mesh position={[0.52, 0.08, 0]}><boxGeometry args={[0.12, 0.12, 0.12]} /><meshBasicMaterial color="#fff6c8" toneMapped={false} /></mesh>
-            </group>
-          );
-        })}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.4 + levels * 0.95, 0]}>
-          <ringGeometry args={[2.6 + levels * 1.5 - 0.15, 2.6 + levels * 1.5 + 0.1, 96]} />
-          <meshBasicMaterial color={accent} transparent opacity={0.55} toneMapped={false} side={THREE.DoubleSide} />
-        </mesh>
-      </group>
-      <pointLight position={[0, 5, cz + 3]} intensity={150} color="#ffb066" distance={52} />
-      <pointLight position={[7, 4, cz]} intensity={70} color="#ffd9a0" distance={42} />
-      <pointLight position={[-7, 4, cz]} intensity={70} color="#ffd9a0" distance={42} />
-      <spotLight position={[0, 14, cz - 2]} angle={1.0} penumbra={1} intensity={340} color="#fff0d8" distance={66} />
+      <mesh position={[0, 0.07, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow><cylinderGeometry args={[1.7, 1.8, 0.14, 48]} /><meshStandardMaterial color="#3a2a1a" roughness={0.85} /></mesh>
+      <mesh position={[0, 0.15, 0]} rotation={[-Math.PI / 2, 0, 0]}><ringGeometry args={[1.55, 1.7, 48]} /><meshBasicMaterial color={accent} toneMapped={false} side={THREE.DoubleSide} /></mesh>
+      {trucks.map((t, k) => (
+        <group key={k} position={[t[0], t[1], t[2]]} rotation={[0, -t[3], 0]}>
+          <mesh castShadow><boxGeometry args={[0.9, 0.45, 0.5]} /><meshStandardMaterial color="#caa23a" roughness={0.7} metalness={0.3} /></mesh>
+          <mesh position={[0.52, 0.08, 0]}><boxGeometry args={[0.12, 0.12, 0.12]} /><meshBasicMaterial color="#fff6c8" toneMapped={false} /></mesh>
+        </group>
+      ))}
+      {/* daylight desert sun */}
+      <directionalLight position={[14, 20, 10]} intensity={3} color="#ffe0b0" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-32} shadow-camera-right={32} shadow-camera-top={32} shadow-camera-bottom={-32} shadow-camera-far={90} />
+      <hemisphereLight args={['#ffe6c0', '#4a3320', 0.8]} />
+      <ambientLight intensity={0.35} />
+      <pointLight position={[0, 7, -8]} intensity={40} color="#ffb066" distance={48} />
     </group>
   );
 }
@@ -625,9 +636,9 @@ export default function EncounterScene({ id }: { id: string }) {
 
   // the mine pit reads best from a higher angle looking down into it
   const isMine = fig.env === 'minepit';
-  const camPos: [number, number, number] = isMine ? [0, 2.3, 6.6] : [0, 1.7, 5.4];
-  const camTarget: [number, number, number] = isMine ? [0, 2.2, -3] : [0, 1.65, 0];
-  const minPolar = isMine ? 0.5 : 0.6;
+  const camPos: [number, number, number] = isMine ? [0, 3, 7] : [0, 1.7, 5.4];
+  const camTarget: [number, number, number] = isMine ? [0, 1.4, 0] : [0, 1.65, 0];
+  const minPolar = isMine ? 0.42 : 0.6;
 
   return (
     <div className="es-stage">
