@@ -3,12 +3,15 @@
 // that must connect to roads, building blocks that fill the rest) collapse into a
 // coherent campus. Rendered as a glowing tech city at night. Regenerate for a new layout.
 import * as THREE from 'three';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { generateWFC, type WfcTile } from '@/lib/wfc';
+import { useChoices } from '@/lib/choices';
+import { worldMeters, MeterBars } from '@/components/WorldReport';
+import { FirstPerson, WorldFigures, EncounterPanel, buildField, ENCOUNTER_CSS } from '@/components/WorldEncounter';
 
 const W = 22, H = 22, TS = 1.5;
 const TILES: WfcTile[] = [
@@ -25,8 +28,7 @@ const TILES: WfcTile[] = [
 function h2(x: number, y: number, s: number) { const v = Math.sin(x * 127.1 + y * 311.7 + s * 13.7) * 43758.5453; return v - Math.floor(v); }
 const WIN_COLORS = ['#39e0ff', '#7fe0ff', '#bdf7ff', '#1affa0', '#ffd23a'];
 
-function City({ seed }: { seed: number }) {
-  const grid = useMemo(() => generateWFC(W, H, TILES, 'city' + seed), [seed]);
+function City({ grid, seed }: { grid: number[]; seed: number }) {
   const data = useMemo(() => {
     const buildings: [number, number, number][] = [], windows: [number, number, number][] = [], roads: [number, number][] = [], towers: [number, number][] = [];
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -86,9 +88,63 @@ function Spin() {
   return null;
 }
 
+// the people who finance, demand and supply the compute this city is built for — they
+// stand along a cleared avenue you can walk down (the WFC grid is carved open here)
+const PLAZA = TILES.findIndex((t) => t.name === 'plaza');
+const AVENUE_ROWS = [10, 11, 12];
+const CITY_FIELD = buildField([
+  { node: 'OpenAI', pos: [-9, -1.2] },
+  { node: 'Nvidia', pos: [0, 1.2] },
+  { node: 'Microsoft', pos: [9, -1.2] },
+]);
+const SPAWN: [number, number, number] = [-15, 0, 0];
+const BOUND = (W / 2) * TS - 1;
+
 export default function CityGenerator() {
   const [seed, setSeed] = useState(1);
-  const [auto, setAuto] = useState(true);
+  const [mode, setMode] = useState<'fly' | 'orbit' | 'walk'>('fly');
+
+  // generate the city, then carve a walkable avenue through the middle for the figures
+  const grid = useMemo(() => {
+    const g = generateWFC(W, H, TILES, 'city' + seed);
+    for (let x = 0; x < W; x++) for (const gy of AVENUE_ROWS) g[gy * W + x] = PLAZA;
+    return g;
+  }, [seed]);
+
+  const sampleRef = useRef<((x: number, z: number) => number) | null>(() => 0); // flat ground
+  const blockedRef = useRef<((x: number, z: number) => boolean) | null>(null);
+  useEffect(() => {
+    const building = new Set<number>();
+    for (let i = 0; i < grid.length; i++) if (TILES[grid[i]].name === 'build') building.add(i);
+    blockedRef.current = (wx, wz) => {
+      const gx = Math.round(wx / TS + W / 2), gy = Math.round(wz / TS + H / 2);
+      if (gx < 0 || gy < 0 || gx >= W || gy >= H) return false;
+      return building.has(gy * W + gx);
+    };
+  }, [grid]);
+
+  // in-world encounters
+  const [choices, setChoice] = useChoices();
+  const [near, setNear] = useState(-1);
+  const nearRef = useRef(-1);
+  const [active, setActive] = useState(-1);
+  const pausedRef = useRef(false);
+  useEffect(() => { pausedRef.current = active >= 0; }, [active]);
+  const walking = mode === 'walk';
+  const metCount = CITY_FIELD.filter((f) => choices[f.node]).length;
+  const meters = worldMeters(choices);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') { setActive(-1); return; }
+      if (e.code === 'KeyE' && walking && active < 0 && nearRef.current >= 0) {
+        setActive(nearRef.current);
+        if (typeof document !== 'undefined' && document.exitPointerLock) document.exitPointerLock();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [walking, active]);
+
   return (
     <div className="cy-stage">
       <Canvas shadows dpr={[1, 2]} camera={{ position: [34, 22, 34], fov: 40 }}>
@@ -97,8 +153,11 @@ export default function CityGenerator() {
         <ambientLight intensity={0.45} />
         <hemisphereLight args={['#3a5882', '#0a0e16', 0.75]} />
         <directionalLight position={[20, 30, 14]} intensity={1.5} color="#bcd4f2" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
-        <City seed={seed} />
-        {auto ? <Spin /> : <OrbitControls makeDefault enablePan={false} minDistance={18} maxDistance={80} maxPolarAngle={1.45} target={[0, 1, 0]} />}
+        <City grid={grid} seed={seed} />
+        <WorldFigures field={CITY_FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} radius={5} />
+        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} blockedRef={blockedRef} spawn={SPAWN} bound={BOUND} />
+          : mode === 'orbit' ? <OrbitControls makeDefault enablePan={false} minDistance={18} maxDistance={80} maxPolarAngle={1.45} target={[0, 1, 0]} />
+          : <Spin />}
         <EffectComposer>
           <Bloom intensity={0.7} luminanceThreshold={0.45} luminanceSmoothing={0.3} mipmapBlur />
           <Vignette eskil={false} offset={0.25} darkness={0.9} />
@@ -109,13 +168,34 @@ export default function CityGenerator() {
         <div className="cy-top">
           <Link href="/world" className="cy-back">← world</Link>
           <div className="cy-title">WFC DATACENTER SPRAWL</div>
-          <div className="cy-sub">Wave Function Collapse · snappable road + building tiles · {W}×{H} grid</div>
+          <div className="cy-sub">Wave Function Collapse grid · walk it · meet the compute trio</div>
         </div>
         <div className="cy-panel">
           <button className="cy-seed" onClick={() => setSeed((s) => s + 1)}>↻ collapse a new city</button>
-          <button className="cy-fly" onClick={() => setAuto((a) => !a)}>{auto ? '⊙ free orbit' : '🎥 auto-fly'}</button>
+          <div className="cy-modes">
+            {(['fly', 'orbit', 'walk'] as const).map((m) => (
+              <button key={m} className={'cy-mode' + (mode === m ? ' on' : '')} onClick={() => setMode(m)}>{m === 'fly' ? '🎥 fly' : m === 'orbit' ? '⊙ orbit' : '🚶 walk'}</button>
+            ))}
+          </div>
         </div>
       </div>
+
+      {walking && (
+        <div className="cy-quest">
+          <div className="cy-quest-head">THE WORLD · LIVE STATE</div>
+          <MeterBars meters={meters} />
+          <div className="cy-quest-foot">{metCount === CITY_FIELD.length ? '✓ the compute trio — every call made' : `${metCount}/${CITY_FIELD.length} spoken · the demand, the capital, the chips`}</div>
+        </div>
+      )}
+      {walking && active < 0 && near >= 0 && (
+        <div className="cy-prompt"><span className="cy-key">E</span> speak with <b style={{ color: CITY_FIELD[near].fig.accent }}>{CITY_FIELD[near].enc.name}</b> — {CITY_FIELD[near].enc.role}</div>
+      )}
+      {active >= 0 && (
+        <EncounterPanel f={CITY_FIELD[active]} prior={choices[CITY_FIELD[active].node]} onPick={(id) => setChoice(CITY_FIELD[active].node, id)} onClose={() => setActive(-1)} />
+      )}
+      {walking && (
+        <div className="cy-walkhint">click to look · <b>WASD</b> move · <b>shift</b> run · <b>esc</b> release</div>
+      )}
 
       <style dangerouslySetInnerHTML={{ __html: `
         .cy-stage{position:fixed;inset:0;background:#05080f}
@@ -124,9 +204,20 @@ export default function CityGenerator() {
         .cy-back:hover{color:#fff}
         .cy-title{font-family:var(--font-mono);font-size:0.85rem;letter-spacing:0.22em;color:#fff;margin-top:14px}
         .cy-sub{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.05em;color:rgba(255,255,255,0.5);margin-top:5px}
-        .cy-panel{pointer-events:auto;align-self:flex-start;display:flex;gap:8px}
+        .cy-panel{pointer-events:auto;align-self:flex-start;display:flex;gap:8px;align-items:center}
         .cy-seed{font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.05em;color:#04140d;background:linear-gradient(135deg,#39e0ff,#1aa0d0);border:none;border-radius:9px;padding:11px 16px;cursor:pointer}
-        .cy-fly{font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.05em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:11px 16px;cursor:pointer}
+        .cy-modes{display:flex;gap:6px}
+        .cy-mode{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.04em;color:#fff;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:9px;padding:11px 13px;cursor:pointer;transition:all 0.18s}
+        .cy-mode:hover{border-color:rgba(57,224,255,0.6)}
+        .cy-mode.on{background:#39e0ff;color:#04140d;border-color:#39e0ff;font-weight:700}
+        .cy-quest{position:absolute;top:90px;right:24px;z-index:6;width:240px;padding:14px 16px 12px;background:linear-gradient(160deg,rgba(20,25,44,0.85),rgba(12,15,31,0.9));border:1px solid rgba(255,255,255,0.1);border-radius:14px;backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,0.4)}
+        .cy-quest-head{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.18em;color:#39e0ff;margin-bottom:10px}
+        .cy-quest-foot{font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.03em;color:rgba(255,255,255,0.5);margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.08)}
+        .cy-prompt{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:none;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.04em;color:#fff;background:rgba(10,16,28,0.78);border:1px solid rgba(57,224,255,0.4);border-radius:999px;padding:11px 20px;backdrop-filter:blur(8px)}
+        .cy-prompt .cy-key{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:9px;border-radius:5px;background:#39e0ff;color:#04140d;font-weight:700;font-size:0.66rem;vertical-align:middle}
+        .cy-walkhint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font-family:var(--font-mono);font-size:0.64rem;letter-spacing:0.06em;color:#fff;background:rgba(10,16,28,0.6);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:9px 18px;backdrop-filter:blur(8px)}
+        .cy-walkhint b{color:#39e0ff}
+        ${ENCOUNTER_CSS}
       ` }} />
     </div>
   );

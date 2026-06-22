@@ -93,7 +93,7 @@ function WorldHologram({ fig, enc, met, near, grpRef }: { fig: { image: string; 
           <meshBasicMaterial map={tex} transparent opacity={met ? 0.78 : 0.96} depthWrite={false} toneMapped={false} />
         </mesh>
       </Billboard>
-      <Html position={[0, 3.5, 0]} center distanceFactor={16} occlude={false} pointerEvents="none">
+      <Html position={[0, 3.4, 0]} center occlude={false} pointerEvents="none" zIndexRange={[10, 0]}>
         <div className="we-tag" style={{ borderColor: fig.accent }}>
           <b style={{ color: fig.accent }}>✦ {enc.name}</b>
           <span>{enc.role}</span>
