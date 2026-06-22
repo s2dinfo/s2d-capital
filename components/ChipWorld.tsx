@@ -228,6 +228,16 @@ export default function ChipWorld() {
         </div>
       )}
 
+      {/* ── Explore launcher — the procedurally-generated 3D worlds ── */}
+      {started && (
+        <div className="cw-labs">
+          <div className="cw-labs-head">EXPLORE · 3D WORLDS</div>
+          <Link href="/terrain" className="cw-lab"><b>🌍 Procedural world</b><span>noise terrain · biomes · rivers · day/night</span></Link>
+          <Link href="/city" className="cw-lab"><b>🏙 Datacenter sprawl</b><span>wave-function-collapse city</span></Link>
+          <Link href="/play" className="cw-lab"><b>▦ Bottleneck</b><span>supply-chain survival game</span></Link>
+        </div>
+      )}
+
       {/* ── Node selector (reliable — globe labels are small/rotating) ── */}
       {started && (
         <div className="cw-pills">
@@ -350,6 +360,13 @@ export default function ChipWorld() {
         .cw-meters-head{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.18em;color:var(--gold-light,#D4B85C);margin-bottom:11px}
         .cw-meters-foot{font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.04em;color:rgba(255,255,255,0.38);margin-top:11px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.06)}
         @media (max-width:720px){.cw-meters{display:none}}
+        .cw-labs{position:absolute;top:96px;right:24px;z-index:6;width:222px;display:flex;flex-direction:column;gap:7px;padding:14px;background:linear-gradient(160deg,rgba(20,25,44,0.82),rgba(12,15,31,0.86));border:1px solid rgba(255,255,255,0.08);border-radius:14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,0.35)}
+        .cw-labs-head{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.18em;color:var(--gold-light,#D4B85C);margin-bottom:3px}
+        .cw-lab{display:flex;flex-direction:column;gap:2px;text-decoration:none;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);transition:all 0.18s}
+        .cw-lab:hover{background:rgba(212,184,92,0.1);border-color:rgba(212,184,92,0.4);transform:translateX(-2px)}
+        .cw-lab b{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.03em;color:#fff;font-weight:600}
+        .cw-lab span{font-family:var(--font-sans);font-size:0.58rem;color:rgba(255,255,255,0.42);line-height:1.3}
+        @media (max-width:880px){.cw-labs{display:none}}
         .cw-report-btn{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:6;background:rgba(212,184,92,0.12);border:1px solid rgba(212,184,92,0.4);color:var(--gold-light,#D4B85C);font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.08em;padding:10px 20px;border-radius:999px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s}
         .cw-report-btn:hover{background:rgba(212,184,92,0.22);color:#fff;transform:translateX(-50%) translateY(-1px)}
         .cw-hud{position:absolute;bottom:22px;right:24px;z-index:3;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.16em;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:8px}
