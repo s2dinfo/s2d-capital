@@ -427,6 +427,9 @@ export default function ProceduralTerrain() {
   const playerPosRef = useRef(new THREE.Vector3());
   const [driving, setDriving] = useState(false);
   const colliders = useMemo(() => worldColliders(FIELD), []);
+  // the learning codex — commodities you've discovered by walking up to them (persisted)
+  const [discovered, setDiscovered] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem('s2d_discovered') || '[]'); } catch { return []; } });
+  const [codexOpen, setCodexOpen] = useState(false);
 
   // in-world encounters
   const [choices, setChoice] = useChoices();
@@ -453,6 +456,13 @@ export default function ProceduralTerrain() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [walking, active]);
+
+  // discover a commodity by walking up to it (records it in the codex)
+  useEffect(() => {
+    if (near < 0) return;
+    const node = FIELD[near].node;
+    setDiscovered((prev) => { if (prev.includes(node)) return prev; const next = [...prev, node]; try { localStorage.setItem('s2d_discovered', JSON.stringify(next)); } catch {} return next; });
+  }, [near]);
 
   return (
     <div className="pt-stage">
@@ -543,6 +553,32 @@ export default function ProceduralTerrain() {
         <Link href="/world" className="pt-complete">⚖ You walked the whole chain — see the world you built →</Link>
       )}
 
+      {/* the learning codex */}
+      {walking && active < 0 && (
+        <button className="pt-codex-btn" onClick={() => setCodexOpen(true)}>📖 codex · {discovered.length}/{FIELD.length}</button>
+      )}
+      {codexOpen && (
+        <div className="pt-codex" onClick={() => setCodexOpen(false)}>
+          <div className="pt-codex-card" onClick={(e) => e.stopPropagation()}>
+            <button className="pt-codex-x" onClick={() => setCodexOpen(false)} aria-label="Close">×</button>
+            <div className="pt-codex-title">THE CHIP-WORLD CODEX <span>{discovered.length}/{FIELD.length} discovered</span></div>
+            <div className="pt-codex-grid">
+              {FIELD.map((f) => {
+                const got = discovered.includes(f.node);
+                return (
+                  <div key={f.node} className={'pt-codex-item' + (got ? '' : ' locked')} style={got ? { borderColor: f.fig.accent + '55' } : undefined}>
+                    <div className="pt-codex-name" style={got ? { color: f.fig.accent } : undefined}>{got ? `◆ ${f.node}` : '◇ ???'}</div>
+                    {got
+                      ? (FACTS[f.node] || []).map((x, i) => <div key={i} className="pt-codex-fact"><b>{x.label}.</b> {x.text}</div>)
+                      : <div className="pt-codex-fact pt-codex-dim">Walk up to this site to discover it.</div>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       <Fader out={leaving} label={leaveLabel} />
 
       <style dangerouslySetInnerHTML={{ __html: `
@@ -581,6 +617,21 @@ export default function ProceduralTerrain() {
         .pt-learn-head{font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.18em;margin-bottom:6px}
         .pt-learn-fact{font-family:var(--font-sans);font-size:0.82rem;line-height:1.5;color:rgba(255,255,255,0.82)}
         .pt-learn-fact b{color:#fff}
+        .pt-codex-btn{position:absolute;bottom:30px;right:24px;z-index:6;pointer-events:auto;font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.06em;color:#fff;background:rgba(10,16,28,0.7);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:9px 15px;cursor:pointer;backdrop-filter:blur(8px)}
+        .pt-codex-btn:hover{border-color:rgba(127,208,255,0.6);color:#7fd0ff}
+        .pt-codex{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 50% 50%,rgba(6,9,18,0.6),rgba(5,7,14,0.9));backdrop-filter:blur(3px)}
+        .pt-codex-card{position:relative;width:min(94vw,720px);max-height:80vh;overflow-y:auto;background:rgba(13,18,32,0.95);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:24px 26px}
+        .pt-codex-x{position:absolute;top:12px;right:16px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;line-height:1;cursor:pointer}
+        .pt-codex-x:hover{color:#fff}
+        .pt-codex-title{font-family:var(--font-mono);font-size:0.82rem;letter-spacing:0.16em;color:#fff;margin-bottom:18px}
+        .pt-codex-title span{font-size:0.58rem;letter-spacing:0.08em;color:#7fd0ff;margin-left:8px}
+        .pt-codex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px}
+        .pt-codex-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:13px 15px}
+        .pt-codex-item.locked{opacity:0.45}
+        .pt-codex-name{font-family:var(--font-mono);font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:8px;letter-spacing:0.04em}
+        .pt-codex-fact{font-family:var(--font-sans);font-size:0.72rem;line-height:1.5;color:rgba(255,255,255,0.72);margin-bottom:6px}
+        .pt-codex-fact b{color:#fff}
+        .pt-codex-dim{color:rgba(255,255,255,0.4);font-style:italic}
 
         .pt-complete{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:auto;text-decoration:none;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.04em;color:#04140d;background:linear-gradient(135deg,#7fd0ff,#3affb0);border-radius:999px;padding:12px 22px;box-shadow:0 10px 34px rgba(127,208,255,0.4)}
       ` }} />
