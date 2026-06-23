@@ -25,14 +25,16 @@ export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, 
   const gl = useThree((s) => s.gl);
   const charRoot = useRef<THREE.Group>(null);
   const carRoot = useRef<THREE.Group>(null);
+  const idleGltf = useGLTF('/models/character-idle.glb');
   const walkGltf = useGLTF('/models/character-walk.glb');
   const runGltf = useGLTF('/models/character-run.glb');
   const carGltf = useGLTF('/models/car.glb');
   const clips = useMemo(() => {
+    const i = idleGltf.animations.map((c) => { const x = inPlace(c); x.name = 'idle'; return x; });
     const w = walkGltf.animations.map((c) => { const x = inPlace(c); x.name = 'walk'; return x; });
     const r = runGltf.animations.map((c) => { const x = inPlace(c); x.name = 'run'; return x; });
-    return [...w, ...r];
-  }, [walkGltf, runGltf]);
+    return [...i, ...w, ...r];
+  }, [idleGltf, walkGltf, runGltf]);
   const { actions } = useAnimations(clips, charRoot);
 
   const carObj = useMemo(() => {
@@ -80,7 +82,7 @@ export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, 
     return () => { dom.removeEventListener('click', onClick); document.removeEventListener('mousemove', onMove); window.removeEventListener('keydown', onDown); window.removeEventListener('keyup', onUp); keys.current = {}; if (document.pointerLockElement === dom) document.exitPointerLock?.(); };
   }, [gl, sampleRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => { const w = actions['walk'], r = actions['run']; w?.play(); r?.play(); if (w) w.weight = 1; if (r) r.weight = 0; }, [actions]);
+  useEffect(() => { ['idle', 'walk', 'run'].forEach((n) => actions[n]?.play()); if (actions['idle']) actions['idle'].weight = 1; if (actions['walk']) actions['walk'].weight = 0; if (actions['run']) actions['run'].weight = 0; }, [actions]);
 
   useFrame((_, dtRaw) => {
     const dt = Math.min(dtRaw, 0.05);
@@ -123,11 +125,13 @@ export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, 
       }
       const g = sampleRef.current ? Math.max(sampleRef.current(avatar.x, avatar.z), -0.05) : 0;
       avatar.y += (g - avatar.y) * Math.min(1, dt * 12);
-      const w = actions['walk'], r = actions['run'];
-      if (w && r) {
-        w.weight += ((!running ? 1 : 0) - w.weight) * 0.2; r.weight += ((moving && running ? 1 : 0) - r.weight) * 0.2;
-        w.paused = !moving; r.paused = !(moving && running);
-      }
+      const state = !moving ? 'idle' : running ? 'run' : 'walk';   // crossfade idle/walk/run
+      (['idle', 'walk', 'run'] as const).forEach((nm) => {
+        const a = actions[nm]; if (!a) return;
+        if (!a.isRunning()) a.play();
+        a.paused = false;
+        a.weight += ((nm === state ? 1 : 0) - a.weight) * 0.18;
+      });
       const D = 5.2, cp = Math.cos(pitch.current), spn = Math.sin(pitch.current);
       tmp.desired.set(avatar.x + Math.sin(yaw.current) * cp * D, avatar.y + 1.5 + spn * D, avatar.z + Math.cos(yaw.current) * cp * D);
       camera.position.lerp(tmp.desired, Math.min(1, dt * 10));
@@ -150,6 +154,7 @@ export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, 
     </>
   );
 }
+useGLTF.preload('/models/character-idle.glb');
 useGLTF.preload('/models/character-walk.glb');
 useGLTF.preload('/models/character-run.glb');
 useGLTF.preload('/models/car.glb');
