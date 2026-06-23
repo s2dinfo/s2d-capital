@@ -85,7 +85,9 @@ export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, 
 
   useEffect(() => {
     const dom = gl.domElement;
-    const g = sampleRef.current ? Math.max(sampleRef.current(spawn[0], spawn[2]), 0) : 0; avatar.set(spawn[0], g, spawn[2]); facing.current = Math.PI;
+    const g = sampleRef.current ? Math.max(sampleRef.current(spawn[0], spawn[2]), 0) : 0; avatar.set(spawn[0], g, spawn[2]);
+    facing.current = Math.atan2(-spawn[0], -spawn[2]);   // face the world centre (down the avenue in the city)
+    yaw.current = facing.current + Math.PI;              // camera behind the character
     const cg = sampleRef.current ? Math.max(sampleRef.current(carSpawn[0], carSpawn[2]), 0) : 0; carPark.set(carSpawn[0], cg, carSpawn[2]);
     const onClick = () => { if (document.pointerLockElement !== dom) dom.requestPointerLock?.(); };
     const onMove = (e: MouseEvent) => { if (document.pointerLockElement === dom) { yaw.current -= e.movementX * 0.0026; pitch.current = clamp(pitch.current + e.movementY * 0.0026, 0.08, 1.15); } };

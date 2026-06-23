@@ -15,6 +15,7 @@ import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
 import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
 import PlayWorld from '@/components/PlayWorld';
+import NPCs from '@/components/NPCs';
 
 const W = 22, H = 22, TS = 1.5;
 const TILES: WfcTile[] = [
@@ -166,6 +167,7 @@ export default function CityGenerator() {
         <hemisphereLight args={['#3a5882', '#0a0e16', 0.75]} />
         <directionalLight position={[20, 30, 14]} intensity={1.5} color="#bcd4f2" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
         <City grid={grid} seed={seed} />
+        {(mode === 'play' || mode === 'walk') && <NPCs sampleRef={sampleRef} count={5} range={14} isWalkable={(x, z) => !blockedRef.current?.(x, z)} />}
         <WorldFigures field={CITY_FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} radius={5} originRef={onFootOrigin} />
         <WorldPortals portals={CITY_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} blockedRef={blockedRef} spawn={SPAWN} carSpawn={CAR_SPAWN} bound={BOUND} />
