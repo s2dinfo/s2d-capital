@@ -154,12 +154,12 @@ export default function CityGenerator() {
 
   return (
     <div className="cy-stage">
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [34, 22, 34], fov: 40 }}>
+      <Canvas shadows dpr={[1, 1.5]} performance={{ min: 0.5 }} camera={{ position: [34, 22, 34], fov: 40 }}>
         <color attach="background" args={['#05080f']} />
         <fog attach="fog" args={['#05080f', 45, 95]} />
         <ambientLight intensity={0.45} />
         <hemisphereLight args={['#3a5882', '#0a0e16', 0.75]} />
-        <directionalLight position={[20, 30, 14]} intensity={1.5} color="#bcd4f2" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
+        <directionalLight position={[20, 30, 14]} intensity={1.5} color="#bcd4f2" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
         <City grid={grid} seed={seed} />
         <WorldFigures field={CITY_FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} radius={5} />
         <WorldPortals portals={CITY_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />

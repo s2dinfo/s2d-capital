@@ -20,7 +20,7 @@ import PlayWorld from '@/components/PlayWorld';
 import NPCs from '@/components/NPCs';
 
 const SIZE = 70;
-const SEG = 170;
+const SEG = 132;   // terrain resolution — lowered for perf (fewer verts to shade + shadow)
 
 function fbm(n: (x: number, y: number) => number, x: number, y: number, oct: number, freq: number) {
   let amp = 1, f = freq, sum = 0, norm = 0;
@@ -406,7 +406,7 @@ function Sun({ auto, manual, dayRef }: { auto: boolean; manual: number; dayRef: 
       <Sky ref={sky} sunPosition={[50, 22, 30]} turbidity={6} rayleigh={2.2} mieCoefficient={0.006} />
       <ambientLight ref={amb} intensity={0.22} />
       <hemisphereLight ref={hemi} args={['#dcebf7', '#3a4a34', 0.7]} />
-      <directionalLight ref={light} position={[50, 44, 26]} intensity={2.4} color="#fff3da" castShadow shadow-mapSize={[2048, 2048]} shadow-camera-left={-55} shadow-camera-right={55} shadow-camera-top={55} shadow-camera-bottom={-55} shadow-camera-far={160} />
+      <directionalLight ref={light} position={[50, 44, 26]} intensity={2.4} color="#fff3da" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-55} shadow-camera-right={55} shadow-camera-top={55} shadow-camera-bottom={-55} shadow-camera-far={160} />
     </>
   );
 }
@@ -455,7 +455,7 @@ export default function ProceduralTerrain() {
 
   return (
     <div className="pt-stage">
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [42, 28, 42], fov: 42 }}>
+      <Canvas shadows dpr={[1, 1.5]} performance={{ min: 0.5 }} camera={{ position: [42, 28, 42], fov: 42 }}>
         <fog attach="fog" args={['#c3d7e8', 80, 175]} />
         <Sun auto={timeAuto} manual={timeManual} dayRef={dayRef} />
         <Clouds material={THREE.MeshBasicMaterial} limit={60}>
@@ -465,7 +465,7 @@ export default function ProceduralTerrain() {
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} originRef={onFootOrigin} />
         <WorldModels field={FIELD} sampleRef={sampleRef} />
-        <NPCs sampleRef={sampleRef} count={6} />
+        {(mode === 'play' || mode === 'walk') && <NPCs sampleRef={sampleRef} count={6} />}
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
           : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} colliders={colliders} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
