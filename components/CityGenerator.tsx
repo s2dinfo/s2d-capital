@@ -14,6 +14,7 @@ import { useFade } from '@/lib/useFade';
 import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
 import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
+import PlayWorld from '@/components/PlayWorld';
 
 const W = 22, H = 22, TS = 1.5;
 const TILES: WfcTile[] = [
@@ -100,6 +101,7 @@ const CITY_FIELD = buildField([
   { node: 'Microsoft', pos: [9, -1.2] },
 ]);
 const SPAWN: [number, number, number] = [-15, 0, 0];
+const CAR_SPAWN: [number, number, number] = [-12, 0, 1.5];   // on the avenue
 const BOUND = (W / 2) * TS - 1;
 // at the far end of the avenue, past the trio — walk through it to return to the globe
 const CITY_PORTALS: Portal[] = [
@@ -108,7 +110,9 @@ const CITY_PORTALS: Portal[] = [
 
 export default function CityGenerator() {
   const [seed, setSeed] = useState(1);
-  const [mode, setMode] = useState<'fly' | 'orbit' | 'walk'>('fly');
+  const [mode, setMode] = useState<'fly' | 'orbit' | 'walk' | 'play'>('fly');
+  const [driving, setDriving] = useState(false);
+  const playerPosRef = useRef(new THREE.Vector3());
 
   // generate the city, then carve a walkable avenue through the middle for the figures
   const grid = useMemo(() => {
@@ -136,7 +140,8 @@ export default function CityGenerator() {
   const [active, setActive] = useState(-1);
   const pausedRef = useRef(false);
   useEffect(() => { pausedRef.current = active >= 0; }, [active]);
-  const walking = mode === 'walk';
+  const walking = mode === 'walk' || mode === 'play';
+  const onFootOrigin = mode === 'play' ? playerPosRef : undefined;
   const metCount = CITY_FIELD.filter((f) => choices[f.node]).length;
   const meters = worldMeters(choices);
   const { go, out: leaving, label: leaveLabel } = useFade();
@@ -161,13 +166,14 @@ export default function CityGenerator() {
         <hemisphereLight args={['#3a5882', '#0a0e16', 0.75]} />
         <directionalLight position={[20, 30, 14]} intensity={1.5} color="#bcd4f2" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
         <City grid={grid} seed={seed} />
-        <WorldFigures field={CITY_FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} radius={5} />
-        <WorldPortals portals={CITY_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />
-        {mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} blockedRef={blockedRef} spawn={SPAWN} bound={BOUND} />
+        <WorldFigures field={CITY_FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} radius={5} originRef={onFootOrigin} />
+        <WorldPortals portals={CITY_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
+        {mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} blockedRef={blockedRef} spawn={SPAWN} carSpawn={CAR_SPAWN} bound={BOUND} />
+          : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} blockedRef={blockedRef} spawn={SPAWN} bound={BOUND} />
           : mode === 'orbit' ? <OrbitControls makeDefault enablePan={false} minDistance={18} maxDistance={80} maxPolarAngle={1.45} target={[0, 1, 0]} />
           : <Spin />}
         <EffectComposer>
-          <Bloom intensity={0.7} luminanceThreshold={0.45} luminanceSmoothing={0.3} mipmapBlur />
+          <Bloom intensity={0.7} luminanceThreshold={0.5} luminanceSmoothing={0} mipmapBlur={false} />
           <Vignette eskil={false} offset={0.25} darkness={0.9} />
         </EffectComposer>
       </Canvas>
@@ -181,8 +187,8 @@ export default function CityGenerator() {
         <div className="cy-panel">
           <button className="cy-seed" onClick={() => setSeed((s) => s + 1)}>↻ collapse a new city</button>
           <div className="cy-modes">
-            {(['fly', 'orbit', 'walk'] as const).map((m) => (
-              <button key={m} className={'cy-mode' + (mode === m ? ' on' : '')} onClick={() => setMode(m)}>{m === 'fly' ? '🎥 fly' : m === 'orbit' ? '⊙ orbit' : '🚶 walk'}</button>
+            {(['fly', 'orbit', 'walk', 'play'] as const).map((m) => (
+              <button key={m} className={'cy-mode' + (mode === m ? ' on' : '')} onClick={() => setMode(m)}>{m === 'fly' ? '🎥 fly' : m === 'orbit' ? '⊙ orbit' : m === 'walk' ? '🚶 1st' : '🎮 play'}</button>
             ))}
           </div>
         </div>
@@ -202,7 +208,7 @@ export default function CityGenerator() {
         <EncounterPanel f={CITY_FIELD[active]} prior={choices[CITY_FIELD[active].node]} onPick={(id) => setChoice(CITY_FIELD[active].node, id)} onClose={() => setActive(-1)} />
       )}
       {walking && (
-        <div className="cy-walkhint">click to look · <b>WASD</b> move · <b>shift</b> run · <b>esc</b> release</div>
+        <div className="cy-walkhint">click to look · <b>WASD</b> move{mode === 'play' ? <> · <b>F</b> {driving ? 'exit car' : 'enter car'}</> : <> · <b>shift</b> run</>} · <b>esc</b> release</div>
       )}
 
       <Fader out={leaving} label={leaveLabel} />
