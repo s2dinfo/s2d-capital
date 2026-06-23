@@ -11,6 +11,7 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
 import { useChoices } from '@/lib/choices';
+import { FACTS } from '@/lib/figures';
 import { useFade } from '@/lib/useFade';
 import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
@@ -524,6 +525,14 @@ export default function ProceduralTerrain() {
         <div className="pt-prompt"><span className="pt-key">E</span> speak with <b style={{ color: FIELD[near].fig.accent }}>{FIELD[near].enc.name}</b> — {FIELD[near].enc.role}</div>
       )}
 
+      {/* ambient learning — a real fact about this commodity surfaces as you walk up */}
+      {walking && active < 0 && near >= 0 && FACTS[FIELD[near].node]?.[0] && (
+        <div className="pt-learn" style={{ borderColor: FIELD[near].fig.accent + '55' }}>
+          <div className="pt-learn-head" style={{ color: FIELD[near].fig.accent }}>◆ {FIELD[near].node.toUpperCase()} · DID YOU KNOW</div>
+          <div className="pt-learn-fact"><b>{FACTS[FIELD[near].node][0].label}.</b> {FACTS[FIELD[near].node][0].text}</div>
+        </div>
+      )}
+
       {/* the in-scene decision */}
       {active >= 0 && (
         <EncounterPanel f={FIELD[active]} prior={choices[FIELD[active].node]} onPick={(id) => setChoice(FIELD[active].node, id)} onClose={() => setActive(-1)} />
@@ -568,6 +577,10 @@ export default function ProceduralTerrain() {
 
         .pt-prompt{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:none;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.04em;color:#fff;background:rgba(10,16,28,0.78);border:1px solid rgba(127,208,255,0.4);border-radius:999px;padding:11px 20px;backdrop-filter:blur(8px);box-shadow:0 8px 30px rgba(0,0,0,0.4)}
         .pt-prompt .pt-key{display:inline-grid;place-items:center;width:20px;height:20px;margin-right:9px;border-radius:5px;background:#7fd0ff;color:#04140d;font-weight:700;font-size:0.66rem;vertical-align:middle}
+        .pt-learn{position:absolute;bottom:120px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:none;width:min(90vw,470px);background:rgba(10,16,28,0.82);border:1px solid;border-radius:14px;padding:12px 16px;backdrop-filter:blur(10px);box-shadow:0 10px 34px rgba(0,0,0,0.45)}
+        .pt-learn-head{font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.18em;margin-bottom:6px}
+        .pt-learn-fact{font-family:var(--font-sans);font-size:0.82rem;line-height:1.5;color:rgba(255,255,255,0.82)}
+        .pt-learn-fact b{color:#fff}
 
         .pt-complete{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);z-index:6;pointer-events:auto;text-decoration:none;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.04em;color:#04140d;background:linear-gradient(135deg,#7fd0ff,#3affb0);border-radius:999px;padding:12px 22px;box-shadow:0 10px 34px rgba(127,208,255,0.4)}
       ` }} />
