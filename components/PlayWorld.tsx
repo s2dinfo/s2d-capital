@@ -12,11 +12,24 @@ const lerpAngle = (a: number, b: number, t: number) => { let d = b - a; while (d
 const inPlace = (clip: THREE.AnimationClip) => { const c = clip.clone(); c.tracks = c.tracks.filter((t) => !t.name.endsWith('.position')); return c; };
 const CAR_YAW = Math.PI; // orientation offset so the model's front matches travel direction
 
-export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, spawn = [0, 0, 8], carSpawn = [3.5, 0, 6], bound = 33 }: {
+// push a position out of any solid obstacle circle it has entered (slide-along collision)
+function pushOut(pos: THREE.Vector3, colliders?: { x: number; z: number; r: number }[]) {
+  if (!colliders) return false;
+  let hit = false;
+  for (const c of colliders) {
+    const dx = pos.x - c.x, dz = pos.z - c.z;
+    const d2 = dx * dx + dz * dz;
+    if (d2 < c.r * c.r && d2 > 1e-6) { const d = Math.sqrt(d2), push = c.r - d; pos.x += (dx / d) * push; pos.z += (dz / d) * push; hit = true; }
+  }
+  return hit;
+}
+
+export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, colliders, spawn = [0, 0, 8], carSpawn = [3.5, 0, 6], bound = 33 }: {
   sampleRef: { current: ((x: number, z: number) => number) | null };
   pausedRef?: { current: boolean };
   posRef?: { current: THREE.Vector3 };
   setDrivingUI?: (b: boolean) => void;
+  colliders?: { x: number; z: number; r: number }[];
   spawn?: [number, number, number];
   carSpawn?: [number, number, number];
   bound?: number;
@@ -99,6 +112,7 @@ export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, 
       avatar.x += Math.sin(carHeading.current) * carSpeed.current * dt;
       avatar.z += Math.cos(carHeading.current) * carSpeed.current * dt;
       avatar.x = clamp(avatar.x, -bound, bound); avatar.z = clamp(avatar.z, -bound, bound);
+      if (pushOut(avatar, colliders)) carSpeed.current *= 0.4; // bumped a building → slow down
       const g = sampleRef.current ? Math.max(sampleRef.current(avatar.x, avatar.z), -0.05) : 0;
       avatar.y += (g - avatar.y) * Math.min(1, dt * 10);
       // auto chase-cam behind the car
@@ -121,6 +135,7 @@ export default function PlayWorld({ sampleRef, pausedRef, posRef, setDrivingUI, 
       if (moving) {
         tmp.move.normalize(); avatar.addScaledVector(tmp.move, sp * dt);
         avatar.x = clamp(avatar.x, -bound, bound); avatar.z = clamp(avatar.z, -bound, bound);
+        pushOut(avatar, colliders);
         facing.current = lerpAngle(facing.current, Math.atan2(tmp.move.x, tmp.move.z), 0.18);
       }
       const g = sampleRef.current ? Math.max(sampleRef.current(avatar.x, avatar.z), -0.05) : 0;

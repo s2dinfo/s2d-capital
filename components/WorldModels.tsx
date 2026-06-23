@@ -24,6 +24,17 @@ const PROPS = [
   { x: 8, z: 12, type: 'container', key: 'cont3' },
 ];
 
+// solid obstacles (x, z, radius) for the player/car to collide with — the site buildings +
+// props. Figures are holograms, so they stay walk-through.
+export function worldColliders(field: FieldEntry[]) {
+  const sites = field.filter((f) => NODE_MODEL[f.node]).map((f) => {
+    const [fx, fz] = f.pos; const len = Math.hypot(fx, fz) || 1;
+    return { x: fx + (-fz / len) * 5, z: fz + (fx / len) * 5, r: 3.3 };
+  });
+  const props = PROPS.map((p) => ({ x: p.x, z: p.z, r: p.type === 'haultruck' ? 2.2 : 1.9 }));
+  return [...sites, ...props];
+}
+
 function Site({ type }: { type: string }) {
   const { scene } = useGLTF(`/models/${type}.glb`);
   const obj = useMemo(() => {

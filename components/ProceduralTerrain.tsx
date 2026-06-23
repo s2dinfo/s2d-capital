@@ -15,7 +15,7 @@ import { useFade } from '@/lib/useFade';
 import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
 import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
-import WorldModels from '@/components/WorldModels';
+import WorldModels, { worldColliders } from '@/components/WorldModels';
 import PlayWorld from '@/components/PlayWorld';
 
 const SIZE = 70;
@@ -424,6 +424,7 @@ export default function ProceduralTerrain() {
   const sampleRef = useRef<((x: number, z: number) => number) | null>(null);
   const playerPosRef = useRef(new THREE.Vector3());
   const [driving, setDriving] = useState(false);
+  const colliders = useMemo(() => worldColliders(FIELD), []);
 
   // in-world encounters
   const [choices, setChoice] = useChoices();
@@ -465,7 +466,7 @@ export default function ProceduralTerrain() {
         <WorldModels field={FIELD} sampleRef={sampleRef} />
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
-          : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
+          : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} colliders={colliders} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
           : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
