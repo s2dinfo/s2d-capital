@@ -1,12 +1,20 @@
 'use client';
 // Minimal turntable viewer to confirm a generated GLB loads + looks right.
 import { Canvas } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Center, ContactShadows } from '@react-three/drei';
-import { Suspense } from 'react';
+import { useGLTF, useAnimations, OrbitControls, Center, ContactShadows } from '@react-three/drei';
+import { Suspense, useRef, useEffect } from 'react';
+import type { Group } from 'three';
 
 function Model({ src }: { src: string }) {
-  const { scene } = useGLTF(src);
-  return <Center><primitive object={scene} /></Center>;
+  const group = useRef<Group>(null);
+  const { scene, animations } = useGLTF(src);
+  const { actions, names } = useAnimations(animations, group);
+  useEffect(() => {
+    const a = names[0] ? actions[names[0]] : null;
+    a?.reset().fadeIn(0.2).play();
+    return () => { a?.fadeOut(0.2); };
+  }, [actions, names]);
+  return <group ref={group}><Center><primitive object={scene} /></Center></group>;
 }
 
 export default function AssetViewer({ src = '/models/car.glb' }: { src?: string }) {
