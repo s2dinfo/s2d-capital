@@ -14,7 +14,15 @@ const NODE_MODEL: Record<string, string> = {
   Copper: 'minehead', RareEarth: 'minehead',
 };
 // target LARGEST dimension (normalizing by max dim, not height — flat models otherwise blow up)
-const TARGET: Record<string, number> = { datacenter: 6, fab: 6, pumpjack: 5, powerplant: 6.5, minehead: 6 };
+const TARGET: Record<string, number> = { datacenter: 6, fab: 6, pumpjack: 5, powerplant: 6.5, minehead: 6, haultruck: 3.2, container: 3.4 };
+// extra props scattered for life — haul trucks by the mines, container stacks around
+const PROPS = [
+  { x: 25, z: 7, type: 'haultruck', key: 'truck1' },
+  { x: -26, z: -4, type: 'haultruck', key: 'truck2' },
+  { x: 16, z: -13, type: 'container', key: 'cont1' },
+  { x: -9, z: 19, type: 'container', key: 'cont2' },
+  { x: 8, z: 12, type: 'container', key: 'cont3' },
+];
 
 function Site({ type }: { type: string }) {
   const { scene } = useGLTF(`/models/${type}.glb`);
@@ -56,7 +64,7 @@ export default function WorldModels({ field, sampleRef }: { field: FieldEntry[];
     if (!type) return null;
     const [fx, fz] = f.pos; const len = Math.hypot(fx, fz) || 1;
     return { x: fx + (-fz / len) * 5, z: fz + (fx / len) * 5, type, key: f.node }; // beside the figure
-  }).filter(Boolean) as { x: number; z: number; type: string; key: string }[], [field]);
+  }).filter(Boolean).concat(PROPS) as { x: number; z: number; type: string; key: string }[], [field]);
   const groups = useRef<(THREE.Group | null)[]>([]);
   useFrame(() => {
     for (let i = 0; i < placed.length; i++) { const g = groups.current[i]; if (g) g.position.y = sampleRef.current ? Math.max(sampleRef.current(placed[i].x, placed[i].z), -0.05) : 0; }
