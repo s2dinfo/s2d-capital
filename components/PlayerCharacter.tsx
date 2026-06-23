@@ -10,9 +10,10 @@ const lerpAngle = (a: number, b: number, t: number) => { let d = b - a; while (d
 // drop root-translation tracks so locomotion clips play IN PLACE (we drive position ourselves)
 const inPlace = (clip: THREE.AnimationClip) => { const c = clip.clone(); c.tracks = c.tracks.filter((t) => !t.name.endsWith('.position')); return c; };
 
-export default function PlayerCharacter({ sampleRef, pausedRef, spawn = [0, 0, 8], bound = 33 }: {
+export default function PlayerCharacter({ sampleRef, pausedRef, posRef, spawn = [0, 0, 8], bound = 33 }: {
   sampleRef: { current: ((x: number, z: number) => number) | null };
   pausedRef?: { current: boolean };
+  posRef?: { current: THREE.Vector3 };
   spawn?: [number, number, number];
   bound?: number;
 }) {
@@ -70,6 +71,7 @@ export default function PlayerCharacter({ sampleRef, pausedRef, spawn = [0, 0, 8
     }
     const g = sampleRef.current ? Math.max(sampleRef.current(pos.x, pos.z), -0.05) : 0;
     pos.y += (g - pos.y) * Math.min(1, dt * 12);
+    if (posRef) posRef.current.copy(pos);
     if (root.current) { root.current.position.copy(pos); root.current.rotation.y = facing.current; }
 
     const w = actions['walk'], r = actions['run'];

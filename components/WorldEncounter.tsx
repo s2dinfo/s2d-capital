@@ -106,7 +106,7 @@ function WorldHologram({ fig, enc, met, near, grpRef }: { fig: { image: string; 
 
 // renders every placed figure, grounds them via sampleRef each frame, and reports the
 // nearest within range (only while walking) without re-rendering every frame
-export function WorldFigures({ field, sampleRef, walking, choices, nearRef, setNear, radius = 6 }: {
+export function WorldFigures({ field, sampleRef, walking, choices, nearRef, setNear, radius = 6, originRef }: {
   field: FieldEntry[];
   sampleRef: { current: ((x: number, z: number) => number) | null };
   walking: boolean;
@@ -114,17 +114,19 @@ export function WorldFigures({ field, sampleRef, walking, choices, nearRef, setN
   nearRef: { current: number };
   setNear: (n: number) => void;
   radius?: number;
+  originRef?: { current: THREE.Vector3 };
 }) {
   const camera = useThree((s) => s.camera);
   const groups = useRef<(THREE.Group | null)[]>([]);
   useFrame(() => {
     let nearest = -1, nd = radius * radius;
+    const o = originRef?.current ?? camera.position;   // player position (3rd-person) or camera (1st-person)
     for (let i = 0; i < field.length; i++) {
       const g = groups.current[i]; if (!g) continue;
       const [x, z] = field[i].pos;
       const gy = sampleRef.current ? Math.max(sampleRef.current(x, z), 0) : 0;
       g.position.set(x, gy, z);
-      if (walking) { const dx = camera.position.x - x, dz = camera.position.z - z; const d2 = dx * dx + dz * dz; if (d2 < nd) { nd = d2; nearest = i; } }
+      if (walking) { const dx = o.x - x, dz = o.z - z; const d2 = dx * dx + dz * dz; if (d2 < nd) { nd = d2; nearest = i; } }
     }
     if (nearest !== nearRef.current) { nearRef.current = nearest; setNear(nearest); }
   });
@@ -176,23 +178,25 @@ function WorldPortal({ portal, grpRef }: { portal: Portal; grpRef: (el: THREE.Gr
 }
 
 // places gateways in the world; walking into one (within ~2 units) fires onEnter once
-export function WorldPortals({ portals, sampleRef, walking, onEnter }: {
+export function WorldPortals({ portals, sampleRef, walking, onEnter, originRef }: {
   portals: Portal[];
   sampleRef: { current: ((x: number, z: number) => number) | null };
   walking: boolean;
   onEnter: (p: Portal) => void;
+  originRef?: { current: THREE.Vector3 };
 }) {
   const camera = useThree((s) => s.camera);
   const groups = useRef<(THREE.Group | null)[]>([]);
   const fired = useRef(false);
   useFrame(() => {
+    const o = originRef?.current ?? camera.position;
     for (let i = 0; i < portals.length; i++) {
       const g = groups.current[i]; if (!g) continue;
       const [x, z] = portals[i].pos;
       const gy = sampleRef.current ? Math.max(sampleRef.current(x, z), 0) : 0;
       g.position.set(x, gy, z);
       if (walking && !fired.current) {
-        const dx = camera.position.x - x, dz = camera.position.z - z;
+        const dx = o.x - x, dz = o.z - z;
         if (dx * dx + dz * dz < 4.2) { fired.current = true; onEnter(portals[i]); }
       }
     }

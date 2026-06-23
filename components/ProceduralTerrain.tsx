@@ -422,6 +422,7 @@ export default function ProceduralTerrain() {
   const [timeManual, setTimeManual] = useState(0.5);
   const dayRef = useRef(0.5);
   const sampleRef = useRef<((x: number, z: number) => number) | null>(null);
+  const playerPosRef = useRef(new THREE.Vector3());
 
   // in-world encounters
   const [choices, setChoice] = useChoices();
@@ -430,7 +431,8 @@ export default function ProceduralTerrain() {
   const [active, setActive] = useState(-1);       // index of the open encounter, -1 = none
   const pausedRef = useRef(false);
   useEffect(() => { pausedRef.current = active >= 0; }, [active]);
-  const walking = mode === 'walk';
+  const walking = mode === 'walk' || mode === 'play';   // exploring on foot (1st- or 3rd-person)
+  const onFootOrigin = mode === 'play' ? playerPosRef : undefined;
   const metCount = FIELD.filter((f) => choices[f.node]).length;
   const meters = worldMeters(choices);
   const { go, out: leaving, label: leaveLabel } = useFade();
@@ -458,11 +460,11 @@ export default function ProceduralTerrain() {
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
         </Clouds>
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
-        <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
+        <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} originRef={onFootOrigin} />
         <WorldModels field={FIELD} sampleRef={sampleRef} />
-        <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />
+        <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
-          : mode === 'play' ? <PlayerCharacter sampleRef={sampleRef} pausedRef={pausedRef} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
+          : mode === 'play' ? <PlayerCharacter sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
           : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         {/* Bloom removed: some generated GLB textures feed NaN into its blur and black the
