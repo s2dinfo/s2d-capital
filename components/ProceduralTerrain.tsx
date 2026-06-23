@@ -16,7 +16,7 @@ import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
 import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
 import WorldModels from '@/components/WorldModels';
-import PlayerCharacter from '@/components/PlayerCharacter';
+import PlayWorld from '@/components/PlayWorld';
 
 const SIZE = 70;
 const SEG = 170;
@@ -423,6 +423,7 @@ export default function ProceduralTerrain() {
   const dayRef = useRef(0.5);
   const sampleRef = useRef<((x: number, z: number) => number) | null>(null);
   const playerPosRef = useRef(new THREE.Vector3());
+  const [driving, setDriving] = useState(false);
 
   // in-world encounters
   const [choices, setChoice] = useChoices();
@@ -464,7 +465,7 @@ export default function ProceduralTerrain() {
         <WorldModels field={FIELD} sampleRef={sampleRef} />
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
-          : mode === 'play' ? <PlayerCharacter sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
+          : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
           : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         {/* Bloom removed: some generated GLB textures feed NaN into its blur and black the
@@ -500,7 +501,7 @@ export default function ProceduralTerrain() {
       </div>
 
       {(mode === 'walk' || mode === 'play') && (
-        <div className="pt-walkhint">click to look · <b>WASD</b> move · <b>shift</b> run · <b>esc</b> release</div>
+        <div className="pt-walkhint">click to look · <b>WASD</b> move{mode === 'play' ? <> · <b>F</b> {driving ? 'exit car' : 'enter car'}</> : <> · <b>shift</b> run</>} · <b>esc</b> release</div>
       )}
 
       {mode === 'tour' && (
