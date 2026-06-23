@@ -468,9 +468,8 @@ export default function ProceduralTerrain() {
           : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
           : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
-        {/* Bloom removed: some generated GLB textures feed NaN into its blur and black the
-            whole frame. Vignette has no blur so it's safe. */}
         <EffectComposer>
+          <Bloom intensity={0.32} luminanceThreshold={0.72} luminanceSmoothing={0} mipmapBlur={false} />
           <Vignette eskil={false} offset={0.2} darkness={0.62} />
         </EffectComposer>
       </Canvas>

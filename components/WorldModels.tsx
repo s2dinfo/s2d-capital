@@ -32,6 +32,9 @@ function Site({ type }: { type: string }) {
     // blows out Bloom to NaN and blacks the whole frame) — kill metalness, keep it matte
     s.traverse((o: any) => {
       if (!o.isMesh) return;
+      // recompute clean normals — generated meshes can have NaN/zero normals that Bloom's blur
+      // spreads into a black frame
+      if (o.geometry) { o.geometry.deleteAttribute('normal'); o.geometry.computeVertexNormals(); }
       const mats = Array.isArray(o.material) ? o.material : [o.material];
       mats.forEach((m: any) => {
         if (!m) return;
