@@ -15,6 +15,7 @@ import { useFade } from '@/lib/useFade';
 import Fader from '@/components/Fader';
 import { worldMeters, MeterBars } from '@/components/WorldReport';
 import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
+import WorldModels from '@/components/WorldModels';
 
 const SIZE = 70;
 const SEG = 170;
@@ -364,6 +365,90 @@ function WorldStructures({ sampleRef }: { sampleRef: { current: ((x: number, z: 
   ))}</>;
 }
 
+// ── Third-person playable character (the GTA-style controller). A low-poly body you steer
+// with WASD relative to the camera; mouse orbits the follow-cam; the body turns to face its
+// movement and a procedural gait swings the limbs; ground-following over the terrain. ──
+const lerpAngle = (a: number, b: number, t: number) => { let d = b - a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return a + d * t; };
+
+function Character({ rootRef, lleg, rleg, larm, rarm, accent }: { rootRef: any; lleg: any; rleg: any; larm: any; rarm: any; accent: string }) {
+  return (
+    <group ref={rootRef}>
+      <mesh position={[0, 1.02, 0]} castShadow><boxGeometry args={[0.55, 0.72, 0.32]} /><meshStandardMaterial color="#3a4658" flatShading roughness={0.8} /></mesh>
+      <mesh position={[0, 1.56, 0]} castShadow><boxGeometry args={[0.33, 0.34, 0.32]} /><meshStandardMaterial color="#e6c29a" flatShading roughness={0.9} /></mesh>
+      <mesh position={[0, 1.74, -0.01]}><boxGeometry args={[0.35, 0.13, 0.34]} /><meshStandardMaterial color={accent} flatShading /></mesh>
+      <group ref={larm} position={[-0.37, 1.32, 0]}><mesh position={[0, -0.3, 0]} castShadow><boxGeometry args={[0.16, 0.62, 0.16]} /><meshStandardMaterial color="#2e3848" flatShading /></mesh></group>
+      <group ref={rarm} position={[0.37, 1.32, 0]}><mesh position={[0, -0.3, 0]} castShadow><boxGeometry args={[0.16, 0.62, 0.16]} /><meshStandardMaterial color="#2e3848" flatShading /></mesh></group>
+      <group ref={lleg} position={[-0.15, 0.64, 0]}><mesh position={[0, -0.34, 0]} castShadow><boxGeometry args={[0.2, 0.66, 0.2]} /><meshStandardMaterial color="#222a36" flatShading /></mesh></group>
+      <group ref={rleg} position={[0.15, 0.64, 0]}><mesh position={[0, -0.34, 0]} castShadow><boxGeometry args={[0.2, 0.66, 0.2]} /><meshStandardMaterial color="#222a36" flatShading /></mesh></group>
+    </group>
+  );
+}
+
+function ThirdPerson({ sampleRef, posRef }: { sampleRef: { current: ((x: number, z: number) => number) | null }; posRef: { current: THREE.Vector3 } }) {
+  const camera = useThree((s) => s.camera);
+  const gl = useThree((s) => s.gl);
+  const root = useRef<THREE.Group>(null);
+  const lleg = useRef<THREE.Group>(null), rleg = useRef<THREE.Group>(null), larm = useRef<THREE.Group>(null), rarm = useRef<THREE.Group>(null);
+  const keys = useRef<Record<string, boolean>>({});
+  const yaw = useRef(0), pitch = useRef(0.42), facing = useRef(0), gait = useRef(0);
+  const pos = posRef.current;
+  const tmp = useMemo(() => ({ fwd: new THREE.Vector3(), right: new THREE.Vector3(), move: new THREE.Vector3(), desired: new THREE.Vector3() }), []);
+
+  useEffect(() => {
+    const dom = gl.domElement;
+    const g = sampleRef.current ? Math.max(sampleRef.current(0, 6), 0) : 0;
+    pos.set(0, g, 6); facing.current = Math.PI;
+    const onClick = () => { if (document.pointerLockElement !== dom) dom.requestPointerLock?.(); };
+    const onMove = (e: MouseEvent) => { if (document.pointerLockElement === dom) { yaw.current -= e.movementX * 0.0026; pitch.current = Math.max(0.06, Math.min(1.15, pitch.current + e.movementY * 0.0026)); } };
+    const onDown = (e: KeyboardEvent) => { keys.current[e.code] = true; };
+    const onUp = (e: KeyboardEvent) => { keys.current[e.code] = false; };
+    dom.addEventListener('click', onClick);
+    document.addEventListener('mousemove', onMove);
+    window.addEventListener('keydown', onDown); window.addEventListener('keyup', onUp);
+    return () => { dom.removeEventListener('click', onClick); document.removeEventListener('mousemove', onMove); window.removeEventListener('keydown', onDown); window.removeEventListener('keyup', onUp); keys.current = {}; if (document.pointerLockElement === dom) document.exitPointerLock?.(); };
+  }, [gl, sampleRef, pos]);
+
+  useFrame((_, dtRaw) => {
+    const dt = Math.min(dtRaw, 0.05);
+    const k = keys.current;
+    const run = !!(k['ShiftLeft'] || k['ShiftRight']);
+    const sp = run ? 10 : 5;
+    tmp.fwd.set(-Math.sin(yaw.current), 0, -Math.cos(yaw.current));        // camera forward on the ground
+    tmp.right.set(tmp.fwd.z, 0, -tmp.fwd.x);                               // right = forward × up
+    tmp.move.set(0, 0, 0);
+    if (k['KeyW'] || k['ArrowUp']) tmp.move.add(tmp.fwd);
+    if (k['KeyS'] || k['ArrowDown']) tmp.move.sub(tmp.fwd);
+    if (k['KeyD'] || k['ArrowRight']) tmp.move.add(tmp.right);
+    if (k['KeyA'] || k['ArrowLeft']) tmp.move.sub(tmp.right);
+    const moving = tmp.move.lengthSq() > 0;
+    if (moving) {
+      tmp.move.normalize();
+      pos.addScaledVector(tmp.move, sp * dt);
+      const lim = SIZE / 2 - 1.5;
+      pos.x = THREE.MathUtils.clamp(pos.x, -lim, lim); pos.z = THREE.MathUtils.clamp(pos.z, -lim, lim);
+      facing.current = lerpAngle(facing.current, Math.atan2(tmp.move.x, tmp.move.z), 0.2);
+      gait.current += dt * (run ? 15 : 9);
+    }
+    const g = sampleRef.current ? Math.max(sampleRef.current(pos.x, pos.z), -0.05) : 0;
+    pos.y += (g - pos.y) * Math.min(1, dt * 12);
+    if (root.current) { root.current.position.copy(pos); root.current.rotation.y = facing.current; }
+    const sw = Math.sin(gait.current) * (moving ? 0.7 : 0);
+    if (lleg.current) lleg.current.rotation.x = sw;
+    if (rleg.current) rleg.current.rotation.x = -sw;
+    if (larm.current) larm.current.rotation.x = -sw;
+    if (rarm.current) rarm.current.rotation.x = sw;
+    // follow camera (orbit yaw/pitch, behind the character), smoothed, kept above ground
+    const D = 5.5, cp = Math.cos(pitch.current), spn = Math.sin(pitch.current);
+    tmp.desired.set(pos.x + Math.sin(yaw.current) * cp * D, pos.y + 1.4 + spn * D, pos.z + Math.cos(yaw.current) * cp * D);
+    camera.position.lerp(tmp.desired, Math.min(1, dt * 10));
+    const cg = sampleRef.current ? sampleRef.current(camera.position.x, camera.position.z) : 0;
+    if (camera.position.y < cg + 0.6) camera.position.y = cg + 0.6;
+    camera.lookAt(pos.x, pos.y + 1.25, pos.z);
+  });
+
+  return <Character rootRef={root} lleg={lleg} rleg={rleg} larm={larm} rarm={rarm} accent="#7fd0ff" />;
+}
+
 // drives a full day/night cycle — the sun arcs overhead, light warms at dawn/dusk,
 // the sky + fog shift toward night, and the day value is published to dayRef so the
 // water can dim in step. day: 0/1 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk.
@@ -456,15 +541,16 @@ export default function ProceduralTerrain() {
         </Clouds>
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} />
-        <WorldStructures sampleRef={sampleRef} />
+        <WorldModels field={FIELD} sampleRef={sampleRef} />
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
           : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : mode === 'fly' ? <CinematicFly />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
+        {/* Bloom removed: some generated GLB textures feed NaN into its blur and black the
+            whole frame. Vignette has no blur so it's safe. */}
         <EffectComposer>
-          <Bloom intensity={0.3} luminanceThreshold={0.75} mipmapBlur />
-          <Vignette eskil={false} offset={0.2} darkness={0.65} />
+          <Vignette eskil={false} offset={0.2} darkness={0.62} />
         </EffectComposer>
       </Canvas>
 
