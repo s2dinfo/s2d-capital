@@ -17,6 +17,7 @@ import { worldMeters, MeterBars } from '@/components/WorldReport';
 import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, ENCOUNTER_CSS, type Portal } from '@/components/WorldEncounter';
 import WorldModels, { worldColliders } from '@/components/WorldModels';
 import PlayWorld from '@/components/PlayWorld';
+import NPCs from '@/components/NPCs';
 
 const SIZE = 70;
 const SEG = 170;
@@ -464,6 +465,7 @@ export default function ProceduralTerrain() {
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} originRef={onFootOrigin} />
         <WorldModels field={FIELD} sampleRef={sampleRef} />
+        <NPCs sampleRef={sampleRef} count={6} />
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
           : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} colliders={colliders} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
