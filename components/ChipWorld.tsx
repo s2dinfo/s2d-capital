@@ -138,6 +138,12 @@ const ARCS = [
 export default function ChipWorld() {
   const { go, out, label } = useFade();
   const [active, setActive] = useState<number | null>(null);
+  const [diveTo, setDiveTo] = useState<[number, number] | null>(null);
+  // dive the globe camera down into a region, then drop into the world there as the character
+  const diveAndWalk = (loc: [number, number], place: string) => {
+    setDiveTo(loc);
+    setTimeout(() => go(`/terrain?mode=play&at=${place}`, `diving into ${place}`), 1250);
+  };
   const [choices] = useChoices(); // shared store — reflects decisions made in the 3D scenes
   const [reportOpen, setReportOpen] = useState(false);
   const [started, setStarted] = useState(false); // false = cinematic Chapter-One opening
@@ -256,6 +262,7 @@ export default function ChipWorld() {
           arcs={discoveredArcs}
           chokepoints={CHOKEPOINTS}
           focus={focus}
+          diveTo={diveTo}
           activeCountry={null}
           accent="#D4B85C"
           arcStyle="comet"
@@ -301,7 +308,7 @@ export default function ChipWorld() {
             {ENCOUNTERS[node.place] && (
               <button className="cw-d-meet" onClick={() => go(`/meet/${node.place}`, `entering ${node.place}`)}>▶&nbsp;&nbsp;MEET {ENCOUNTERS[node.place].name.toUpperCase()}</button>
             )}
-            <button className="cw-d-walk" onClick={() => go(`/terrain?mode=play&at=${node.place}`, `dropping into the world`)}>🚶&nbsp;&nbsp;WALK THE WORLD FROM {node.place.toUpperCase()}</button>
+            <button className="cw-d-walk" onClick={() => diveAndWalk(node.location, node.place)}>🚶&nbsp;&nbsp;DIVE IN &amp; WALK {node.place.toUpperCase()}</button>
             {node.href && (
               <Link href={node.href} className="cw-d-link">READ THE FULL STORY →</Link>
             )}

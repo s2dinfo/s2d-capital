@@ -127,6 +127,7 @@ function JourneyGlobeGL({
   enableZoom = false,
   fill = false,
   onStopClick,
+  diveTo = null,
 }: {
   stops: JourneyStop[];
   arcs: JourneyArc[];
@@ -145,6 +146,7 @@ function JourneyGlobeGL({
   enableZoom?: boolean;
   fill?: boolean;
   onStopClick?: (index: number) => void;
+  diveTo?: [number, number] | null;
 }) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -188,6 +190,13 @@ function JourneyGlobeGL({
       reduced ? 0 : 1400
     );
   }, [focus, zoomedOut, ready]);
+
+  // Dive: plunge the camera down toward a region's surface (for "dive into the world")
+  useEffect(() => {
+    if (!ready || !globeRef.current || !diveTo) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    globeRef.current.pointOfView({ lat: diveTo[0], lng: diveTo[1], altitude: 0.05 }, reduced ? 0 : 1700);
+  }, [diveTo, ready]);
 
   const activeStop = stops.find((s) => s.active);
   const litCountry = hoverCountry ?? activeCountry;
