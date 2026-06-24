@@ -206,8 +206,8 @@ export default function ChipWorld() {
                 decisions that built them. You make the calls. The world remembers.
               </p>
               <div className="cw-intro-actions">
-                <button className="cw-intro-go" onClick={beginJourney}>Begin the journey&nbsp;&nbsp;→</button>
-                <button className="cw-intro-skip" onClick={() => setStarted(true)}>or explore the map freely</button>
+                <button className="cw-intro-go" onClick={() => setStarted(true)}>🌍&nbsp;&nbsp;EXPLORE THE GLOBE</button>
+                <button className="cw-intro-skip" onClick={beginJourney}>or jump straight into a story →</button>
               </div>
             </motion.div>
           </motion.div>
