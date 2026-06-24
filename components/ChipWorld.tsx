@@ -232,9 +232,9 @@ export default function ChipWorld() {
       {started && (
         <div className="cw-labs">
           <div className="cw-labs-head">EXPLORE · 3D WORLDS</div>
+          <Link href="/terrain?mode=play" className="cw-lab"><b>🎮 Walk the world</b><span>3rd-person · drive · meet the people · learn</span></Link>
           <Link href="/terrain" className="cw-lab"><b>🌍 Procedural world</b><span>noise terrain · biomes · rivers · day/night</span></Link>
           <Link href="/city" className="cw-lab"><b>🏙 Datacenter sprawl</b><span>wave-function-collapse city</span></Link>
-          <Link href="/play" className="cw-lab"><b>▦ Bottleneck</b><span>supply-chain survival game</span></Link>
         </div>
       )}
 
@@ -301,6 +301,7 @@ export default function ChipWorld() {
             {ENCOUNTERS[node.place] && (
               <button className="cw-d-meet" onClick={() => go(`/meet/${node.place}`, `entering ${node.place}`)}>▶&nbsp;&nbsp;MEET {ENCOUNTERS[node.place].name.toUpperCase()}</button>
             )}
+            <button className="cw-d-walk" onClick={() => go(`/terrain?mode=play&at=${node.place}`, `dropping into the world`)}>🚶&nbsp;&nbsp;WALK THE WORLD FROM {node.place.toUpperCase()}</button>
             {node.href && (
               <Link href={node.href} className="cw-d-link">READ THE FULL STORY →</Link>
             )}
@@ -385,6 +386,8 @@ export default function ChipWorld() {
         .cw-d-body{font-family:var(--font-sans);font-size:0.86rem;color:rgba(255,255,255,0.7);line-height:1.7;margin:0 0 18px}
         .cw-d-meet{display:block;width:100%;margin-bottom:14px;background:var(--gold-light,#D4B85C);color:#1A1A2E;border:none;border-radius:10px;padding:12px;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;font-weight:700;cursor:pointer;transition:filter 0.2s}
         .cw-d-meet:hover{filter:brightness(1.1)}
+        .cw-d-walk{display:block;width:100%;margin-bottom:12px;background:rgba(127,208,255,0.14);color:#7fd0ff;border:1px solid rgba(127,208,255,0.45);border-radius:10px;padding:11px;font-family:var(--font-mono);font-size:0.66rem;letter-spacing:0.07em;font-weight:700;cursor:pointer;transition:all 0.2s}
+        .cw-d-walk:hover{background:rgba(127,208,255,0.24);color:#fff}
         .cw-d-link{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--gold-light,#D4B85C);text-decoration:none}
         .cw-d-link:hover{color:#fff}
 

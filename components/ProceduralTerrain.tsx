@@ -415,11 +415,18 @@ function Sun({ auto, manual, dayRef }: { auto: boolean; manual: number; dayRef: 
 const TIME_LABEL = (d: number) => (d < 0.2 || d > 0.82 ? 'night' : d < 0.32 ? 'dawn' : d < 0.68 ? 'day' : 'dusk');
 
 export default function ProceduralTerrain() {
+  // deep-link params from the globe: ?mode=play (drop straight in) & ?at=<company> (spawn near it)
+  const params = useMemo(() => { if (typeof window === 'undefined') return { mode: '', at: '' }; const p = new URLSearchParams(window.location.search); return { mode: p.get('mode') || '', at: p.get('at') || '' }; }, []);
   const [amp, setAmp] = useState(10);
   const [freq, setFreq] = useState(0.05);
   const [octaves, setOctaves] = useState(5);
   const [seed, setSeed] = useState(1);
-  const [mode, setMode] = useState<'tour' | 'orbit' | 'walk' | 'play'>('tour');
+  const [mode, setMode] = useState<'tour' | 'orbit' | 'walk' | 'play'>(params.mode === 'play' ? 'play' : 'tour');
+  const playSpawn = useMemo<[number, number, number]>(() => {
+    const f = FIELD.find((x) => x.node.toLowerCase() === params.at.toLowerCase());
+    if (f) { const [fx, fz] = f.pos; const len = Math.hypot(fx, fz) || 1; return [fx + (fx / len) * 6, 0, fz + (fz / len) * 6]; } // spawn just outside the chosen company, facing it
+    return PLAY_SPAWN;
+  }, [params.at]);
   const [timeAuto, setTimeAuto] = useState(true);
   const [timeManual, setTimeManual] = useState(0.5);
   const dayRef = useRef(0.5);
@@ -479,7 +486,7 @@ export default function ProceduralTerrain() {
         {(mode === 'play' || mode === 'walk') && <NPCs sampleRef={sampleRef} count={6} />}
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
-          : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} colliders={colliders} spawn={PLAY_SPAWN} bound={SIZE / 2 - 1.5} />
+          : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} colliders={colliders} spawn={playSpawn} bound={SIZE / 2 - 1.5} />
           : mode === 'walk' ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} bound={SIZE / 2 - 1.5} />
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
