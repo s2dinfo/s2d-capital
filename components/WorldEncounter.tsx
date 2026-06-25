@@ -6,11 +6,11 @@
 import * as THREE from 'three';
 import { useMemo, useRef, useState, useEffect, Suspense } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { PointerLockControls, Billboard, Html, useTexture } from '@react-three/drei';
+import { PointerLockControls, Billboard, Html, useTexture, useGLTF } from '@react-three/drei';
 import { FIGURES } from '@/lib/figures';
 import { ENCOUNTERS, lineAudioId } from '@/lib/encounters';
 
-export type FieldEntry = { node: string; pos: [number, number]; fig: { image: string; accent: string }; enc: any };
+export type FieldEntry = { node: string; pos: [number, number]; fig: { image: string; accent: string; model?: string }; enc: any };
 
 // build a placed-figure list from node→position, dropping any without art/script
 export function buildField(spots: { node: string; pos: [number, number] }[]): FieldEntry[] {
@@ -104,6 +104,61 @@ function WorldHologram({ fig, enc, met, near, grpRef }: { fig: { image: string; 
   );
 }
 
+// the REAL 3D character (Meshy image-to-3D of the figure's portrait) standing in the world
+// — replaces the flat hologram billboard. Sanitized (keep the base map = likeness, drop
+// secondary maps that can NaN the bloom), scaled to human height, feet on the ground.
+// WorldFigures turns it to face the player each frame.
+const CHAR_H = 2.3;   // target height in world units
+function WorldCharacter({ model, accent, enc, met, near, grpRef }: {
+  model: string; accent: string; enc: any; met: boolean; near: boolean;
+  grpRef: (el: THREE.Group | null) => void;
+}) {
+  const { scene } = useGLTF(model);
+  const obj = useMemo(() => {
+    const root = scene.clone(true);
+    root.traverse((o: any) => {
+      if (o.isMesh) {
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach((m: any) => {
+          if (!m) return;
+          if ('metalness' in m) m.metalness = 0;
+          if ('roughness' in m) m.roughness = 1;
+          for (const k of ['normalMap', 'metalnessMap', 'roughnessMap', 'aoMap', 'emissiveMap']) { if (m[k]) m[k] = null; }
+          m.needsUpdate = true;
+        });
+        if (o.geometry?.attributes?.normal) { o.geometry.deleteAttribute('normal'); o.geometry.computeVertexNormals(); }
+        o.castShadow = true; o.receiveShadow = false;
+      }
+    });
+    const box = new THREE.Box3().setFromObject(root);
+    const size = box.getSize(new THREE.Vector3());
+    root.scale.setScalar(CHAR_H / (size.y || 1));
+    const box2 = new THREE.Box3().setFromObject(root);
+    const c = box2.getCenter(new THREE.Vector3());
+    root.position.set(-c.x, -box2.min.y, -c.z);   // centre x/z, feet on the ground
+    return root;
+  }, [scene]);
+  return (
+    <group ref={grpRef}>
+      <primitive object={obj} />
+      {/* interaction ground ring — the only glow that stays; the 'walk up · press E' cue */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
+        <ringGeometry args={[0.9, 1.25, 44]} />
+        <meshBasicMaterial color={accent} transparent opacity={near ? 0.95 : met ? 0.35 : 0.6} blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+      {/* soft theme light so the character reads in their accent colour */}
+      <pointLight position={[0, 2.4, 1.4]} color={accent} intensity={near ? 5 : 2.5} distance={9} />
+      <Html position={[0, CHAR_H + 0.35, 0]} center occlude={false} pointerEvents="none" zIndexRange={[10, 0]}>
+        <div className="we-tag" style={{ borderColor: accent }}>
+          <b style={{ color: accent }}>✦ {enc.name}</b>
+          <span>{enc.role}</span>
+          <em>{met ? '✓ spoken' : 'walk up · press E'}</em>
+        </div>
+      </Html>
+    </group>
+  );
+}
+
 // renders every placed figure, grounds them via sampleRef each frame, and reports the
 // nearest within range (only while walking) without re-rendering every frame
 export function WorldFigures({ field, sampleRef, walking, choices, nearRef, setNear, radius = 6, originRef }: {
@@ -126,6 +181,7 @@ export function WorldFigures({ field, sampleRef, walking, choices, nearRef, setN
       const [x, z] = field[i].pos;
       const gy = sampleRef.current ? Math.max(sampleRef.current(x, z), 0) : 0;
       g.position.set(x, gy, z);
+      g.rotation.y = Math.atan2(o.x - x, o.z - z);   // turn the character to face the player
       if (walking) { const dx = o.x - x, dz = o.z - z; const d2 = dx * dx + dz * dz; if (d2 < nd) { nd = d2; nearest = i; } }
     }
     if (nearest !== nearRef.current) { nearRef.current = nearest; setNear(nearest); }
@@ -133,7 +189,9 @@ export function WorldFigures({ field, sampleRef, walking, choices, nearRef, setN
   return (
     <Suspense fallback={null}>
       {field.map((f, i) => (
-        <WorldHologram key={f.node} fig={f.fig} enc={f.enc} met={!!choices[f.node]} near={nearRef.current === i} grpRef={(el) => { groups.current[i] = el; }} />
+        f.fig.model
+          ? <WorldCharacter key={f.node} model={f.fig.model} accent={f.fig.accent} enc={f.enc} met={!!choices[f.node]} near={nearRef.current === i} grpRef={(el) => { groups.current[i] = el; }} />
+          : <WorldHologram key={f.node} fig={f.fig} enc={f.enc} met={!!choices[f.node]} near={nearRef.current === i} grpRef={(el) => { groups.current[i] = el; }} />
       ))}
     </Suspense>
   );
