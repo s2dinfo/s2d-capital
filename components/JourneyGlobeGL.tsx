@@ -191,11 +191,17 @@ function JourneyGlobeGL({
     );
   }, [focus, zoomedOut, ready]);
 
-  // Dive: plunge the camera down toward a region's surface (for "dive into the world")
+  // Dive: plunge the camera down toward a region's surface (for "dive into the world").
+  // Two-stage so it reads like a flight, not a flat zoom: a quick swing to centre the
+  // target, then an accelerating drop through the atmosphere to just above the surface.
   useEffect(() => {
     if (!ready || !globeRef.current || !diveTo) return;
+    const g = globeRef.current;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    globeRef.current.pointOfView({ lat: diveTo[0], lng: diveTo[1], altitude: 0.05 }, reduced ? 0 : 1700);
+    if (reduced) { g.pointOfView({ lat: diveTo[0], lng: diveTo[1], altitude: 0.05 }, 0); return; }
+    g.pointOfView({ lat: diveTo[0], lng: diveTo[1], altitude: 1.2 }, 550);            // swing in
+    const t = setTimeout(() => g.pointOfView({ lat: diveTo[0], lng: diveTo[1], altitude: 0.012 }, 1500), 520); // plunge
+    return () => clearTimeout(t);
   }, [diveTo, ready]);
 
   const activeStop = stops.find((s) => s.active);

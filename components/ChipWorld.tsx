@@ -142,7 +142,8 @@ export default function ChipWorld() {
   // dive the globe camera down into a region, then drop into the world there as the character
   const diveAndWalk = (loc: [number, number], place: string) => {
     setDiveTo(loc);
-    setTimeout(() => go(`/terrain?mode=play&at=${place}`, `diving into ${place}`), 1250);
+    // hand off near the plunge's peak (the surface fills the frame) so the cut hides in the rush
+    setTimeout(() => go(`/terrain?mode=play&at=${place}`, `diving into ${place}`), 1850);
   };
   const [choices] = useChoices(); // shared store — reflects decisions made in the 3D scenes
   const [reportOpen, setReportOpen] = useState(false);
