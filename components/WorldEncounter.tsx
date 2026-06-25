@@ -138,9 +138,18 @@ function WorldCharacter({ model, accent, enc, met, near, grpRef }: {
     root.position.set(-c.x, -box2.min.y, -c.z);   // centre x/z, feet on the ground
     return root;
   }, [scene]);
+  // a subtle faked idle so they read as alive, not frozen — no rig, can't deform the mesh
+  const idle = useRef<THREE.Group>(null);
+  const phase = useMemo(() => Math.random() * Math.PI * 2, []);
+  useFrame((s) => {
+    const g = idle.current; if (!g) return;
+    const t = s.clock.elapsedTime + phase;
+    g.position.y = Math.sin(t * 1.4) * 0.025;   // breathing bob
+    g.rotation.z = Math.sin(t * 0.8) * 0.012;   // gentle weight shift
+  });
   return (
     <group ref={grpRef}>
-      <primitive object={obj} />
+      <group ref={idle}><primitive object={obj} /></group>
       {/* interaction ground ring — the only glow that stays; the 'walk up · press E' cue */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
         <ringGeometry args={[0.9, 1.25, 44]} />
