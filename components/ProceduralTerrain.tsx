@@ -437,6 +437,7 @@ export default function ProceduralTerrain() {
   // the learning codex — commodities you've discovered by walking up to them (persisted)
   const [discovered, setDiscovered] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem('s2d_discovered') || '[]'); } catch { return []; } });
   const [codexOpen, setCodexOpen] = useState(false);
+  const [factIdx, setFactIdx] = useState(0);   // ambient card cycles through a node's facts
 
   // in-world encounters
   const [choices, setChoice] = useChoices();
@@ -469,6 +470,16 @@ export default function ProceduralTerrain() {
     if (near < 0) return;
     const node = FIELD[near].node;
     setDiscovered((prev) => { if (prev.includes(node)) return prev; const next = [...prev, node]; try { localStorage.setItem('s2d_discovered', JSON.stringify(next)); } catch {} return next; });
+  }, [near]);
+
+  // the ambient card cycles through all of a node's facts while you stand near it
+  useEffect(() => {
+    setFactIdx(0);
+    if (near < 0) return;
+    const n = FACTS[FIELD[near].node]?.length || 0;
+    if (n <= 1) return;
+    const t = setInterval(() => setFactIdx((i) => (i + 1) % n), 5500);
+    return () => clearInterval(t);
   }, [near]);
 
   return (
@@ -542,13 +553,18 @@ export default function ProceduralTerrain() {
         <div className="pt-prompt"><span className="pt-key">E</span> speak with <b style={{ color: FIELD[near].fig.accent }}>{FIELD[near].enc.name}</b> — {FIELD[near].enc.role}</div>
       )}
 
-      {/* ambient learning — a real fact about this commodity surfaces as you walk up */}
-      {walking && active < 0 && near >= 0 && FACTS[FIELD[near].node]?.[0] && (
-        <div className="pt-learn" style={{ borderColor: FIELD[near].fig.accent + '55' }}>
-          <div className="pt-learn-head" style={{ color: FIELD[near].fig.accent }}>◆ {FIELD[near].node.toUpperCase()} · DID YOU KNOW</div>
-          <div className="pt-learn-fact"><b>{FACTS[FIELD[near].node][0].label}.</b> {FACTS[FIELD[near].node][0].text}</div>
-        </div>
-      )}
+      {/* ambient learning — facts about this commodity cycle as you stand near it */}
+      {walking && active < 0 && near >= 0 && (() => {
+        const facts = FACTS[FIELD[near].node] || [];
+        if (!facts.length) return null;
+        const i = factIdx % facts.length;
+        return (
+          <div className="pt-learn" style={{ borderColor: FIELD[near].fig.accent + '55' }}>
+            <div className="pt-learn-head" style={{ color: FIELD[near].fig.accent }}>◆ {FIELD[near].node.toUpperCase()} · DID YOU KNOW{facts.length > 1 ? <span style={{ opacity: 0.55, marginLeft: 6 }}>{i + 1}/{facts.length}</span> : null}</div>
+            <div className="pt-learn-fact"><b>{facts[i].label}.</b> {facts[i].text}</div>
+          </div>
+        );
+      })()}
 
       {/* the in-scene decision */}
       {active >= 0 && (
