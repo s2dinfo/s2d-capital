@@ -136,14 +136,15 @@ const ARCS = [
 
 // Which prior stop's choice the next encounter reacts to (the quest memory).
 export default function ChipWorld() {
-  const { go, out, label } = useFade();
+  const { go, out, label, tone } = useFade();
   const [active, setActive] = useState<number | null>(null);
   const [diveTo, setDiveTo] = useState<[number, number] | null>(null);
   // dive the globe camera down into a region, then drop into the world there as the character
   const diveAndWalk = (loc: [number, number], place: string) => {
     setDiveTo(loc);
-    // hand off near the plunge's peak (the surface fills the frame) so the cut hides in the rush
-    setTimeout(() => go(`/terrain?mode=play&at=${place}`, `diving into ${place}`), 1850);
+    // hand off near the plunge's peak (the surface fills the frame) so the cut hides in the rush,
+    // flashing cloud-white on both sides of the cut = one punch through the atmosphere
+    setTimeout(() => go(`/terrain?mode=play&at=${place}&dive=1`, `diving into ${place}`, 'cloud'), 1850);
   };
   const [choices] = useChoices(); // shared store — reflects decisions made in the 3D scenes
   const [reportOpen, setReportOpen] = useState(false);
@@ -172,7 +173,7 @@ export default function ChipWorld() {
 
   return (
     <section className="cw-stage">
-      <Fader out={out} label={label} />
+      <Fader out={out} label={label} outTone={tone} />
       {/* ── Immersive background: animated glows + grid + vignette ── */}
       <div className="cw-bg" aria-hidden>
         <div className="cw-stars" />

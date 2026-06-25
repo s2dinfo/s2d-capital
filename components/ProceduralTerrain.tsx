@@ -416,7 +416,7 @@ const TIME_LABEL = (d: number) => (d < 0.2 || d > 0.82 ? 'night' : d < 0.32 ? 'd
 
 export default function ProceduralTerrain() {
   // deep-link params from the globe: ?mode=play (drop straight in) & ?at=<company> (spawn near it)
-  const params = useMemo(() => { if (typeof window === 'undefined') return { mode: '', at: '' }; const p = new URLSearchParams(window.location.search); return { mode: p.get('mode') || '', at: p.get('at') || '' }; }, []);
+  const params = useMemo(() => { if (typeof window === 'undefined') return { mode: '', at: '', dive: false }; const p = new URLSearchParams(window.location.search); return { mode: p.get('mode') || '', at: p.get('at') || '', dive: p.get('dive') === '1' }; }, []);
   const [amp, setAmp] = useState(10);
   const [freq, setFreq] = useState(0.05);
   const [octaves, setOctaves] = useState(5);
@@ -602,7 +602,7 @@ export default function ProceduralTerrain() {
         </div>
       )}
 
-      <Fader out={leaving} label={leaveLabel} />
+      <Fader out={leaving} label={leaveLabel} inTone={params.dive ? 'cloud' : 'dark'} />
 
       <style dangerouslySetInnerHTML={{ __html: `
         .pt-stage{position:fixed;inset:0;background:#c3d7e8}
