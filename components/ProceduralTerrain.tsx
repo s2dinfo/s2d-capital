@@ -52,16 +52,16 @@ function biomeColor(h: number, moist: number, amp: number): THREE.Color {
 // Each commodity territory is themed as its real-world place — ground palette + what grows
 // there — so crossing the world feels like traveling between regions, and diving into a
 // place drops you into that locale (Pillar ③: real distinct locations).
-const LOCALE: Record<string, { ground: string; veg: 'forest' | 'temperate' | 'sparse' | 'desert' }> = {
-  Nvidia:    { ground: '#7a7d4e', veg: 'temperate' }, // Santa Clara — dry California gold-green
-  TSMC:      { ground: '#3f6b3a', veg: 'forest' },     // Hsinchu, Taiwan — lush subtropical
-  ASML:      { ground: '#5c7449', veg: 'sparse' },     // Veldhoven, NL — flat cool polder
-  Copper:    { ground: '#b27a4a', veg: 'desert' },     // Atacama, Chile — arid red rock
-  Power:     { ground: '#6a7158', veg: 'sparse' },     // grid country — industrial temperate
-  OpenAI:    { ground: '#5d6b6a', veg: 'sparse' },     // datacenter — cool tech
-  Microsoft: { ground: '#3f5e4a', veg: 'forest' },     // Redmond — evergreen PNW
-  Oil:       { ground: '#c2a368', veg: 'desert' },     // Saudi Aramco — sand
-  RareEarth: { ground: '#8a6f4a', veg: 'desert' },     // China processing — arid industrial
+const LOCALE: Record<string, { ground: string; veg: 'forest' | 'temperate' | 'sparse' | 'desert'; fog: string }> = {
+  Nvidia:    { ground: '#7a7d4e', veg: 'temperate', fog: '#cdd6cf' }, // Santa Clara — dry California gold-green
+  TSMC:      { ground: '#3f6b3a', veg: 'forest',    fog: '#bcd8d2' }, // Hsinchu, Taiwan — lush subtropical
+  ASML:      { ground: '#5c7449', veg: 'sparse',    fog: '#c4ccd4' }, // Veldhoven, NL — flat cool overcast
+  Copper:    { ground: '#b27a4a', veg: 'desert',    fog: '#e0c89e' }, // Atacama, Chile — arid red rock, dusty haze
+  Power:     { ground: '#6a7158', veg: 'sparse',    fog: '#c3cdd0' }, // grid country — industrial temperate
+  OpenAI:    { ground: '#5d6b6a', veg: 'sparse',    fog: '#c0cccd' }, // datacenter — cool tech
+  Microsoft: { ground: '#3f5e4a', veg: 'forest',    fog: '#bccbd2' }, // Redmond — evergreen PNW mist
+  Oil:       { ground: '#c2a368', veg: 'desert',    fog: '#e6d3a6' }, // Saudi Aramco — sand haze
+  RareEarth: { ground: '#8a6f4a', veg: 'desert',    fog: '#d2c4a8' }, // China processing — arid industrial smog
 };
 const LOCALE_COL: Record<string, THREE.Color> = {};
 for (const k of Object.keys(LOCALE)) LOCALE_COL[k] = new THREE.Color(LOCALE[k].ground);
@@ -399,19 +399,19 @@ function WorldStructures({ sampleRef }: { sampleRef: { current: ((x: number, z: 
 // drives a full day/night cycle — the sun arcs overhead, light warms at dawn/dusk,
 // the sky + fog shift toward night, and the day value is published to dayRef so the
 // water can dim in step. day: 0/1 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk.
-function Sun({ auto, manual, dayRef }: { auto: boolean; manual: number; dayRef: { current: number } }) {
+function Sun({ auto, manual, dayRef, fog }: { auto: boolean; manual: number; dayRef: { current: number }; fog?: string }) {
   const light = useRef<THREE.DirectionalLight>(null);
   const sky = useRef<any>(null);
   const hemi = useRef<THREE.HemisphereLight>(null);
   const amb = useRef<THREE.AmbientLight>(null);
   const dayCol = useMemo(() => new THREE.Color('#fff3da'), []);
   const duskCol = useMemo(() => new THREE.Color('#ff7327'), []);
-  const dayFog = useMemo(() => new THREE.Color('#c3d7e8'), []);
+  const dayFog = useMemo(() => new THREE.Color(fog || '#c3d7e8'), [fog]);
   const nightFog = useMemo(() => new THREE.Color('#0a1424'), []);
   const sunPos = useMemo(() => new THREE.Vector3(), []);
   const tmp = useMemo(() => new THREE.Color(), []);
   useFrame((s) => {
-    const day = auto ? (s.clock.elapsedTime * 0.03) % 1 : manual;
+    const day = auto ? (s.clock.elapsedTime * 0.03 + 0.4) % 1 : manual;   // arrive mid-morning (sun up), then cycle
     dayRef.current = day;
     const ang = day * Math.PI * 2 - Math.PI / 2;            // noon (day .5) -> straight up
     const sy = Math.sin(ang), sx = Math.cos(ang);
@@ -454,6 +454,11 @@ export default function ProceduralTerrain() {
     if (f) { const [fx, fz] = f.pos; const len = Math.hypot(fx, fz) || 1; return [fx + (fx / len) * 6, 0, fz + (fz / len) * 6]; } // spawn just outside the chosen company, facing it
     return PLAY_SPAWN;
   }, [params.at]);
+  // the locale you dove into sets the atmosphere haze (desert dust at the copper pit, cool overcast at ASML…)
+  const arriveFog = useMemo(() => {
+    const f = FIELD.find((x) => x.node.toLowerCase() === params.at.toLowerCase());
+    return (f && LOCALE[f.node]?.fog) || '#c3d7e8';
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [timeAuto, setTimeAuto] = useState(true);
   const [timeManual, setTimeManual] = useState(0.5);
   const dayRef = useRef(0.5);
@@ -512,8 +517,8 @@ export default function ProceduralTerrain() {
   return (
     <div className="pt-stage">
       <Canvas shadows dpr={[1, 1.5]} performance={{ min: 0.5 }} camera={{ position: [42, 28, 42], fov: 42 }}>
-        <fog attach="fog" args={['#c3d7e8', 80, 175]} />
-        <Sun auto={timeAuto} manual={timeManual} dayRef={dayRef} />
+        <fog attach="fog" args={[arriveFog, 80, 175]} />
+        <Sun auto={timeAuto} manual={timeManual} dayRef={dayRef} fog={arriveFog} />
         <Clouds material={THREE.MeshBasicMaterial} limit={60}>
           <Cloud seed={seed} segments={30} bounds={[40, 4, 40]} volume={9} color="#ffffff" opacity={0.55} position={[0, 30, -10]} />
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
