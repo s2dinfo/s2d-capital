@@ -245,16 +245,18 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
 
 // ── The people who run the chip world, standing out IN the world (walk up + press E).
 // Figures, hologram rendering, proximity and the encounter card all live in WorldEncounter. ──
+// spread across the bigger world (~1.55× the old layout) so the districts fill the map and
+// walking between them is a real trek — territories, structures, crowds and traffic all follow
 const FIELD = buildField([
-  { node: 'Nvidia', pos: [0, -20] },
-  { node: 'TSMC', pos: [18, -11] },
-  { node: 'ASML', pos: [-9, -18] },
-  { node: 'Copper', pos: [22, 9] },
-  { node: 'Power', pos: [6, 22] },
-  { node: 'Oil', pos: [-18, 15] },
-  { node: 'RareEarth', pos: [-23, -7] },
-  { node: 'OpenAI', pos: [13, 20] },
-  { node: 'Microsoft', pos: [-26, 4] },
+  { node: 'Nvidia', pos: [0, -31] },
+  { node: 'TSMC', pos: [28, -17] },
+  { node: 'ASML', pos: [-14, -28] },
+  { node: 'Copper', pos: [34, 14] },
+  { node: 'Power', pos: [9, 34] },
+  { node: 'Oil', pos: [-28, 23] },
+  { node: 'RareEarth', pos: [-36, -11] },
+  { node: 'OpenAI', pos: [20, 31] },
+  { node: 'Microsoft', pos: [-40, 6] },
 ]);
 
 // gateway out of the landscape and into the datacenter city — walk through it
