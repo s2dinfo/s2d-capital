@@ -19,6 +19,7 @@ import { FirstPerson, WorldFigures, WorldPortals, EncounterPanel, buildField, EN
 import WorldModels, { worldColliders } from '@/components/WorldModels';
 import PlayWorld from '@/components/PlayWorld';
 import NPCs from '@/components/NPCs';
+import Birds from '@/components/Birds';
 
 const SIZE = 70;
 const SEG = 132;   // terrain resolution — lowered for perf (fewer verts to shade + shadow)
@@ -411,7 +412,7 @@ function Sun({ auto, manual, dayRef, fog }: { auto: boolean; manual: number; day
   const sunPos = useMemo(() => new THREE.Vector3(), []);
   const tmp = useMemo(() => new THREE.Color(), []);
   useFrame((s) => {
-    const day = auto ? (s.clock.elapsedTime * 0.03 + 0.4) % 1 : manual;   // arrive mid-morning (sun up), then cycle
+    const day = auto ? (s.clock.elapsedTime * 0.009 + 0.4) % 1 : manual;   // arrive mid-morning (sun up), then cycle slowly (~110s)
     dayRef.current = day;
     const ang = day * Math.PI * 2 - Math.PI / 2;            // noon (day .5) -> straight up
     const sy = Math.sin(ang), sx = Math.cos(ang);
@@ -519,6 +520,7 @@ export default function ProceduralTerrain() {
       <Canvas shadows dpr={[1, 1.5]} performance={{ min: 0.5 }} camera={{ position: [42, 28, 42], fov: 42 }}>
         <fog attach="fog" args={[arriveFog, 80, 175]} />
         <Sun auto={timeAuto} manual={timeManual} dayRef={dayRef} fog={arriveFog} />
+        <Birds count={16} />
         <Clouds material={THREE.MeshBasicMaterial} limit={60}>
           <Cloud seed={seed} segments={30} bounds={[40, 4, 40]} volume={9} color="#ffffff" opacity={0.55} position={[0, 30, -10]} />
           <Cloud seed={seed + 5} segments={24} bounds={[30, 3, 30]} volume={7} color="#eef4ff" opacity={0.45} position={[-20, 26, 20]} />
