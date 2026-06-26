@@ -20,6 +20,7 @@ import WorldModels, { worldColliders } from '@/components/WorldModels';
 import PlayWorld from '@/components/PlayWorld';
 import NPCs from '@/components/NPCs';
 import Birds from '@/components/Birds';
+import Traffic from '@/components/Traffic';
 
 const SIZE = 70;
 const SEG = 132;   // terrain resolution — lowered for perf (fewer verts to shade + shadow)
@@ -529,6 +530,7 @@ export default function ProceduralTerrain() {
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} originRef={onFootOrigin} />
         <WorldModels field={FIELD} sampleRef={sampleRef} />
         {(mode === 'play' || mode === 'walk') && <NPCs sampleRef={sampleRef} count={18} hubs={FIELD.map((f) => f.pos)} />}
+        {(mode === 'play' || mode === 'walk') && <Traffic sampleRef={sampleRef} waypoints={FIELD.map((f) => f.pos)} count={6} />}
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
           : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} colliders={colliders} spawn={playSpawn} bound={SIZE / 2 - 1.5} />
