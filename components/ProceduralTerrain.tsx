@@ -22,8 +22,8 @@ import NPCs from '@/components/NPCs';
 import Birds from '@/components/Birds';
 import Traffic from '@/components/Traffic';
 
-const SIZE = 70;
-const SEG = 132;   // terrain resolution — lowered for perf (fewer verts to shade + shadow)
+const SIZE = 100;  // a bigger world to roam (the walk bounds follow SIZE/2)
+const SEG = 150;   // terrain resolution — kept moderate for perf (fewer verts to shade + shadow)
 
 function fbm(n: (x: number, y: number) => number, x: number, y: number, oct: number, freq: number) {
   let amp = 1, f = freq, sum = 0, norm = 0;
@@ -549,13 +549,19 @@ export default function ProceduralTerrain() {
           <div className="pt-sub">FBM terrain · biomes · carved rivers · day/night · walk it in first person</div>
         </div>
         <div className="pt-panel">
-          <Slider label="Amplitude" v={amp} min={3} max={18} step={0.5} onChange={setAmp} hint="height of the mountains" />
-          <Slider label="Frequency" v={freq} min={0.018} max={0.095} step={0.002} onChange={setFreq} hint="ruggedness of the land" fmt={(x) => x.toFixed(3)} />
-          <Slider label="Octaves" v={octaves} min={1} max={6} step={1} onChange={(x) => setOctaves(Math.round(x))} hint="layers of detail" />
-          <Slider label="Time of day" v={timeManual} min={0} max={1} step={0.01} disabled={timeAuto}
-            onChange={(x) => { setTimeAuto(false); setTimeManual(x); }} hint={timeAuto ? 'cycling automatically' : 'drag to set the sun'}
-            fmt={() => (timeAuto ? 'auto ☀→🌙' : TIME_LABEL(timeManual))} />
-          <button className="pt-seed" style={{ width: '100%' }} onClick={() => setSeed((s) => s + 1)}>↻ generate a new world</button>
+          {/* the world-generator sliders are a sandbox tool — hide them in the immersive modes
+              (play / 1st-person) so the game reads as a game, not a dev panel */}
+          {!walking && (
+            <>
+              <Slider label="Amplitude" v={amp} min={3} max={18} step={0.5} onChange={setAmp} hint="height of the mountains" />
+              <Slider label="Frequency" v={freq} min={0.018} max={0.095} step={0.002} onChange={setFreq} hint="ruggedness of the land" fmt={(x) => x.toFixed(3)} />
+              <Slider label="Octaves" v={octaves} min={1} max={6} step={1} onChange={(x) => setOctaves(Math.round(x))} hint="layers of detail" />
+              <Slider label="Time of day" v={timeManual} min={0} max={1} step={0.01} disabled={timeAuto}
+                onChange={(x) => { setTimeAuto(false); setTimeManual(x); }} hint={timeAuto ? 'cycling automatically' : 'drag to set the sun'}
+                fmt={() => (timeAuto ? 'auto ☀→🌙' : TIME_LABEL(timeManual))} />
+              <button className="pt-seed" style={{ width: '100%' }} onClick={() => setSeed((s) => s + 1)}>↻ generate a new world</button>
+            </>
+          )}
           <div className="pt-modes">
             {(['tour', 'orbit', 'walk', 'play'] as const).map((m) => (
               <button key={m} className={'pt-mode' + (mode === m ? ' pt-mode-on' : '')} onClick={() => setMode(m)}>
