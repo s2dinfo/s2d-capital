@@ -49,6 +49,28 @@ function biomeColor(h: number, moist: number, amp: number): THREE.Color {
   return C.forest;
 }
 
+// Each commodity territory is themed as its real-world place — ground palette + what grows
+// there — so crossing the world feels like traveling between regions, and diving into a
+// place drops you into that locale (Pillar ③: real distinct locations).
+const LOCALE: Record<string, { ground: string; veg: 'forest' | 'temperate' | 'sparse' | 'desert' }> = {
+  Nvidia:    { ground: '#7a7d4e', veg: 'temperate' }, // Santa Clara — dry California gold-green
+  TSMC:      { ground: '#3f6b3a', veg: 'forest' },     // Hsinchu, Taiwan — lush subtropical
+  ASML:      { ground: '#5c7449', veg: 'sparse' },     // Veldhoven, NL — flat cool polder
+  Copper:    { ground: '#b27a4a', veg: 'desert' },     // Atacama, Chile — arid red rock
+  Power:     { ground: '#6a7158', veg: 'sparse' },     // grid country — industrial temperate
+  OpenAI:    { ground: '#5d6b6a', veg: 'sparse' },     // datacenter — cool tech
+  Microsoft: { ground: '#3f5e4a', veg: 'forest' },     // Redmond — evergreen PNW
+  Oil:       { ground: '#c2a368', veg: 'desert' },     // Saudi Aramco — sand
+  RareEarth: { ground: '#8a6f4a', veg: 'desert' },     // China processing — arid industrial
+};
+const LOCALE_COL: Record<string, THREE.Color> = {};
+for (const k of Object.keys(LOCALE)) LOCALE_COL[k] = new THREE.Color(LOCALE[k].ground);
+function nearestFieldIdx(wx: number, wz: number): number {
+  let best = 0, bd = Infinity;
+  for (let k = 0; k < FIELD.length; k++) { const dx = wx - FIELD[k].pos[0], dz = wz - FIELD[k].pos[1]; const d = dx * dx + dz * dz; if (d < bd) { bd = d; best = k; } }
+  return best;
+}
+
 function Water({ dayRef }: { dayRef: { current: number } }) {
   const ref = useRef<THREE.ShaderMaterial>(null);
   useFrame((s) => { if (ref.current) { ref.current.uniforms.uTime.value = s.clock.elapsedTime; ref.current.uniforms.uDay.value = dayRef.current; } });
@@ -157,9 +179,12 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
       if (rt <= 0.12 && terr.length) {                     // land only — wash with its territory accent
         const wz = -py; let best = 0, bd = Infinity, second = Infinity;
         for (let k = 0; k < FIELD.length; k++) { const dx = px - FIELD[k].pos[0], dz = wz - FIELD[k].pos[1]; const d = dx * dx + dz * dz; if (d < bd) { second = bd; bd = d; best = k; } else if (d < second) { second = d; } }
-        // stronger wash near a company, easing off toward the border with its neighbour
+        // each territory takes on its real-world locale's ground palette (desert / lush /
+        // polder…) so the regions read as distinct places, with a faint accent on top
         const edge = sstep(Math.sqrt(second) - Math.sqrt(bd), 0, 6); // 0 at the border, 1 deep inside
-        tmp.lerp(terr[best], 0.12 + edge * 0.16);
+        const loc = LOCALE_COL[FIELD[best].node];
+        if (loc) tmp.lerp(loc, 0.2 + edge * 0.34);
+        tmp.lerp(terr[best], 0.05 + edge * 0.07);
       }
       colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
     }
@@ -180,10 +205,12 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
       if (t < 0.04 || t > 0.85) continue;
       if (riverMask(px, py, h) > 0.2) continue;   // don't plant in the river
       const w: any = [px, h, -py, 0.5 + rng() * 0.7];
-      if (mo > 0.35 && rng() > 0.22) trees.push(w);
-      else if (mo > 0.0 && rng() > 0.5) trees.push(w);
-      else if (mo < -0.3 && rng() > 0.5) cacti.push(w);
-      else if (rng() > 0.78) rocks.push(w);
+      // what grows here is governed by the nearest territory's locale, not just moisture
+      const veg = LOCALE[FIELD[nearestFieldIdx(px, -py)].node]?.veg || 'temperate';
+      if (veg === 'desert') { if (rng() > 0.45) cacti.push(w); else if (rng() > 0.6) rocks.push(w); }
+      else if (veg === 'forest') { if (rng() > 0.14) trees.push(w); }
+      else if (veg === 'temperate') { if (rng() > (mo > 0.1 ? 0.3 : 0.55)) trees.push(w); else if (rng() > 0.72) rocks.push(w); }
+      else { if (rng() > 0.66) trees.push(w); else if (rng() > 0.76) rocks.push(w); } // sparse
     }
     return { trees, rocks, cacti };
   }, [elev, moist, river, amp, freq, octaves, seed]);
