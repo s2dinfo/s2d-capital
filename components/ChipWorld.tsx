@@ -148,7 +148,7 @@ export default function ChipWorld() {
   };
   const [choices] = useChoices(); // shared store — reflects decisions made in the 3D scenes
   const [reportOpen, setReportOpen] = useState(false);
-  const [started, setStarted] = useState(false); // false = cinematic Chapter-One opening
+  const [started, setStarted] = useState(true); // open straight on the 3D globe — no text-wall intro
   const callsMade = NODES.filter((n) => choices[n.place]).length;
   // the supply links you've earned by meeting both figures — the chain draws itself
   const discoveredArcs = ARCS.filter((a) => a.ends.every((p) => choices[p]));
@@ -250,7 +250,7 @@ export default function ChipWorld() {
       {started && (
         <div className="cw-pills">
           {NODES.map((n, i) => (
-            <button key={n.place} className={'cw-pill' + (i === active ? ' cw-pill-on' : '')} onClick={() => setActive(i)}>
+            <button key={n.place} className={'cw-pill' + (i === active ? ' cw-pill-on' : '')} onClick={() => diveAndWalk(n.location, n.place)}>
               {n.place}
             </button>
           ))}
@@ -275,7 +275,7 @@ export default function ChipWorld() {
           showCountries={false}
           enableZoom
           fill
-          onStopClick={(i) => setActive(i)}
+          onStopClick={(i) => diveAndWalk(NODES[i].location, NODES[i].place)}
         />
       </div>
 
@@ -284,7 +284,7 @@ export default function ChipWorld() {
         <span className="cw-hud-dot" />
         {node
           ? `LAT ${node.location[0].toFixed(2)} · LNG ${node.location[1].toFixed(2)} — ${node.place.toUpperCase()}`
-          : 'ASML · TSMC · NVIDIA — SELECT A NODE'}
+          : 'CLICK A REGION ON THE GLOBE TO ZOOM IN & LAND'}
       </div>
 
       {/* ── Floating dossier (bottom-left), animates in on select ── */}
