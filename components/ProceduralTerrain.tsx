@@ -526,7 +526,7 @@ export default function ProceduralTerrain() {
         <Terrain amp={amp} freq={freq} octaves={octaves} seed={seed} dayRef={dayRef} sampleRef={sampleRef} />
         <WorldFigures field={FIELD} sampleRef={sampleRef} walking={walking && active < 0} choices={choices} nearRef={nearRef} setNear={setNear} originRef={onFootOrigin} />
         <WorldModels field={FIELD} sampleRef={sampleRef} />
-        {(mode === 'play' || mode === 'walk') && <NPCs sampleRef={sampleRef} count={6} />}
+        {(mode === 'play' || mode === 'walk') && <NPCs sampleRef={sampleRef} count={18} hubs={FIELD.map((f) => f.pos)} />}
         <WorldPortals portals={TERRAIN_PORTALS} sampleRef={sampleRef} walking={walking && active < 0} onEnter={(p) => go(p.dest, p.label)} originRef={onFootOrigin} />
         {mode === 'tour' ? <CinematicIntro onDone={() => setMode('orbit')} />
           : mode === 'play' ? <PlayWorld sampleRef={sampleRef} pausedRef={pausedRef} posRef={playerPosRef} setDrivingUI={setDriving} colliders={colliders} spawn={playSpawn} bound={SIZE / 2 - 1.5} />
