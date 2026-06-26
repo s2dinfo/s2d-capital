@@ -547,8 +547,9 @@ export default function ProceduralTerrain() {
       <div className="pt-ui">
         <div className="pt-top">
           <Link href="/world" className="pt-back">← world</Link>
-          <div className="pt-title">PROCEDURAL WORLD</div>
-          <div className="pt-sub">FBM terrain · biomes · carved rivers · day/night · walk it in first person</div>
+          {/* dev-flavoured title hidden in the immersive modes — keep only the exit */}
+          {!walking && <div className="pt-title">PROCEDURAL WORLD</div>}
+          {!walking && <div className="pt-sub">FBM terrain · biomes · carved rivers · day/night · walk it in first person</div>}
         </div>
         <div className="pt-panel">
           {/* the world-generator sliders are a sandbox tool — hide them in the immersive modes
