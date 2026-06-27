@@ -4,9 +4,10 @@
 // token), all in our low-poly look. Pick the place with ?at=<district>.
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Sky } from '@react-three/drei';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { FirstPerson } from '@/components/WorldEncounter';
 
 type BBox = { s: number; w: number; n: number; e: number };
 type Sampler = (lat: number, lon: number) => number;
@@ -157,6 +158,10 @@ export default function RealMap() {
   }, []);
   const [layers, setLayers] = useState<{ buildings?: THREE.BufferGeometry | null; roads?: THREE.BufferGeometry | null; water?: THREE.BufferGeometry | null; green?: THREE.BufferGeometry | null; terrain?: THREE.BufferGeometry | null }>({});
   const [status, setStatus] = useState(`Loading ${name}…`);
+  const [mode, setMode] = useState<'orbit' | 'walk'>('orbit');
+  const sampleRef = useRef<((x: number, z: number) => number) | null>(null);   // world (x,z) → ground height, for FirstPerson
+  const pausedRef = useRef(false);
+  useEffect(() => { pausedRef.current = mode !== 'walk'; }, [mode]);
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -168,6 +173,9 @@ export default function RealMap() {
         if (!alive) return;
         const p = projector(bbox);
         const base = sample ? sample((bbox.s + bbox.n) / 2, (bbox.w + bbox.e) / 2) : 0;
+        // world (x,z metres) → ground height for the walker, by inverting the projection to lat/lon
+        const lat0 = (bbox.s + bbox.n) / 2, lon0 = (bbox.w + bbox.e) / 2, mLat = 110540, mLon = 111320 * Math.cos((lat0 * Math.PI) / 180);
+        sampleRef.current = (x, z) => (sample ? sample(lat0 + z / mLat, lon0 + x / mLon) - base : 0);
         const els = (res.elements || []) as any[];
         const by = { building: [] as any[], road: [] as any[], water: [] as any[], green: [] as any[] };
         for (const el of els) { const c = classify(el); if (c) by[c].push(el); }
@@ -206,8 +214,19 @@ export default function RealMap() {
         {layers.water && <mesh geometry={layers.water}><meshStandardMaterial color="#3d6e8c" roughness={0.4} metalness={0.1} side={THREE.DoubleSide} /></mesh>}
         {layers.roads && <mesh geometry={layers.roads} receiveShadow><meshStandardMaterial color="#3a3d42" roughness={0.95} side={THREE.DoubleSide} /></mesh>}
         {layers.buildings && <mesh geometry={layers.buildings} castShadow receiveShadow><meshStandardMaterial color="#dde1e7" roughness={0.92} flatShading /></mesh>}
-        <OrbitControls makeDefault enablePan target={[0, 0, 0]} maxPolarAngle={1.5} maxDistance={ext * 2.5} />
+        {mode === 'walk'
+          ? <FirstPerson sampleRef={sampleRef} pausedRef={pausedRef} spawn={[0, 0, 0]} bound={Math.max(20, ext / 2 - 10)} />
+          : <OrbitControls makeDefault enablePan target={[0, 0, 0]} maxPolarAngle={1.5} maxDistance={ext * 2.5} />}
       </Canvas>
+      <button onClick={() => setMode((m) => (m === 'walk' ? 'orbit' : 'walk'))}
+        style={{ position: 'absolute', top: 18, right: 20, fontFamily: 'var(--font-mono,monospace)', fontSize: 12, padding: '8px 14px', borderRadius: 8, cursor: 'pointer', color: '#11202e', background: mode === 'walk' ? '#aee0c0' : 'rgba(255,255,255,0.85)', border: '1px solid rgba(0,0,0,0.15)' }}>
+        {mode === 'walk' ? '⊙ orbit' : '🚶 walk it'}
+      </button>
+      {mode === 'walk' && (
+        <div style={{ position: 'absolute', bottom: 58, left: '50%', transform: 'translateX(-50%)', fontFamily: 'var(--font-mono,monospace)', fontSize: 12, color: '#fff', background: 'rgba(10,16,28,0.72)', padding: '6px 14px', borderRadius: 8 }}>
+          click to look · <b>WASD</b> move · <b>esc</b> release
+        </div>
+      )}
       <div style={{ position: 'absolute', top: 18, left: 20, fontFamily: 'var(--font-mono,monospace)', fontSize: 12, letterSpacing: '0.05em', color: '#11202e', background: 'rgba(255,255,255,0.82)', padding: '8px 12px', borderRadius: 8 }}>
         REAL-WORLD DISTRICT · <b>{name}</b><br />OSM buildings·roads·water·parks + AWS terrain · {status}
       </div>
