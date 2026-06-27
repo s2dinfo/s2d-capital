@@ -10,7 +10,7 @@ export default function Birds({ count = 16 }: { count?: number }) {
   const ref = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const geo = useMemo(() => { const g = new THREE.ConeGeometry(0.55, 1.6, 3); g.rotateX(Math.PI / 2); g.scale(1, 0.28, 1); return g; }, []); // a flat dart
-  const mat = useMemo(() => new THREE.MeshBasicMaterial({ color: '#2b3140' }), []);
+  const mat = useMemo(() => new THREE.MeshBasicMaterial({ color: '#4a5568' }), []);
   const flock = useMemo(() => Array.from({ length: count }, () => ({
     radius: 26 + Math.random() * 46,
     height: 20 + Math.random() * 16,

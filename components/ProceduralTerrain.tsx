@@ -7,7 +7,7 @@ import { useMemo, useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Sky, Clouds, Cloud } from '@react-three/drei';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Vignette, HueSaturation, BrightnessContrast } from '@react-three/postprocessing';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
 import { useChoices } from '@/lib/choices';
@@ -32,8 +32,8 @@ function fbm(n: (x: number, y: number) => number, x: number, y: number, oct: num
 }
 
 const C = {
-  sand: new THREE.Color('#d8c896'), desert: new THREE.Color('#dcae62'), savanna: new THREE.Color('#a9a155'),
-  grass: new THREE.Color('#4f7d3e'), forest: new THREE.Color('#33602c'), rock: new THREE.Color('#70675b'),
+  sand: new THREE.Color('#e3d27e'), desert: new THREE.Color('#e6b052'), savanna: new THREE.Color('#b6ab4e'),
+  grass: new THREE.Color('#56953f'), forest: new THREE.Color('#2f6e26'), rock: new THREE.Color('#70675b'),
   rockLight: new THREE.Color('#8b8377'), snow: new THREE.Color('#eef4f8'),
   bank: new THREE.Color('#c2a86f'), riverbed: new THREE.Color('#5b5038'),
 };
@@ -414,6 +414,7 @@ function Sun({ auto, manual, dayRef, fog }: { auto: boolean; manual: number; day
   const nightFog = useMemo(() => new THREE.Color('#0a1424'), []);
   const sunPos = useMemo(() => new THREE.Vector3(), []);
   const tmp = useMemo(() => new THREE.Color(), []);
+  const tmp2 = useMemo(() => new THREE.Color(), []);
   useFrame((s) => {
     const day = auto ? (s.clock.elapsedTime * 0.009 + 0.4) % 1 : manual;   // arrive mid-morning (sun up), then cycle slowly (~110s)
     dayRef.current = day;
@@ -429,14 +430,14 @@ function Sun({ auto, manual, dayRef, fog }: { auto: boolean; manual: number; day
     }
     if (sky.current) sky.current.material.uniforms.sunPosition.value.copy(sunPos);
     if (hemi.current) hemi.current.intensity = 0.12 + up * 0.7;
-    if (amb.current) amb.current.intensity = 0.05 + up * 0.22;
+    if (amb.current) amb.current.intensity = 0.03 + up * 0.12;
     const fog = s.scene.fog as THREE.Fog | null;
-    if (fog) fog.color.copy(nightFog).lerp(dayFog, 0.12 + up * 0.88);
+    if (fog) fog.color.copy(nightFog).lerp(tmp2.copy(dayFog).lerp(duskCol, horizon * 0.5), 0.12 + up * 0.88);  // aerial perspective: far fades toward the lit horizon
   });
   return (
     <>
       <Sky ref={sky} sunPosition={[50, 22, 30]} turbidity={6} rayleigh={2.2} mieCoefficient={0.006} />
-      <ambientLight ref={amb} intensity={0.22} />
+      <ambientLight ref={amb} intensity={0.12} />
       <hemisphereLight ref={hemi} args={['#dcebf7', '#3a4a34', 0.7]} />
       <directionalLight ref={light} position={[50, 44, 26]} intensity={2.4} color="#fff3da" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-55} shadow-camera-right={55} shadow-camera-top={55} shadow-camera-bottom={-55} shadow-camera-far={160} />
     </>
@@ -520,7 +521,7 @@ export default function ProceduralTerrain() {
 
   return (
     <div className="pt-stage">
-      <Canvas shadows dpr={[1, 1.5]} performance={{ min: 0.5 }} camera={{ position: [42, 28, 42], fov: 42 }}>
+      <Canvas shadows dpr={[1, 1.5]} performance={{ min: 0.5 }} camera={{ position: [42, 28, 42], fov: 42 }} gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.08, outputColorSpace: THREE.SRGBColorSpace, powerPreference: 'high-performance' }}>
         <fog attach="fog" args={[arriveFog, 80, 175]} />
         <Sun auto={timeAuto} manual={timeManual} dayRef={dayRef} fog={arriveFog} />
         <Birds count={16} />
@@ -540,7 +541,9 @@ export default function ProceduralTerrain() {
           : <OrbitControls makeDefault enablePan={false} minDistance={22} maxDistance={110} maxPolarAngle={1.52} autoRotate autoRotateSpeed={0.2} target={[0, 2, 0]} />}
         <EffectComposer>
           <Bloom intensity={0.32} luminanceThreshold={0.72} luminanceSmoothing={0} mipmapBlur={false} />
-          <Vignette eskil={false} offset={0.2} darkness={0.62} />
+          <HueSaturation hue={0} saturation={0.12} />
+          <BrightnessContrast brightness={0} contrast={0.08} />
+          <Vignette eskil={false} offset={0.32} darkness={0.45} />
         </EffectComposer>
       </Canvas>
 
