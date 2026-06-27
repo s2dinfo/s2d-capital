@@ -4,6 +4,21 @@ This repo's flagship is the **`/terrain` procedural walkable world** (`component
 
 ---
 
+# ⚙️ How to work in this repo — the guardrails
+
+The four ways agentic coding goes wrong (Karpathy's `CLAUDE.md` anti-patterns). Hold to these on **every** change:
+
+1. **No silent assumptions.** If a fact isn't established, state the assumption and *verify it* (read the code, check the path/API/behavior) before acting. Never guess at a function signature, a file location, or how something behaves — confirm it first.
+2. **No hypertrophy.** Make the *smallest* change that solves the task. Don't add abstractions, layers, config options, or "while I'm here" generalizations nobody asked for. Prefer editing existing code over inventing new structures.
+3. **No collateral changes.** Touch only what the task needs. No drive-by refactors, reformatting, renames, or edits to unrelated code. Keep diffs targeted and reviewable.
+4. **Always have a verifiable success criterion.** Before calling anything done, state how it's checked and *run that check*:
+   - typecheck: `npx tsc --noEmit` — **baseline is 7 pre-existing errors**; only new errors count.
+   - visual/runtime change → verify the *actual behavior* (an in-browser render via chrome-devtools), then park the tab (`about:blank`) to keep the fanless Air cool. "It compiles" ≠ "it works."
+
+Plus: **verify, don't trust** (re-read your own diff) and **report faithfully** (if a check failed or a step was skipped, say so — don't paper over it).
+
+---
+
 # 🔀 MODEL ROUTING LAYER — Opus vs local Ornith
 
 A local model (**Ornith-1.0-9B**, runs free on this Mac via Ollama) handles cheap grunt work so Claude/Opus tokens go to the hard stuff. **Mechanism:** `node scripts/ornith.mjs [--fast] [--raw] "<prompt>"` (stdin is appended; `--fast` skips its `<think>` reasoning for speed; needs `brew services start ollama`).
