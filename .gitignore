@@ -14,3 +14,9 @@ ds-bundle/
 .design-sync/learnings/
 .design-sync/node_modules
 public/cesium/
+
+# Obsidian local vault config
+wiki/.obsidian/
+
+# macOS
+.DS_Store
