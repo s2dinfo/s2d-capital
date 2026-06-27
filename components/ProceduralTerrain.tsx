@@ -220,12 +220,12 @@ function Terrain({ amp, freq, octaves, seed, dayRef, sampleRef }: { amp: number;
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const make = (geom: THREE.BufferGeometry, mat: THREE.Material, list: any[], yOff: number, rotY: boolean) => {
     const m = new THREE.InstancedMesh(geom, mat, Math.max(1, list.length));
-    list.forEach((r, i) => { dummy.position.set(r[0], r[1] + yOff, r[2]); dummy.scale.setScalar(r[3]); dummy.rotation.set(rotY ? 0 : rngAng(i), rngAng(i + 1), rotY ? 0 : rngAng(i + 2)); dummy.updateMatrix(); m.setMatrixAt(i, dummy.matrix); });
+    list.forEach((r, i) => { dummy.position.set(r[0], r[1] + yOff, r[2]); dummy.scale.setScalar(r[3]); dummy.scale.y *= 0.82 + Math.abs((Math.sin(i * 91.7) * 13.13) % 1) * 0.45; dummy.rotation.set(rotY ? 0 : rngAng(i), rngAng(i + 1), rotY ? 0 : rngAng(i + 2)); dummy.updateMatrix(); m.setMatrixAt(i, dummy.matrix); });
     m.instanceMatrix.needsUpdate = true; m.castShadow = true;
     return m;
   };
-  const treeGeo = useMemo(() => { const g = new THREE.ConeGeometry(0.55, 1.9, 7); g.translate(0, 0.95, 0); return g; }, []);
-  const cactusGeo = useMemo(() => { const g = new THREE.CylinderGeometry(0.18, 0.22, 1.4, 8); g.translate(0, 0.7, 0); return g; }, []);
+  const treeGeo = useMemo(() => { const g = new THREE.ConeGeometry(0.55, 1.9, 10); g.translate(0, 0.95, 0); return g; }, []);
+  const cactusGeo = useMemo(() => { const g = new THREE.CylinderGeometry(0.18, 0.22, 1.4, 12); g.translate(0, 0.7, 0); return g; }, []);
   const trees = useMemo(() => make(treeGeo, new THREE.MeshStandardMaterial({ color: '#2f5d2e', flatShading: true, roughness: 1 }), scatter.trees, 0, true), [scatter, treeGeo]);
   const rocks = useMemo(() => make(new THREE.DodecahedronGeometry(0.4, 0), new THREE.MeshStandardMaterial({ color: '#5a5650', flatShading: true, roughness: 1 }), scatter.rocks, 0.12, false), [scatter]);
   const cacti = useMemo(() => make(cactusGeo, new THREE.MeshStandardMaterial({ color: '#3f7a4a', flatShading: true, roughness: 1 }), scatter.cacti, 0, true), [scatter, cactusGeo]);
@@ -439,7 +439,7 @@ function Sun({ auto, manual, dayRef, fog }: { auto: boolean; manual: number; day
       <Sky ref={sky} sunPosition={[50, 22, 30]} turbidity={6} rayleigh={2.2} mieCoefficient={0.006} />
       <ambientLight ref={amb} intensity={0.12} />
       <hemisphereLight ref={hemi} args={['#dcebf7', '#3a4a34', 0.7]} />
-      <directionalLight ref={light} position={[50, 44, 26]} intensity={2.4} color="#fff3da" castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-55} shadow-camera-right={55} shadow-camera-top={55} shadow-camera-bottom={-55} shadow-camera-far={160} />
+      <directionalLight ref={light} position={[50, 44, 26]} intensity={2.4} color="#fff3da" castShadow shadow-mapSize={[1024, 1024]} shadow-bias={-0.0004} shadow-normalBias={0.03} shadow-camera-left={-42} shadow-camera-right={42} shadow-camera-top={42} shadow-camera-bottom={-42} shadow-camera-far={160} />
     </>
   );
 }
