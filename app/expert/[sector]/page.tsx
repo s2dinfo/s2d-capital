@@ -5,9 +5,22 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ExpertChat from '@/components/ExpertChat';
+import TradingViewChart from '@/components/TradingViewChart';
 import { loadResearch } from '@/lib/research';
 
 export const dynamic = 'force-dynamic';
+
+// TradingView symbol per desk — the front-month futures / benchmark contract for each commodity.
+const TV_SYMBOL: Record<string, string> = {
+  copper: 'COMEX:HG1!',
+  aluminium: 'COMEX:ALI1!',
+  'iron-ore': 'SGX:FEF1!',
+  // Nickel/zinc/aluminium are LME metals; LME is subscription-gated on TradingView's free embed,
+  // so we use the freely-rendering exchange contract where COMEX/CME doesn't list one.
+  // (COMEX *does* list aluminium + zinc; nickel only renders via Shanghai/SHFE on the free tier.)
+  nickel: 'SHFE:NI1!',
+  zinc: 'COMEX:ZNC1!',
+};
 
 export async function generateMetadata({
   params,
@@ -37,6 +50,13 @@ export default async function ExpertSectorPage({ params }: { params: { sector: s
           <div style={S.kicker}>S2D CAPITAL · {r.sector.toUpperCase()} RESEARCH</div>
           <h1 style={S.h1}>{r.title}</h1>
           <div style={S.deskline}>{r.desk}</div>
+
+          {TV_SYMBOL[r.slug] && (
+            <div style={S.chartBlock}>
+              <div style={S.chartLabel}>LIVE PRICE · {TV_SYMBOL[r.slug]}</div>
+              <TradingViewChart symbol={TV_SYMBOL[r.slug]} height={360} />
+            </div>
+          )}
 
           <div style={S.body}>
             {r.blocks.map((b, i) => {
@@ -91,6 +111,8 @@ const S: Record<string, React.CSSProperties> = {
   kicker: { fontSize: 11, letterSpacing: 2.5, color: GOLD, fontWeight: 600, margin: '22px 0 10px' },
   h1: { fontSize: 38, fontWeight: 700, lineHeight: 1.15, letterSpacing: -0.6, margin: '0 0 10px' },
   deskline: { fontSize: 13, color: '#7c879c', marginBottom: 26, paddingBottom: 22, borderBottom: '1px solid #1c2740' },
+  chartBlock: { margin: '0 0 34px' },
+  chartLabel: { fontSize: 10.5, letterSpacing: 2, color: GOLD, fontWeight: 600, marginBottom: 8 },
   body: { fontSize: 16.5, lineHeight: 1.72, color: '#c4cdde', maxWidth: 760 },
   h2: { fontSize: 24, fontWeight: 700, color: '#f1f4fa', letterSpacing: -0.3, margin: '40px 0 8px' },
   h3: { fontSize: 19, fontWeight: 650, color: GOLD, margin: '30px 0 6px' },

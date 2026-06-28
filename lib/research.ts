@@ -52,6 +52,8 @@ function parseBody(body: string): { title: string; blocks: Block[] } {
       flush();
       continue;
     }
+    // Drop PDF page-footer artifacts, e.g. "An Introduction to Copper Markets · page 14 of 14".
+    if (/\bpage\s+\d+\s+of\s+\d+\b/i.test(line)) continue;
     const h = line.match(HEADING);
     if (h) {
       flush();

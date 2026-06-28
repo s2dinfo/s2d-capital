@@ -36,10 +36,21 @@ export default function ExpertChat({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastReplyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (!el) return;
+    const last = messages[messages.length - 1];
+    // While the desk is thinking (or right after you ask), keep the bottom in view.
+    // When the answer lands, scroll to the TOP of it so you read from the start, not the tail.
+    if (loading || !last || last.role === 'user') {
+      el.scrollTop = el.scrollHeight;
+    } else if (last.role === 'assistant' && lastReplyRef.current) {
+      const top =
+        lastReplyRef.current.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop;
+      el.scrollTop = Math.max(0, top - 12);
+    }
   }, [messages, loading]);
 
   useEffect(() => {
@@ -112,7 +123,11 @@ export default function ExpertChat({
         )}
 
         {messages.map((m, i) => (
-          <div key={i} style={{ ...ST.row, justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+          <div
+            key={i}
+            ref={i === messages.length - 1 && m.role === 'assistant' ? lastReplyRef : undefined}
+            style={{ ...ST.row, justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}
+          >
             <div style={m.role === 'user' ? ST.userBubble : ST.expertBubble}>
               {m.role === 'assistant' && <div style={ST.who}>{title} Desk</div>}
               <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.55 }}>{m.content}</div>
@@ -144,7 +159,7 @@ export default function ExpertChat({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={`Ask the ${title} desk…`}
-          autoFocus
+          autoFocus={embedded}
         />
         <button type="submit" style={{ ...ST.sendBtn, opacity: loading || !input.trim() ? 0.45 : 1 }} disabled={loading}>
           Ask
